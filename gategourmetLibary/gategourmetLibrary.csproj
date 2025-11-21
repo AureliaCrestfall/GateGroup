@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GateGroupWebpages\GateGroupWebpages.csproj" />
+    <ProjectReference Include="..\simply database test\simply database test.csproj" />
+  </ItemGroup>
+
 </Project>
