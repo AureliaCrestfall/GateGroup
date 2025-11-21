@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateGroupWebpages", "GateGroupWebpages\GateGroupWebpages.csproj", "{87B26F07-1BD5-4E6C-B1B2-016576B1C77A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gategourmetLibary", "gategourmetLibary\gategourmetLibary.csproj", "{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gategourmetLibrary", "gategourmetLibary\gategourmetLibrary.csproj", "{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simply database test", "simply database test\simply database test.csproj", "{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}"
 EndProject
