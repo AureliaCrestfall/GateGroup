@@ -1,4 +1,5 @@
 ﻿using simply_database_test.secret;
+using simply_database_test.Sercet;
 
 namespace simply_database_test
 {
@@ -6,8 +7,8 @@ namespace simply_database_test
     {
         static void Main(string[] args)
         {
-            conet con = new conet();
-            testrepo test = new testrepo(con.connet);
+            connect on = new connect();
+            testrepo test = new testrepo(on.cstring);
 
             List<testallergi> allergiw = new List<testallergi>();
             allergiw = test.GetAll();
