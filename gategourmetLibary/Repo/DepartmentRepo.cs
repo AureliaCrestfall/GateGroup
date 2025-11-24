@@ -10,35 +10,48 @@ namespace gategourmetLibrary.Repo
     {
         //public void Add(int department)
         //{
+
         //}
-        
+
         //public void Delete(int department)
         //{
-        //}
-        //public void GetAll()
-        //{
+
         //}
 
         //public void Update(int DepartmentID, Department UpdateDepartment  )
         //{
+
         //}
 
-        //public void NewWarehouse(WereHous newwerehous)
-        //{
-        //}
-        //public void Stoklngredient(Ingredient stocklngredient)
+        //public void GetAll()
         //{
 
         //}
-        //public void GetWerehousStock(int werehous)
+
+        //public void NewWarehouse(WereHouse newWarehouse)
         //{
+
         //}
+
+        //public void StokIngredient(Ingredient stockIngredient)
+        //{
+
+        //}
+        //public void GetWarehouseStock(int warehouse)
+        //{
+
+        //}
+
         //public void GetDepartmentManagers(int department)
         //{
+
         //}
+
         //public void GetDepartmentEmployees(int department)
         //{
+
         //}
+
         //public int Get( int DepartmentID )
         //{
         //    int i = 1;
@@ -47,15 +60,16 @@ namespace gategourmetLibrary.Repo
 
         //public void AddNewDepartmentManager(int DepartmentID,manager newManager) 
         //{
+
         //}
 
 
-        //public void  AddnewDepartmentEmpolyee(int DepartmentID, Employee newEmployee)
+        //public void  AddNewDepartmentEmpolyee(int DepartmentID, Employee newEmployee)
         //{
 
         //}
 
-        //public void RemoveStock(Ingredient Ingredient, int amount, Department departmentID, Warehouse warehouseID)
+        //public void RemoveStock(Ingredient ingredient, int amount, Department departmentID, Warehouse warehouseID)
         //{
 
         //}
