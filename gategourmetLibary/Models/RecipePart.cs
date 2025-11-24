@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-// class for one part of a full recipe order f.ks. main dish 
+// class for one part of a full recipe order fx. main dish 
 namespace gategourmetLibrary.Models
 {
     public class RecipePart

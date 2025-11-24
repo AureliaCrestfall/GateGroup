@@ -21,7 +21,7 @@ namespace gategourmetLibrary.Models
     public enum WarehouseType
     {
         Freezer,
-        Fride, 
+        Fridge, 
         DryStorage
     }
 }

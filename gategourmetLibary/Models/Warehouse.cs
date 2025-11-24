@@ -18,7 +18,7 @@ namespace gategourmetLibrary.Models
         // name of warehouse
         public string Name { get; set; }
 
-        // Unique identifier ergo id 
+        // Unique identifier (id)
         public int ID { get; set; }
 
         // list for stored ingredients in warehouse 

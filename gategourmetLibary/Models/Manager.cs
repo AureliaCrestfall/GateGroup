@@ -9,6 +9,6 @@ namespace gategourmetLibrary.Models
     public class Manager : Employee
     {
         // title or position of the manager 
-        public string Posistion { get; set; }
+        public string Position { get; set; }
     }
 }

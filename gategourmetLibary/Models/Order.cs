@@ -11,10 +11,10 @@ namespace gategourmetLibrary.Models
         // parts from recipe that forms a complete dish 
         public List<RecipePart> Recipe {  get; set; }
 
-        // customer that has orderd this dish/ order
+        // customer that has ordered this dish/ order
         public Customer CustomerOrder { get; set; }
 
-        // current status of this order'
+        // current status of this order by using OrderStatus Enum
         public OrderStatus Status { get; set; }
 
         // when order was created 
