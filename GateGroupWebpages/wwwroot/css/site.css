@@ -1,22 +1,109 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Fokus-styles (tilgængelighed) */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem #CBB682, 0 0 0 0.25rem rgba(209, 185, 127, 0.5);
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
+/* Baggrund + generel tekst */
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #0d0d0d; /* sort baggrund */
+    color: #e5e5e5; /* lys tekst */
+    font-family: 'Inter', Arial, sans-serif;
 }
+
+/* Kort billeder (bruges i fx forside cards) */
+.card-img-top {
+    aspect-ratio: 16/8;
+    object-fit: cover;
+}
+
+/* Logo */
+.logo-img {
+    height: 40px;
+    width: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+    .logo-img:hover {
+        transform: scale(1.1);
+    }
+
+/* Links */
+a {
+    color: #CBB681;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+    a:hover {
+        color: #9F8F66;
+    }
+
+/* Navbar */
+.navbar {
+    background-color: #121212 !important;
+}
+
+.nav-link {
+    color: #E8E8E8 !important;
+    font-weight: 500;
+}
+
+    .nav-link:hover {
+        color: #d1b97f !important;
+    }
+
+/* Primære knapper */
+.btn-primary {
+    background: linear-gradient(180deg, #CBB682, #9F8F66);
+    border: none;
+    color: #0b0b0b;
+    font-weight: 700;
+}
+
+    .btn-primary:hover {
+        filter: brightness(0.95);
+    }
+
+/* Sekundære/ghost knapper */
+.btn-outline-light {
+    border: 1px solid #CBB682;
+    color: #CBB682;
+    background: transparent;
+}
+
+    .btn-outline-light:hover {
+        background: rgba(209, 185, 127, 0.1);
+        color: #CBB682;
+    }
+
+/* Footer */
+footer {
+    background-color: #355E3B;
+    color: #999;
+}
+
+    footer a {
+        color: #CBB682;
+    }
+
+   footer a:hover {
+            color: #9F8F66;
+        }

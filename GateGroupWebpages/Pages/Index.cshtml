@@ -1,10 +1,56 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="container py-5">
+    <div class="row align-items-center gy-4">
+        <!-- Tekst til venstre -->
+        <div class="col-lg-6 text-center text-lg-start">
+            <h1 class="display-5 mb-3" style="font-family:'Playfair Display', Georgia, serif;">
+               Welcome to Gate Gourmet
+            </h1>
+            <p class="lead text-muted mb-4">
+                Gate Gourmet is an international catering company that produces and delivers meals for airlines, rail operators, and airport lounges. <strong>We manage the entire process — from menu planning and food preparation to packing and delivery — ensuring that every meal arrives on time and at a consistent quality.</strong>,
+                With specialized teams and close coordination between kitchen and logistics, we help create a professional and reliable dining experience for passengers during their journey.
+            </p>
+            <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+                <a asp-page="/Bathwater" class="btn btn-gold px-4">Read more about who we are and how we work →</a>
+                <a asp-page="/Privacy" class="btn btn-outline-light px-4">About Us</a>
+            </div>
+        </div>
+
+        <!-- Billede til højre -->
+        <div class="col-lg-6 text-center">
+            <img src="~/img/forside.png"
+                 alt="Premium Bathwater Hero"
+                 class="img-fluid rounded shadow"
+                 loading="lazy" />
+        </div>
+    </div>
+</section>
+
+<hr class="hr-gold" />
+
+<section class="container py-5">
+    <div class="text-center mb-5">
+        <h2 style="font-family:'Playfair Display', Georgia, serif;">Why Choose Gate Gourmet?</h2>
+        <p class="text-muted">Because precision matters in the world of travel catering.</p>
+    </div>
+
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <h5 class="price-gold">✔ Reliability</h5>
+            <p>Every order is prepared and delivered according to strict timelines that match scheduled flights and rail departures. Punctuality and workflow coordination are at the heart of our production.</p>
+        </div>
+        <div class="col-md-4">
+            <h5 class="price-gold">✔ Consistent Quality</h5>
+            <p>From economy meals to premium dining concepts, we follow standardized processes that ensure the same high level of quality — regardless of volume, destination, or passenger segment.</p>
+        </div>
+        <div class="col-md-4">
+            <h5 class="price-gold">✔ Seamless Collaboration</h5>
+            <p>Chefs, planners, warehouse employees and logistics specialists work in one coordinated flow. This minimizes bottlenecks and ensures a smooth handover from the kitchen to the aircraft or lounge.</p>
+        </div>
+    </div>
+</section>
