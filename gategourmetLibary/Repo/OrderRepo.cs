@@ -16,17 +16,22 @@ namespace gategourmetLibrary.Repo
 
         //public void Add(Order newOrder)
         //{
+
         //}
         //public void Delete(int orderID)
         //{
-        //}
-        //public void Get(int orderID)
-        //{
-        //}
 
+        //}
         //public void Update(int orderID, Order updateOrder)
         //{
+
         //}
+
+        //public void Get(int orderID)
+        //{
+
+        //}
+
         //public void GetRecipeParts(int orderID)
         //{
         //    List<RecipePart>
@@ -54,6 +59,7 @@ namespace gategourmetLibrary.Repo
 
         //public void Filter(datetime filterAfterDate)
         //{ 
+
         //}
     }
 }

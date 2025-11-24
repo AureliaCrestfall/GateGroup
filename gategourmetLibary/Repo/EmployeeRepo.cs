@@ -10,20 +10,22 @@ namespace gategourmetLibrary.Models
     {
         public void Add(int employee)
         {
-        }
-        public int Get()
-        {
-            int i = 1;
-            return i;
+
         }
         public void Delete(int employeeID)
+        {
+        }
+        public void Update(int employee)
         {
         }
         public void GetAll()
         {
         }
-        public void Update(int employee)
+
+        public int Get()
         {
+            int i = 1;
+            return i;
         }
     }
 }

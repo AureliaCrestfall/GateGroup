@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace gategourmetLibrary.Repo
 {
-    interface IOrderRepo
+    public interface IOrderRepo
     {
         void Add(int order);
         int Get();

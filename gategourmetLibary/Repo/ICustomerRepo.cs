@@ -12,7 +12,7 @@ namespace gategourmetLibrary.Repo
         int Get();
         void Delete(int customer);
         void GetAll();
-        void MyOrdwer(int customer);
+        void MyOrder(int customer);
         void Update(int customer);
         void Filter(string customer);
     }

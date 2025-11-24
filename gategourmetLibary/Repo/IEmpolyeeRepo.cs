@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace gategourmetLibrary.Repo
 {
-    interface IEmpolyeeRepo
+    public interface IEmpolyeeRepo
     {
         void Add(int empolyee);
         int Get();
