@@ -21,6 +21,9 @@ namespace gategourmetLibrary.Models
         // Unique identifier (id)
         public int ID { get; set; }
 
+        // id for the department this warehouse belongs to 
+        public int DepartmentId { get; set; }
+
         // list for stored ingredients in warehouse 
         public List<Ingredient> ingredientsInWarehouse { get; set; }
          

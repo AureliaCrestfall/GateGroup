@@ -1,48 +1,179 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using gategourmetLibrary.Models;
 using gategourmetLibrary.Service;
+using Microsoft.Data.SqlClient;
 
 namespace gategourmetLibrary.Repo
 {
     public class DepartmentRepo : IDepartmentRepo
     {
+        // connection string bruges til at kommuniker med database 
+        private readonly string _connectionString;
+
+        // constructor modtager connection string fra service 
+        public DepartmentRepo(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         // returns all departments
         public List<Department> GetAllDepartments()
         {
-            return null;
+            List<Department> departments = new List<Department>();
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(
+                "SELECT D_ID, D_Name, D_Location, D_Email FROM Department",
+                connection);
+
+            connection.Open();
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            // gennemgår hver department fra hver table 
+            while (reader.Read())
+            {
+                // der laves et objekt for hver række 
+                Department department = new Department();
+                department.DepartmentId = (int)reader["D_ID"];
+                department.DepartmentName = reader["D_Name"].ToString();
+                department.DepartmentLocation = reader["D_Location"].ToString();
+                department.DepartmentEmail = reader["email"].ToString();
+
+                departments.Add(department);
+            }
+
+            reader.Close();
+            connection.Close();
+
+            return departments;
         }
-        // adds a new department
+        // adds a new department to database 
         public void AddDepartment(Department newDepartment)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(
+                "INSERT INTO Department (D_Name, D_Location, D_Email)" +
+                "VALUES (@name, @location, @mail)",
+                connection);
+
+            command.Parameters.AddWithValue("@name", newDepartment.DepartmentName);
+            command.Parameters.AddWithValue("@location", newDepartment.DepartmentLocation);
+            command.Parameters.AddWithValue("@mail", newDepartment.DepartmentEmail);
+
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
 
         }
-        // deletes a department by ID
+        // deletes a department with matching ID
         public void DeleteDepartment(int departmentId)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            SqlCommand command = new SqlCommand(
+               "DELETE FROM Departments WHERE D_ID = @id",
+               connection);
+
+            command.Parameters.AddWithValue("@id", departmentId);
+
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
 
         }
         // updates department info by ID
         public void UpdateDepartment(int departmentId, Department updatedDepartment)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
 
+            SqlCommand command = new SqlCommand(
+                "UPDATE Department SET D_Name =@name,D_Location=@location,D_Email=@mail" +
+                "Where D_ID = @id",
+                connection);
+
+            command.Parameters.AddWithValue("@name", updatedDepartment.DepartmentName);
+            command.Parameters.AddWithValue("@location", updatedDepartment.DepartmentLocation);
+            command.Parameters.AddWithValue("@mail",updatedDepartment.DepartmentEmail);
+            command.Parameters.AddWithValue("@id", updatedDepartment.DepartmentId);
+
+            connection.Open ();
+            command.ExecuteNonQuery();
+            connection.Close ();
         }
+
         // returns a specific department by ID
         public Department GetDepartment(int departmentId)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
+            SqlCommand command = new SqlCommand(
+                "SELECT D_ID, D_Name, D_Location, D_Email FROM Department WHERE D_ID =@id",
+                connection);
+
+            command.Parameters.AddWithValue("@id",departmentId);
+
+            connection.Open();
+
+            SqlDataReader reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                Department department = new Department();
+                department.DepartmentId = (int)reader["D_ID"];
+                department.DepartmentName = reader["D_Name"].ToString();
+                department.DepartmentLocation = reader["D_Location"].ToString();
+                department.DepartmentEmail = reader["D_Email"].ToString();
+
+                reader.Close();
+                connection.Close();
+                return department;
+            }
+            reader.Close();
+            connection.Close();
             return null;
         }
+         
+
         // assigns a new warehouse to a department
         public void NewWarehouse(Warehouse newWarehouse)
         {
+            SqlConnection connection = new SqlConnection (_connectionString);
+
+            connection.Open ();
+
+            // indsætter warehouse og retunerer generet W_id
+            SqlCommand insertWarehouse = new SqlCommand (
+                "INSERT INTO Warehouse (W_Name, W_Type, W_Location)" +
+                "VALUES (@name, @type,@location); SELECT SCOPE_IDENTITY();",
+                connection);
+
+            insertWarehouse.Parameters.AddWithValue("@name", newWarehouse.Name);
+            insertWarehouse.Parameters.AddWithValue("@type", newWarehouse.Type);
+            insertWarehouse.Parameters.AddWithValue("@location", newWarehouse.Location);
+
+            object result = insertWarehouse.ExecuteScalar();
+            int warehouseId = Convert.ToInt32(result);
+
+            // linker warehouse til department 
+            SqlCommand link = new SqlCommand (
+                "INSERT INTO werehouseDepartment (D_ID, W_ID) VALUES (@d, @w)",
+                connection);
+
+            link.Parameters.AddWithValue("@d", newWarehouse.DepartmentId);
+            link.Parameters.AddWithValue("@w", warehouseId);
+            link.ExecuteNonQuery ();
+
+            connection.Close ();
 
         }
         // stocks an ingredient in the department's warehouse
         public void StockIngredient(Ingredient stockIngredient)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
 
         }
         // gets the stock of a specific warehouse
