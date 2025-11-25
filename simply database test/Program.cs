@@ -13,9 +13,9 @@ namespace simply_database_test
             connect on = new connect();
             testrepo test = new testrepo(on.cstring);
 
-            List<testallergi> allergiw = test.GetAll();
+            List<testallergi> allergi = test.GetAll();
 
-            foreach (testallergi a in allergiw)
+            foreach (testallergi a in allergi)
             {
                 Console.WriteLine($" it has an id of {a.ID} and name  of {a.Name}");
             }
