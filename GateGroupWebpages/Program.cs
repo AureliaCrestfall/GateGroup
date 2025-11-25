@@ -1,5 +1,6 @@
 
 
+using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 using gategourmetLibrary.Service;
 
@@ -14,7 +15,19 @@ namespace GateGroupWebpages
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddSingleton<IOrderRepo, OrderRepo>();
-            builder.Services.AddSingleton<OrderService>(); var app = builder.Build();
+            builder.Services.AddSingleton<OrderService>(); 
+            builder.Services.AddSingleton<IEmpolyeeRepo, EmployeeRepo>();
+            builder.Services.AddSingleton<EmployeeService>();
+            builder.Services.AddSingleton<IDepartmentRepo, DepartmentRepo>();
+            builder.Services.AddSingleton<DepartmentService>();
+            builder.Services.AddSingleton<ICustomerRepo, CustomerRepo>();
+            builder.Services.AddSingleton<CustomerService>();
+
+
+
+
+            var app = builder.Build();
+
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

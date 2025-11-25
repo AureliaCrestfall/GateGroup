@@ -7,13 +7,20 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Reflection.PortableExecutable;
 using System.Reflection;
+using gategourmetLibrary.Secret;
+using gategourmetLibrary.Repo;
 
 namespace gategourmetLibrary.Models
 {
-    public class EmployeeRepo
+    public class EmployeeRepo:IEmpolyeeRepo
     {
         private readonly string _connectionString;
         private readonly List<Employee> _employee;
+        private readonly Connect connect = new Connect();
+        public EmployeeRepo()
+        {
+            _connectionString = connect.cstring;
+        }
 
         public void Add(Employee employee)
         {
@@ -168,6 +175,12 @@ namespace gategourmetLibrary.Models
                 reader.Close();
                 return null;
             }
+
+            List<Employee> Filter(string empolyee)
+            {
+                return null;
+            }
+
 
 
         }
