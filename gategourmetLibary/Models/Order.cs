@@ -34,7 +34,7 @@ namespace gategourmetLibrary.Models
             ID = id;
             paystatus = pstatus;
         }
-        public Order(DateTime made, DateTime ready, Customer customer, int id, Dictionary<int, RecipePart> recipe):this(made, ready, customer, id)
+        public Order(DateTime made, DateTime ready, Customer customer, int id, bool pstatus, Dictionary<int, RecipePart> recipe):this(made, ready, customer, id, pstatus)
         {
             Recipe = recipe;
         }

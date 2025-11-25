@@ -34,11 +34,11 @@ namespace gategourmetLibrary.Repo
         List<Order> FilterByStatus(OrderStatus status);
         //filters orders by a specific date
         List<Order> FilterByDate(DateTime date);
-        void Add(Order order);
-        Order Get(int orderID);
-        void Delete(int orderPrimaryKey);
-        Dictionary<int, Order> GetAll();
-        void Update(int orderID, Order updateOrder);
+        //void Add(Order order);
+        //Order Get(int orderID);
+        //void Delete(int orderPrimaryKey);
+        //Dictionary<int, Order> GetAll();
+        //void Update(int orderID, Order updateOrder);
 
     }
 }

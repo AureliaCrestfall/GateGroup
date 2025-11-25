@@ -57,7 +57,7 @@ namespace gategourmetLibrary.Repo
             }
             catch (SqlException sqlError)
             {
-                throw new Exception("Database error in ResidentRepository.GetAllResidents(): " + sqlError.Message);
+                throw new Exception("Database error in OrderRepository.AddOrder(): " + sqlError.Message);
             }
             finally
             {
@@ -66,8 +66,9 @@ namespace gategourmetLibrary.Repo
 
             return ordersFromDatabase;
         }
+        //add a new order to repo
 
-        public void Add(Order newOrder)
+        public void AddOrder(Order newOrder)
         {
 
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
@@ -76,19 +77,9 @@ namespace gategourmetLibrary.Repo
                 "VALUES (@O_ID, @O_Made, @O_ready, @O_paystatus, @O_status)",
                 sqlConnection);
 
-            SqlCommand sqlCommandRecipePart = new SqlCommand(
-               "INSERT INTO recipePart (R_ID, R_howToPrep, R_name, R_status) " +
-               "VALUES (@R_ID, @R_howToPrep, @R_name, @R_status)",
-               sqlConnection);
+           
 
-            SqlCommand sqlCommandOrderRecipePart = new SqlCommand(
-              "INSERT INTO recipePart (R_ID, O_ID) " +
-              "VALUES (@R_ID, @O_ID)",
-              sqlConnection);
-            SqlCommand sqlCommandRecipePartIngredient = new SqlCommand(
-             "INSERT INTO recipePart (R_ID, I_ID) " +
-             "VALUES (@R_ID, @I_ID)",
-             sqlConnection);
+            AddOrderTableCustomert(newOrder.ID, newOrder.CustomerOrder.ID);
 
             sqlCommand.Parameters.AddWithValue("@O_made", newOrder.OrderMade);
             sqlCommand.Parameters.AddWithValue("@O_status", newOrder.Status);
@@ -103,7 +94,7 @@ namespace gategourmetLibrary.Repo
             }
             catch (SqlException sqlError)
             {
-                throw new Exception("Databasefejl i ResidentRepository.AddResident(): " + sqlError.Message);
+                throw new Exception("Databasefejl i OrderRepository.AddOrder(): " + sqlError.Message);
             }
             finally
             {
@@ -112,66 +103,134 @@ namespace gategourmetLibrary.Repo
 
             foreach (KeyValuePair<int,RecipePart> part in newOrder.Recipe)
             {
-                sqlCommandRecipePart.Parameters.AddWithValue("@R_ID", part.Value.ID);
-                sqlCommandRecipePart.Parameters.AddWithValue("@R_howToprep", part.Value.Assemble);
-                sqlCommandRecipePart.Parameters.AddWithValue("@r_name", part.Value.partName);
-                sqlCommandRecipePart.Parameters.AddWithValue("@R_status",part.Value.status);
-                
-
-                try
-                {
-                    sqlConnection.Open();
-                    sqlCommandRecipePart.ExecuteNonQuery();
-                    sqlCommandOrderRecipePart.ExecuteNonQuery();
-                }
-                catch (SqlException sqlError)
-                {
-                    throw new Exception("Databasefejl i ResidentRepository.AddResident(): " + sqlError.Message);
-                }
-                finally
-                {
-                    sqlConnection.Close();
-                }
-                sqlCommandOrderRecipePart.Parameters.AddWithValue("@O_ID", newOrder.ID);
-                sqlCommandOrderRecipePart.Parameters.AddWithValue("@R_ID", part.Value.ID);
-                try
-                {
-                    sqlCommandOrderRecipePart.ExecuteNonQuery();
-                }
-                catch (SqlException sqlError)
-                {
-                    throw new Exception("Databasefejl i ResidentRepository.AddResident(): " + sqlError.Message);
-                }
-                finally
-                {
-                    sqlConnection.Close();
-                }
+                AddRecipePart(part.Value);
+                AddOrderRecipePart(newOrder.ID, part.Value.ID);
+              
+              
             }
             foreach (KeyValuePair<int, RecipePart> part in newOrder.Recipe)
             {
                 foreach(Ingredient i in part.Value.Ingredients)
                 {
-                    sqlCommandOrderRecipePart.Parameters.AddWithValue("@I_ID", i.ID);
-                    sqlCommandOrderRecipePart.Parameters.AddWithValue("@R_ID", part.Value.ID);
-                    try
-                    {
-                        sqlConnection.Open();
-                        sqlCommandOrderRecipePart.ExecuteNonQuery();
-                       
-                    }
-                    catch (SqlException sqlError)
-                    {
-                        throw new Exception("Databasefejl i ResidentRepository.AddResident(): " + sqlError.Message);
-                    }
-                    finally
-                    {
-                        sqlConnection.Close();
-                    }
+                    AddRecipePartIngredient(part.Value.ID, i.ID);
                 }
             }
             
 
         }
+
+
+        public void AddOrderTableCustomert(int orderID,int customerID)
+        {
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            SqlCommand sqlCommand = new SqlCommand(
+            "INSERT INTO IngrefientrecipePart (O_ID, C_ID) " +
+            "VALUES (@O_ID, @C_ID)",
+            sqlConnection);
+
+
+            sqlCommand.Parameters.AddWithValue("@O_ID", orderID);
+            sqlCommand.Parameters.AddWithValue("@C_ID", customerID);
+
+
+            try
+            {
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (SqlException sqlError)
+            {
+                throw new Exception("Databasefejl i OrderRepository.AddOrderTableCustomert(): " + sqlError.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+        public void AddRecipePartIngredient(int recipeID,int ingredientID)
+        {
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            SqlCommand sqlCommand = new SqlCommand(
+                        "INSERT INTO IngrefientrecipePart (R_ID, I_ID) " +
+                        "VALUES (@R_ID, @I_ID)",
+                        sqlConnection);
+
+            sqlCommand.Parameters.AddWithValue("@R_ID", recipeID);
+            sqlCommand.Parameters.AddWithValue("@I_ID", ingredientID);
+
+
+            try
+            {
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (SqlException sqlError)
+            {
+                throw new Exception("Databasefejl i OrderRepository.AddRecipePartIngredient(): " + sqlError.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+
+        public void AddOrderRecipePart(int orderID,int recipePartID)
+        {
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            SqlCommand sqlCommand = new SqlCommand(
+             "INSERT INTO recipePart (R_ID, O_ID) " +
+             "VALUES (@R_ID, @O_ID)",
+             sqlConnection);
+
+            sqlCommand.Parameters.AddWithValue("@O_ID", orderID);
+            sqlCommand.Parameters.AddWithValue("@R_ID", recipePartID);
+            try
+            {
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (SqlException sqlError)
+            {
+                throw new Exception("Databasefejl i OrderRepository.AddOrderRecipePart(): " + sqlError.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+        public void AddRecipePart(RecipePart rp)
+        {
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            SqlCommand sqlCommand = new SqlCommand(
+                   "INSERT INTO recipePart (R_ID, R_howToPrep, R_name, R_status) " +
+                   "VALUES (@R_ID, @R_howToPrep, @R_name, @R_status)",
+                   sqlConnection);
+
+            sqlCommand.Parameters.AddWithValue("@R_ID", rp.ID);
+            sqlCommand.Parameters.AddWithValue("@R_howToprep", rp.Assemble);
+            sqlCommand.Parameters.AddWithValue("@r_name", rp.partName);
+            sqlCommand.Parameters.AddWithValue("@R_status", rp.status);
+
+
+            try
+            {
+                sqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+            }
+            catch (SqlException sqlError)
+            {
+                throw new Exception("Databasefejl i OrderRepository.AddRecipePart(): " + sqlError.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+        }
+        
+
+
+
+
+
         public void Delete(int orderID)
         {
         }
@@ -201,11 +260,7 @@ namespace gategourmetLibrary.Repo
         {
             return null;
         }
-        //add a new order to repo
-        public void AddOrder(Order order)
-        {
-
-        }
+       
         //delete an order by its ID
         public void DeleteOrder(int orderID)
         {
