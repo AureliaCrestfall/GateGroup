@@ -48,7 +48,7 @@ namespace gategourmetLibrary.Models
 
             // sql kommando der fjerner en medarbejder 
             SqlCommand command = new SqlCommand(
-                "DELETE FROM Employye WHERE employee_Id = @id", 
+                "DELETE FROM Employee WHERE employee_Id = @id", 
                 connection);
            
             // indsætter værdier i parameter

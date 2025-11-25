@@ -38,5 +38,8 @@ namespace gategourmetLibrary.Models
             CustomerOrder = customer;
             Recipe = recipe;
         }
+        public Order()
+        {
+        }
     }
 }
