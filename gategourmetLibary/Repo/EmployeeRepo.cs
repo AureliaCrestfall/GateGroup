@@ -16,10 +16,10 @@ namespace gategourmetLibrary.Models
     {
         private readonly string _connectionString;
         private readonly List<Employee> _employee;
-        private readonly Connect connect = new Connect();
-        public EmployeeRepo()
+        public EmployeeRepo(string connectionString)
         {
-            _connectionString = connect.cstring;
+            _connectionString = connectionString;
+            _employee = new List<Employee>();
         }
 
         public void Add(Employee employee)

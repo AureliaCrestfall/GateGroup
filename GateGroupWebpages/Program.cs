@@ -14,13 +14,24 @@ namespace GateGroupWebpages
 
             // Add services to the container.
             builder.Services.AddRazorPages();
-            builder.Services.AddSingleton<IOrderRepo, OrderRepo>();
+            builder.Services.AddSingleton<IOrderRepo>
+                (sp => new OrderRepo(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddSingleton<OrderService>(); 
-            builder.Services.AddSingleton<IEmpolyeeRepo, EmployeeRepo>();
+
+            builder.Services.AddSingleton<IEmpolyeeRepo>
+                (sp => new EmployeeRepo(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddSingleton<EmployeeService>();
-            builder.Services.AddSingleton<IDepartmentRepo, DepartmentRepo>();
+
+            builder.Services.AddSingleton<IDepartmentRepo>
+                (sp => new DepartmentRepo(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddSingleton<DepartmentService>();
-            builder.Services.AddSingleton<ICustomerRepo, CustomerRepo>();
+
+            builder.Services.AddSingleton<ICustomerRepo>
+                (sp => new CustomerRepo(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddSingleton<CustomerService>();
 
 

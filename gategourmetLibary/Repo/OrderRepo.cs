@@ -12,14 +12,11 @@ namespace gategourmetLibrary.Repo
 {
     public class OrderRepo : IOrderRepo
     {
-        string _connectionString;
-        Connect _cstring;
-        public OrderRepo()
+        private readonly string _connectionString;
+        public OrderRepo( string connectionString)
         {
-            _connectionString = _cstring.cstring;
-
+            _connectionString = connectionString;
         }
-
         public Dictionary<int, Order> GetAll()
         {
 
