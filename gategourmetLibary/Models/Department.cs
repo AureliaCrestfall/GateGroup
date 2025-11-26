@@ -25,7 +25,7 @@ namespace gategourmetLibrary.Models
         public List<Employee> DepartmentEmployees { get; set; }
 
         // managers responsible for this department 
-        public List<Manager> DepartmentManagers { get; set; }
+        public List<Position> DepartmentPositions { get; set; }
 
         // warehouse linked to this department 
         public List<Warehouse> DepartmentWarehouse { get; set; }
@@ -33,7 +33,7 @@ namespace gategourmetLibrary.Models
         public Department() 
         {
             DepartmentEmployees = new List<Employee>();
-            DepartmentManagers = new List<Manager>();
+            DepartmentPositions = new List<Position>();
             DepartmentWarehouse = new List<Warehouse>();
         }
     }
