@@ -1,4 +1,4 @@
-using gategourmetLibrary.Models;
+﻿using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 using gategourmetLibrary.Secret;
 using gategourmetLibrary.Service;
@@ -41,6 +41,8 @@ namespace GateGroupWebpages
 
             builder.Services.AddSingleton<CustomerService>();
 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
 
 
 
