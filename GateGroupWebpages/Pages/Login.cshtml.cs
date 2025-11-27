@@ -5,6 +5,9 @@ namespace GateGroupWebpages.Pages.Shared
 {
     public class LoginModel : PageModel
     {
+        [BindProperty]
+        public string UserID { get; set; }
+
         [BindProperty ]
         public string Password { get; set; }
         [BindProperty]
@@ -22,7 +25,7 @@ namespace GateGroupWebpages.Pages.Shared
 
         public IActionResult OnPost()
         {
-            if (Password == "sas123")
+            if (Password == "sas123" && UserID == "SAS")
             {
                 HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
 
@@ -30,7 +33,7 @@ namespace GateGroupWebpages.Pages.Shared
             }
 
             // Hvis password IKKE er korrekt
-            ErrorMessage = "Forkert password, prøv venligst igen";
+            ErrorMessage = "Incorrect password, please try again.";
             return Page();
 
         }
