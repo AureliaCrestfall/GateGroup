@@ -26,45 +26,21 @@ namespace gategourmetLibrary.Repo
         void StockIngredient(Ingredient stockIngredient);
         // gets the stock of a specific warehouse
         List<Ingredient> GetWarehouseStock(int warehouseId);
-        // gets the managers of a specific department
-        List<Manager> GetDepartmentManagers(int departmentId);
+
+        // gets the positions of a specific department
+        List<Position> GetDepartmentPositions(int departmentId);
+
         // gets the employees of a specific department
         List<Employee> GetDepartmentEmployees(int departmentId);
-        // adds a new manager to a department
-        void AddNewDepartmentManager(int departmentId, Manager newManager);
-        // adds a new employee to a department
-        void AddNewDepartmentEmployee(int departmentId, Employee newEmployee);
+    
         // removes stock from a department's warehouse
         void RemoveStock(Ingredient ingredient, int amount, int departmentID, int warehouseID);
 
+        // adds a new position to an employee in a specific department
+        void AddNewDepartmentPosition(int departmentId, Employee employee, Position newPosition);
 
-
-        //    void Add(int department);
-        //    void Delete(int department);
-        //    void GetAll();
-        //    void Update(int DepartmentID, Department UpdateDepartment);
-        //    void NewWarehouse(Warehouse newWarehouse);
-        //    void StokIngredient(Ingredient stockIngredient);
-        //    void GetWarehouseStock(int warehouse);
-        //    void GetDepartmentManagers(int department);
-        //    void GetDepartmentEmployees(int department);
-        //    int Get(int DepartmentID);
-        //    void AddNewDepartmentManager(int DepartmentID, manager newManager);
-        //    void AddnewDepartmentEmpolyee(int DepartmentID, Employee newEmployee);
-        //    void RemoveStock(Ingredient ingredient, int amount, Department departmentID, Warehouse warehouseID);
-        //void Add(int department);
-        //void Delete(int department);
-        //void GetAll();
-        //void Update(int DepartmentID, Department UpdateDepartment);
-        //void NewWarehouse(WereHous newwerehous);
-        //void Stoklngredient(Ingredient stocklngredient);
-        //void GetWerehousStock(int werehous);
-        //void GetDepartmentManagers(int department);
-        //void GetDepartmentEmployees(int department);
-        //int Get(int DepartmentID);
-        //void AddNewDepartmentManager(int DepartmentID, manager newManager);
-        //void AddnewDepartmentEmpolyee(int DepartmentID, Employee newEmployee);
-        //void RemoveStock(Ingredient Ingredient, int amount, Department departmentID, Warehouse warehouseID);
+        // adds a new employee in department
+        void AddNewDepartmentEmployee(int departmentId, Employee newEmployee);
 
     }
 }
