@@ -15,7 +15,7 @@
             <div class="container">
                 <!-- Logo går til forsiden -->
                 <a class="navbar-brand" href="/">GateGourmet</a>
-                <!--logud knappen oppe -->
+                <!--logud knappen -->
                 @if (Context.Session.GetString("IsLoggedIn") == "true")
                 {
                     <div style="position: absolute; right: 20px; top: 10px;">
@@ -27,7 +27,27 @@
                         </a>
                     </div>
                 }
+                <head>
+                    <!-- en lille fade når man skifter side -->
+                    <style>
+                        body {
+                            animation: fadeIn 0.5s ease-in-out;
+                        }
 
+                        @@keyframes fadeIn {
+                            from {
+                                opacity: 0;
+                                transform: translateY(20px);
+                            }
+
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+                    </style>
+                </head>
+                
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,11 +65,17 @@
                         <li class="nav-item">
                             <a class="nav-link" href="/About">About</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/NewOrder">Order</a>
+                        
+                        <!-- Order med sort dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Order
+                            </a>
+                            <ul class="dropdown-menu" style="background-color: #000000; border: 1px solid #333;">
+                                <li><a class="dropdown-item" href="/Login" style="color: white;">Login</a></li>
+                                <li><hr class="dropdown-divider" style="border-color: #333;"></li>
+                                <li><a class="dropdown-item" href="/NewOrder" style="color: white;">Bestil Ret</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
