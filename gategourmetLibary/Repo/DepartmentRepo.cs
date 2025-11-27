@@ -1,64 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using gategourmetLibrary.Models;
-using gategourmetLibrary.Service;
 using Microsoft.Data.SqlClient;
 
 namespace gategourmetLibrary.Repo
 {
     public class DepartmentRepo : IDepartmentRepo
     {
-        // connection string bruges til at kommuniker med database 
+        // bruges til at oprette forbindelse til databasen
         private readonly string _connectionString;
 
-        // constructor modtager connection string fra service 
+        // modtager connectionstring fra service laget
         public DepartmentRepo(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        // returns all departments
+        // henter alle afdelinger fra databasen
         public List<Department> GetAllDepartments()
         {
             List<Department> departments = new List<Department>();
             SqlConnection connection = new SqlConnection(_connectionString);
+
             SqlCommand command = new SqlCommand(
                 "SELECT D_ID, D_Name, D_Location, D_Email FROM Department",
                 connection);
 
             connection.Open();
-
             SqlDataReader reader = command.ExecuteReader();
 
-            // gennemgår hver department fra hver table 
+            // gennemgår alle rækker og laver department objekter
             while (reader.Read())
             {
-                // der laves et objekt for hver række 
                 Department department = new Department();
                 department.DepartmentId = (int)reader["D_ID"];
                 department.DepartmentName = reader["D_Name"].ToString();
                 department.DepartmentLocation = reader["D_Location"].ToString();
-                department.DepartmentEmail = reader["email"].ToString();
+                department.DepartmentEmail = reader["D_Email"].ToString();
 
                 departments.Add(department);
             }
 
             reader.Close();
             connection.Close();
-
             return departments;
         }
-        // adds a new department to database 
+
+        // opretter en ny afdeling
         public void AddDepartment(Department newDepartment)
         {
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(
-                "INSERT INTO Department (D_Name, D_Location, D_Email)" +
-                "VALUES (@name, @location, @mail)",
+                "INSERT INTO Department (D_Name, D_Location, D_Email) VALUES (@name, @location, @mail)",
                 connection);
 
             command.Parameters.AddWithValue("@name", newDepartment.DepartmentName);
@@ -68,15 +61,14 @@ namespace gategourmetLibrary.Repo
             connection.Open();
             command.ExecuteNonQuery();
             connection.Close();
-
         }
-        // deletes a department with matching ID
+
+        // sletter en afdeling ud fra id
         public void DeleteDepartment(int departmentId)
         {
             SqlConnection connection = new SqlConnection(_connectionString);
-
             SqlCommand command = new SqlCommand(
-               "DELETE FROM Departments WHERE D_ID = @id",
+               "DELETE FROM Department WHERE D_ID = @id",
                connection);
 
             command.Parameters.AddWithValue("@id", departmentId);
@@ -84,40 +76,37 @@ namespace gategourmetLibrary.Repo
             connection.Open();
             command.ExecuteNonQuery();
             connection.Close();
-
         }
-        // updates department info by ID
+
+        // ændrer information om en afdeling
         public void UpdateDepartment(int departmentId, Department updatedDepartment)
         {
             SqlConnection connection = new SqlConnection(_connectionString);
-
             SqlCommand command = new SqlCommand(
-                "UPDATE Department SET D_Name =@name,D_Location=@location,D_Email=@mail" +
-                "Where D_ID = @id",
+                "UPDATE Department SET D_Name = @name, D_Location = @location, D_Email = @mail WHERE D_ID = @id",
                 connection);
 
             command.Parameters.AddWithValue("@name", updatedDepartment.DepartmentName);
             command.Parameters.AddWithValue("@location", updatedDepartment.DepartmentLocation);
-            command.Parameters.AddWithValue("@mail",updatedDepartment.DepartmentEmail);
-            command.Parameters.AddWithValue("@id", updatedDepartment.DepartmentId);
+            command.Parameters.AddWithValue("@mail", updatedDepartment.DepartmentEmail);
+            command.Parameters.AddWithValue("@id", departmentId);
 
-            connection.Open ();
+            connection.Open();
             command.ExecuteNonQuery();
-            connection.Close ();
+            connection.Close();
         }
 
-        // returns a specific department by ID
+        // finder en afdeling ud fra id
         public Department GetDepartment(int departmentId)
         {
             SqlConnection connection = new SqlConnection(_connectionString);
             SqlCommand command = new SqlCommand(
-                "SELECT D_ID, D_Name, D_Location, D_Email FROM Department WHERE D_ID =@id",
+                "SELECT D_ID, D_Name, D_Location, D_Email FROM Department WHERE D_ID = @id",
                 connection);
 
-            command.Parameters.AddWithValue("@id",departmentId);
+            command.Parameters.AddWithValue("@id", departmentId);
 
             connection.Open();
-
             SqlDataReader reader = command.ExecuteReader();
 
             if (reader.Read())
@@ -132,23 +121,20 @@ namespace gategourmetLibrary.Repo
                 connection.Close();
                 return department;
             }
+
             reader.Close();
             connection.Close();
             return null;
         }
-         
 
-        // assigns a new warehouse to a department
+        // opretter et nyt lager (warehouse) og knytter det til en afdeling
         public void NewWarehouse(Warehouse newWarehouse)
         {
-            SqlConnection connection = new SqlConnection (_connectionString);
+            SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
 
-            connection.Open ();
-
-            // indsætter warehouse og retunerer generet W_id
-            SqlCommand insertWarehouse = new SqlCommand (
-                "INSERT INTO Warehouse (W_Name, W_Type, W_Location)" +
-                "VALUES (@name, @type,@location); SELECT SCOPE_IDENTITY();",
+            SqlCommand insertWarehouse = new SqlCommand(
+                "INSERT INTO Warehouse (W_Name, W_Type, W_Location) VALUES (@name, @type, @location); SELECT SCOPE_IDENTITY();",
                 connection);
 
             insertWarehouse.Parameters.AddWithValue("@name", newWarehouse.Name);
@@ -158,122 +144,234 @@ namespace gategourmetLibrary.Repo
             object result = insertWarehouse.ExecuteScalar();
             int warehouseId = Convert.ToInt32(result);
 
-            // linker warehouse til department 
-            SqlCommand link = new SqlCommand (
+            SqlCommand link = new SqlCommand(
                 "INSERT INTO werehouseDepartment (D_ID, W_ID) VALUES (@d, @w)",
                 connection);
 
             link.Parameters.AddWithValue("@d", newWarehouse.DepartmentId);
             link.Parameters.AddWithValue("@w", warehouseId);
-            link.ExecuteNonQuery ();
+            link.ExecuteNonQuery();
 
-            connection.Close ();
-
+            connection.Close();
         }
-        // stocks an ingredient in the department's warehouse
+
+        // lægger en ingrediens på lager og sikrer en kobling til warehouse
         public void StockIngredient(Ingredient stockIngredient)
         {
             SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
 
+            SqlCommand updateQuantity = new SqlCommand(
+                "UPDATE Ingredient SET I_quntity = I_quntity + @amount WHERE I_ID = @id",
+                connection);
+
+            updateQuantity.Parameters.AddWithValue("@amount", stockIngredient.Quantity);
+            updateQuantity.Parameters.AddWithValue("@id", stockIngredient.ID);
+            updateQuantity.ExecuteNonQuery();
+
+            SqlCommand linkCheck = new SqlCommand(
+                "SELECT COUNT(*) FROM werehouseIngredient WHERE W_ID = @w AND I_ID = @i",
+                connection);
+
+            linkCheck.Parameters.AddWithValue("@w", stockIngredient.WarehouseId);
+            linkCheck.Parameters.AddWithValue("@i", stockIngredient.ID);
+
+            int exists = Convert.ToInt32(linkCheck.ExecuteScalar());
+
+            if (exists == 0)
+            {
+                SqlCommand createLink = new SqlCommand(
+                    "INSERT INTO werehouseIngredient (W_ID, I_ID) VALUES (@w, @i)",
+                    connection);
+
+                createLink.Parameters.AddWithValue("@w", stockIngredient.WarehouseId);
+                createLink.Parameters.AddWithValue("@i", stockIngredient.ID);
+                createLink.ExecuteNonQuery();
+            }
+
+            connection.Close();
         }
-        // gets the stock of a specific warehouse
+
+        // henter alle ingredienser på lageret i en bestemt warehouse
         public List<Ingredient> GetWarehouseStock(int warehouseId)
         {
-            return null;
+            List<Ingredient> ingredients = new List<Ingredient>();
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            SqlCommand command = new SqlCommand(
+                "SELECT i.I_ID, i.I_Name, i.I_expireDate, i.I_quntity " +
+                "FROM werehouseIngredient wi " +
+                "JOIN Ingredient i ON wi.I_ID = i.I_ID " +
+                "WHERE wi.W_ID = @id",
+                connection);
+
+            command.Parameters.AddWithValue("@id", warehouseId);
+
+            connection.Open();
+            SqlDataReader reader = command.ExecuteReader();
+
+            // laver Ingredient objekter fra sql
+            while (reader.Read())
+            {
+                Ingredient ingredient = new Ingredient();
+                ingredient.ID = (int)reader["I_ID"];
+                ingredient.Name = reader["I_Name"].ToString();
+                ingredient.ExpireDate = (DateTime)reader["I_expireDate"];
+                ingredient.Quantity = (int)reader["I_quntity"];
+                ingredient.WarehouseId = warehouseId;
+
+                ingredients.Add(ingredient);
+            }
+
+            reader.Close();
+            connection.Close();
+            return ingredients;
         }
-        // gets the managers of a specific department
-        public List<Manager> GetDepartmentManagers(int departmentId)
-        {
-            return null;
-        }
-        // gets the employees of a specific department
+
+        // henter alle ansatte i en afdeling
         public List<Employee> GetDepartmentEmployees(int departmentId)
         {
-            return null;
-        }
-        // adds a new manager to a department
-        public void AddNewDepartmentManager(int departmentId, Manager newManager)
-        {
+            List<Employee> employees = new List<Employee>();
+            SqlConnection connection = new SqlConnection(_connectionString);
 
+            SqlCommand command = new SqlCommand(
+                "SELECT e.Employee_ID, e.E_Name, e.E_Email, e.E_PhoneNumber " +
+                "FROM EmployeeDepartment ed " +
+                "JOIN Employee e ON ed.E_ID = e.Employee_ID " +
+                "WHERE ed.D_ID = @id",
+                connection);
+
+            command.Parameters.AddWithValue("@id", departmentId);
+
+            connection.Open();
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Employee employee = new Employee();
+                employee.Id = (int)reader["Employee_ID"];
+                employee.Name = reader["E_Name"].ToString();
+                employee.Email = reader["E_Email"].ToString();
+                employee.PhoneNumber = reader["E_PhoneNumber"].ToString();
+
+                employees.Add(employee);
+            }
+
+            reader.Close();
+            connection.Close();
+            return employees;
         }
-        // adds a new employee to a department
+
+        // henter alle positioner (roller) knyttet til ansatte i en afdeling
+        public List<Position> GetDepartmentPositions(int departmentId)
+        {
+            List<Position> positions = new List<Position>();
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            SqlCommand command = new SqlCommand(
+                "SELECT DISTINCT p.P_ID, p.P_Name " +
+                "FROM EmployeeDepartment ed " +
+                "JOIN EmployeePostion ep ON ed.E_ID = ep.E_ID " +
+                "JOIN Postion p ON ep.P_ID = p.P_ID " +
+                "WHERE ed.D_ID = @id",
+                connection);
+
+            command.Parameters.AddWithValue("@id", departmentId);
+
+            connection.Open();
+            SqlDataReader reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                Position position = new Position();
+                position.Id = (int)reader["P_ID"];
+                position.Name = reader["P_Name"].ToString();
+                positions.Add(position);
+            }
+
+            reader.Close();
+            connection.Close();
+            return positions;
+        }
+
+        // knytter en position (rolle) til en employee i en bestemt afdeling
+        public void AddNewDepartmentPosition(int departmentId, Employee employee, Position newPosition)
+        {
+            SqlConnection connection = new SqlConnection(_connectionString);
+
+            SqlCommand command = new SqlCommand(
+                "INSERT INTO EmployeePostion (E_ID, P_ID) VALUES (@e, @p)",
+                connection);
+
+            // bruger employee Id fra employee objektet
+            command.Parameters.AddWithValue("@e", employee.Id);
+            command.Parameters.AddWithValue("@p", newPosition.Id);
+
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
+        }
+
+
+        // knytter en employee til en afdeling
         public void AddNewDepartmentEmployee(int departmentId, Employee newEmployee)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
 
+            SqlCommand command = new SqlCommand(
+                "INSERT INTO EmployeeDepartment (E_ID, D_ID) VALUES (@e, @d)",
+                 connection);
+
+            command.Parameters.AddWithValue("@e", newEmployee.Id);
+            command.Parameters.AddWithValue("@d", departmentId);
+
+            connection.Open();
+            command.ExecuteNonQuery();
+            connection.Close();
         }
-        // removes stock from a department's warehouse
+
+        // fjerner ingredienser fra lager og sletter kobling når mængden er 0
         public void RemoveStock(Ingredient ingredient, int amount, int departmentID, int warehouseID)
         {
+            SqlConnection connection = new SqlConnection(_connectionString);
+            connection.Open();
 
+            SqlCommand update = new SqlCommand(
+                "UPDATE Ingredient SET I_quntity = I_quntity - @amount WHERE I_ID = @id",
+                connection);
+
+            update.Parameters.AddWithValue("@amount", amount);
+            update.Parameters.AddWithValue("@id", ingredient.ID);
+            update.ExecuteNonQuery();
+
+            SqlCommand getQuantity = new SqlCommand(
+                "SELECT I_quntity FROM Ingredient WHERE I_ID = @id",
+                connection);
+
+            getQuantity.Parameters.AddWithValue("@id", ingredient.ID);
+            object quantityObj = getQuantity.ExecuteScalar();
+
+            if (quantityObj == null || quantityObj == DBNull.Value)
+            {
+                connection.Close();
+                return;
+            }
+
+            int quantity = Convert.ToInt32(quantityObj);
+
+            if (quantity <= 0)
+            {
+                SqlCommand removeLink = new SqlCommand(
+                    "DELETE FROM werehouseIngredient WHERE W_ID = @w AND I_ID = @i",
+                    connection);
+
+                removeLink.Parameters.AddWithValue("@w", warehouseID);
+                removeLink.Parameters.AddWithValue("@i", ingredient.ID);
+                removeLink.ExecuteNonQuery();
+            }
+
+            connection.Close();
         }
-
-
-
-        //public void Add(int department)
-        //{
-
-        //}
-
-        //public void Delete(int department)
-        //{
-
-        //}
-
-        //public void Update(int DepartmentID, Department UpdateDepartment  )
-        //{
-
-        //}
-
-        //public void GetAll()
-        //{
-
-        //}
-
-        //public void NewWarehouse(WereHouse newWarehouse)
-        //{
-
-        //}
-
-        //public void StokIngredient(Ingredient stockIngredient)
-        //{
-
-        //}
-        //public void GetWarehouseStock(int warehouse)
-        //{
-
-        //}
-
-        //public void GetDepartmentManagers(int department)
-        //{
-
-        //}
-
-        //public void GetDepartmentEmployees(int department)
-        //{
-
-        //}
-
-        //public int Get( int DepartmentID )
-        //{
-        //    int i = 1;
-        //    return i;
-        //}
-
-        //public void AddNewDepartmentManager(int DepartmentID,manager newManager) 
-        //{
-
-        //}
-
-
-        //public void  AddNewDepartmentEmpolyee(int DepartmentID, Employee newEmployee)
-        //{
-
-        //}
-
-        //public void RemoveStock(Ingredient ingredient, int amount, Department departmentID, Warehouse warehouseID)
-        //{
-
-        //}
-
     }
 }
+

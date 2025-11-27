@@ -57,26 +57,29 @@ namespace gategourmetLibrary.Service
             return _departmentRepo.GetWarehouseStock(warehouseId);
         }
         // gets the managers of a specific department
-        public List<Manager> GetDepartmentManagers(int departmentId)
+        public List<Position> GetDepartmentPositions(int departmentId)
         {
-            return _departmentRepo.GetDepartmentManagers(departmentId);
+            return _departmentRepo.GetDepartmentPositions(departmentId);
         }
         // gets the employees of a specific department
         public List<Employee> GetDepartmentEmployees(int departmentId)
         {
             return _departmentRepo.GetDepartmentEmployees(departmentId);
         }
-        // adds a new manager to a department
-        public void AddNewDepartmentManager(int departmentId, Manager newManager)
-        {
-            _departmentRepo.AddNewDepartmentManager(departmentId, newManager);
-        }
+       
         // adds a new employee to a department
         public void AddNewDepartmentEmployee(int departmentId, Employee newEmployee)
         {
             _departmentRepo.AddNewDepartmentEmployee(departmentId, newEmployee);
         }
-        // removes stock from a department's warehouse
+
+        // adds a new position (role) to an employee in a department
+        public void AddNewDepartmentPosition(int departmentId, Employee employee, Position newPosition)
+        {
+            _departmentRepo.AddNewDepartmentPosition(departmentId, employee, newPosition);
+        }
+
+        // removes stock from a departments warehouse
         public void RemoveStock(Ingredient ingredient, int amount, int departmentID, int warehouseID)
         {
             _departmentRepo.RemoveStock(ingredient, amount, departmentID, warehouseID);

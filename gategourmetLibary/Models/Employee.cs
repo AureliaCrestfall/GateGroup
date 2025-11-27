@@ -20,5 +20,9 @@ namespace gategourmetLibrary.Models
 
         // number of employee
         public string PhoneNumber {  get; set; }
+        public Employee()
+        {
+
+        }
     }
 }

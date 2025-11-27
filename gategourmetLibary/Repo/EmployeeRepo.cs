@@ -7,13 +7,20 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Reflection.PortableExecutable;
 using System.Reflection;
+using gategourmetLibrary.Secret;
+using gategourmetLibrary.Repo;
 
 namespace gategourmetLibrary.Models
 {
-    public class EmployeeRepo
+    public class EmployeeRepo:IEmpolyeeRepo
     {
         private readonly string _connectionString;
         private readonly List<Employee> _employee;
+        public EmployeeRepo(string connectionString)
+        {
+            _connectionString = connectionString;
+            _employee = new List<Employee>();
+        }
 
         public void Add(Employee employee)
         {
@@ -126,7 +133,7 @@ namespace gategourmetLibrary.Models
             return employees;
         }
 
-        public Employee Get( int employee)
+        public Employee Get(int employee)
         {
 
             SqlConnection connection = new SqlConnection(_connectionString);
@@ -137,10 +144,10 @@ namespace gategourmetLibrary.Models
 
             // her sætte vi ID parameter
             command.Parameters.AddWithValue("@id", employee);
-            
+
             // vi åbner forbindelsen til databasen 
             connection.Open();
-           
+
             //sql commando til finde resultat
             SqlDataReader reader = command.ExecuteReader();
 
@@ -150,7 +157,7 @@ namespace gategourmetLibrary.Models
                 // hvis medarbejdern blev fundet, bliver der oprettet en ny objekt med data fra databasen
                 Employee employees = new Employee()
                 {
-                    Id = (int)reader["Employee_ID"],  
+                    Id = (int)reader["Employee_ID"],
                     Name = reader["E_Name"].ToString(),
                     Email = reader["E_Email"].ToString(),
                     PhoneNumber = reader["E_PhoneNumber"].ToString()
@@ -168,8 +175,15 @@ namespace gategourmetLibrary.Models
                 reader.Close();
                 return null;
             }
+        }
+
+            public List<Employee> Filter(string empolyee)
+            {
+                return null;
+            }
+
 
 
         }
     }
-}
+

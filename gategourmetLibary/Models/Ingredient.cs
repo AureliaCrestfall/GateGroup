@@ -10,7 +10,14 @@ namespace gategourmetLibrary.Models
     public class Ingredient
     {
         public int ID { get; set; }
+
         public string Name { get; set; }
+
+        public DateTime ExpireDate { get; set; }
+
+        public int Quantity { get; set; }
+
+        public int WarehouseId { get; set; }
 
         //List of allergy tags connected to the ingredients (f.ks.lactose )
         public List<string> Allergies { get; set; }
