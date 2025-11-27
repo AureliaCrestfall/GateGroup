@@ -18,6 +18,9 @@ namespace GateGroupWebpages
             string connection = new Connect().cstring;
 
 
+            
+            
+
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddSingleton<IOrderRepo>
@@ -61,6 +64,9 @@ namespace GateGroupWebpages
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //til logud knappen 
+            app.UseSession();
 
             app.MapRazorPages();
 
