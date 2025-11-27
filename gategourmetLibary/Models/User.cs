@@ -8,7 +8,7 @@ namespace gategourmetLibrary.Models
 {
     public abstract class User
     {
-        // password used for login
+        // password used for login     
         public string Password { get; set; }
     }
 }

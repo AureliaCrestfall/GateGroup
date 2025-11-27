@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gategourmetLibrary", "gateg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simply database test", "simply database test\simply database test.csproj", "{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompanyWebpages", "CompanyWebpages\CompanyWebpages.csproj", "{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

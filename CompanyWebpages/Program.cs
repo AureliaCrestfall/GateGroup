@@ -1,30 +1,26 @@
-﻿using gategourmetLibrary.Models;
+using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 using gategourmetLibrary.Secret;
 using gategourmetLibrary.Service;
-using System;
 
-namespace GateGroupWebpages
+namespace CompanyWebpages
 {
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            //Connect con = new Connect();
-            //string connection = con.cstring;
+
+            // Henter connection string fra Connect klassen 
             string connection = new Connect().cstring;
 
-
-            
-            
-
-            // Add services to the container.
+            // Add services to the container
             builder.Services.AddRazorPages();
+
             builder.Services.AddSingleton<IOrderRepo>
                 (sp => new OrderRepo(builder.Configuration.GetConnectionString(connection)));
 
-            builder.Services.AddSingleton<OrderService>(); 
+            builder.Services.AddSingleton<OrderService>();
 
             builder.Services.AddSingleton<IEmpolyeeRepo>
                 (sp => new EmployeeRepo(builder.Configuration.GetConnectionString(connection)));
@@ -44,17 +40,12 @@ namespace GateGroupWebpages
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
 
-
-
             var app = builder.Build();
 
-
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -65,7 +56,7 @@ namespace GateGroupWebpages
 
             app.UseAuthorization();
 
-            //til logud knappen 
+            // Til logout knap mm
             app.UseSession();
 
             app.MapRazorPages();

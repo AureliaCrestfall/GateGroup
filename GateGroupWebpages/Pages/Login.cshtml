@@ -17,12 +17,18 @@
 
         <form method="post" class="login-form">
             <div class="form-group">
-               
-                <input type="password" id="password" name="Password" class="form-control"
-                       placeholder="Indtast din adgangskode" required />
+
+                <input type="text" id="userId" name="UserID" class="form-control"
+                       placeholder="Insert your user ID" required />
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Log ind</button>
+            <div class="form-group">
+               
+                <input type="password" id="password" name="Password" class="form-control"
+                       placeholder="Insert your password" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Log in</button>
         </form>
 
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
