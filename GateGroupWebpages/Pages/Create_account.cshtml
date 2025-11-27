@@ -1,0 +1,48 @@
+﻿@page
+@model GateGroupWebpages.Pages.Create_accountModel
+
+@{
+    ViewData["Title"] = "Opret konto";
+}
+
+<h2>Opret ny kunde</h2>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div>
+        <label asp-for="Customer.Name"></label>
+        <input asp-for="Customer.Name" />
+        <span asp-validation-for="Customer.Name"></span>
+    </div>
+
+    <div>
+        <label asp-for="Customer.Password"></label>
+        <input asp-for="Customer.Password" type="password" />
+        <span asp-validation-for="Customer.Password"></span>
+    </div>
+
+    <div>
+        <label asp-for="Customer.Email"></label>
+        <input asp-for="Customer.Email" />
+        <span asp-validation-for="Customer.Email"></span>
+    </div>
+
+    <div>
+        <label asp-for="Customer.CompanyName"></label>
+        <input asp-for="Customer.CompanyName" />
+        <span asp-validation-for="Customer.CompanyName"></span>
+    </div>
+
+    <div>
+        <label asp-for="Customer.CVR"></label>
+        <input asp-for="Customer.CVR" />
+        <span asp-validation-for="Customer.CVR"></span>
+    </div>
+
+    <button type="submit">Opret</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
