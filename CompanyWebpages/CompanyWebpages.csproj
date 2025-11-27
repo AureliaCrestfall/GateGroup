@@ -8,8 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\gategourmetLibary\gategourmetLibrary.csproj" />
-    <ProjectReference Include="..\GateGroupWebpages\GateGroupWebpages.csproj" />
-    <ProjectReference Include="..\simply database test\simply database test.csproj" />
   </ItemGroup>
 
 </Project>
