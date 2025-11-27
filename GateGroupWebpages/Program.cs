@@ -66,7 +66,7 @@ namespace GateGroupWebpages
             app.UseAuthorization();
 
             //til logud knappen 
-            app.UseSession();
+            //app.UseSession();
 
             app.MapRazorPages();
 
