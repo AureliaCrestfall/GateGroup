@@ -12,7 +12,7 @@ namespace CompanyWebpages
             var builder = WebApplication.CreateBuilder(args);
 
             // Henter connection string fra Connect klassen 
-            string connection = new Connect().cstring;
+            string connection = new Connect().cstring;z
 
             // Add services to the container
             builder.Services.AddRazorPages();
