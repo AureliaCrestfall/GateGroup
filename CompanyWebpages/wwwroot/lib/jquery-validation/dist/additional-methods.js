@@ -733,8 +733,7 @@ $.validator.addMethod( "iban", function( value, element ) {
 	// Remove spaces and to upper case
 	var iban = value.replace( / /g, "" ).toUpperCase(),
 		ibancheckdigits = "",
-		leadingZeroes = true,
-		cRest = "",
+		leadingZeroes = true, = "",
 		cOperator = "",
 		countrycode, ibancheck, charAt, cChar, bbanpattern, bbancountrypatterns, ibanregexp, i, p;
 

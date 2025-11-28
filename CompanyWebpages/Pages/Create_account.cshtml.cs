@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using gategourmetLibrary.Models;
 using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,10 @@ namespace GateGroupWebpages.Pages
         public IActionResult OnPost()
         {
             if (!ModelState.IsValid)
+            {
+                Debug.WriteLine("is not vaild");
                 return Page();
+            }
 
             var c = new Customer
             {

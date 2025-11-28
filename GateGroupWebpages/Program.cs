@@ -21,8 +21,8 @@ namespace GateGroupWebpages
 
             // Add services to the container.
             builder.Services.AddRazorPages();
-            builder.Services.AddSingleton<IOrderRepo, OrderRepo>();
-                //(sp => new OrderRepo(builder.Configuration.GetConnectionString(connection)));
+            builder.Services.AddSingleton<IOrderRepo>
+            (sp => new OrderRepo(connection));
 
             builder.Services.AddSingleton<OrderService>(); 
 

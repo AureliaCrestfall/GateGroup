@@ -2,6 +2,8 @@ using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 using gategourmetLibrary.Secret;
 using gategourmetLibrary.Service;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace CompanyWebpages
 {
@@ -13,27 +15,27 @@ namespace CompanyWebpages
 
             // Henter connection string fra Connect klassen 
             string connection = new Connect().cstring;
-
+            Debug.WriteLine(connection);
             // Add services to the container
             builder.Services.AddRazorPages();
 
-            builder.Services.AddSingleton<IOrderRepo, OrderRepo>();
-                //(sp => new OrderRepo(builder.Configuration.GetConnectionString(connection)));
+            builder.Services.AddSingleton<IOrderRepo>
+            (sp => new OrderRepo(connection));
 
             builder.Services.AddSingleton<OrderService>();
 
             builder.Services.AddSingleton<IEmpolyeeRepo>
-                (sp => new EmployeeRepo(builder.Configuration.GetConnectionString(connection)));
+                (sp => new EmployeeRepo(connection));
 
             builder.Services.AddSingleton<EmployeeService>();
 
             builder.Services.AddSingleton<IDepartmentRepo>
-                (sp => new DepartmentRepo(builder.Configuration.GetConnectionString(connection)));
+                (sp => new DepartmentRepo(connection));
 
             builder.Services.AddSingleton<DepartmentService>();
 
             builder.Services.AddSingleton<ICustomerRepo>
-                (sp => new CustomerRepo(builder.Configuration.GetConnectionString(connection)));
+                (sp => new CustomerRepo(connection));
 
             builder.Services.AddSingleton<CustomerService>();
 
