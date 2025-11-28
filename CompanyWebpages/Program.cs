@@ -62,6 +62,26 @@ namespace CompanyWebpages
             app.MapRazorPages();
 
             app.Run();
+            builder.Services.AddSingleton<IOrderRepo, OrderRepo>();
+            //(sp => new OrderRepo(builder.Configuration.GetConnectionString(connection)));
+
+            builder.Services.AddSingleton<OrderService>();
+
+            builder.Services.AddSingleton<IEmpolyeeRepo>
+                (sp => new EmployeeRepo(builder.Configuration.GetConnectionString(connection)));
+
+            builder.Services.AddSingleton<EmployeeService>();
+
+            builder.Services.AddSingleton<IDepartmentRepo>
+                (sp => new DepartmentRepo(builder.Configuration.GetConnectionString(connection)));
+
+            builder.Services.AddSingleton<DepartmentService>();
+
+            builder.Services.AddSingleton<ICustomerRepo>
+                (sp => new CustomerRepo(builder.Configuration.GetConnectionString(connection)));
+
+            builder.Services.AddSingleton<CustomerService>();
+
         }
     }
 }

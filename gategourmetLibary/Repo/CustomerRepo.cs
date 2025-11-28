@@ -68,23 +68,7 @@ namespace gategourmetLibrary.Repo
             }
         }
 
-        //public void AddCustomer(Customer customer)
-        //{
-        //    //using (using) to ensure the connection is closed after use
-        //    using (SqlConnection connection = new SqlConnection(_connectionString))
-        //    {
-        //        //sql command to insert a new customer
-        //        SqlCommand command = new SqlCommand("INSERT INTO Customer (C_Name, C_Password) VALUES (@Name, @Password)", connection);
-        //        //add parameters to prevent SQL injection
-        //        command.Parameters.AddWithValue("@Name", customer.Name);
-        //        command.Parameters.AddWithValue("@Password", customer.Password);
-        //        //open database connection
-        //        connection.Open();
-        //        //execute the insert command
-        //        command.ExecuteNonQuery();
-        //    }
-        //}
-        //deletes a customer by ID
+       
         public void DeleteCustomer(int customerId)
         {
             //using (using) to ensure the connection is closed after use
