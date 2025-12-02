@@ -63,8 +63,22 @@
                             <a class="nav-link" href="/About">About</a>
                         </li>
                         <li class="nav-item">
-							<a class="nav-link" href="/Login">Login</a>
+							<a class="nav-link" href="/Contact">Contact</a>
                         </li>
+
+                        <li class="nav-item">
+                            @if (Context.Session.GetString("IsLoggedIn") != "true")
+						{
+                            <a class="nav-link" href="/Login">Login</a>
+                        }
+                        </li>
+                        <li class="nav-item">
+                            @if (Context.Session.GetString("IsLoggedIn") == "true")
+                            {
+                                <a class="nav-link" href="/Dashboard">Dashboard</a>
+                            }
+                        </li>
+
                         
                         <!-- Order med sort dropdown -->
 @*                         <li class="nav-item dropdown">

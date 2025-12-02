@@ -29,7 +29,9 @@ namespace GateGroupWebpages.Pages.Shared
             {
                 HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
 
-                return RedirectToPage("/NewOrder");
+                return RedirectToPage("/Dashboard");
+                //return RedirectToPage("/NewOrder");
+
             }
 
             // Hvis password IKKE er korrekt
