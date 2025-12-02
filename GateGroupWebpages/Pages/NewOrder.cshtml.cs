@@ -93,14 +93,7 @@ namespace GateGroupWebpages.Pages
             recipePart3.Ingredients.Add(new Ingredient(Ingredient3));
             recipePart4.Ingredients.Add(new Ingredient(Ingredient4));
             recipePart5.Ingredients.Add(new Ingredient(Ingredient5));
-            recipePart1.ID = 1;
-            recipePart2.ID = 2;
-            recipePart3.ID = 3;
-            recipePart4.ID = 4;
-            recipePart5.ID = 5;
-          
-
-            newOrder.ID = 1;
+           
             newOrder.Recipe.Add(1,recipePart1);
             newOrder.Recipe.Add(2, recipePart2);
             newOrder.Recipe.Add(3, recipePart3);
