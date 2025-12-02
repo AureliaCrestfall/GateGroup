@@ -40,6 +40,8 @@ namespace gategourmetLibrary.Models
         }
         public Order()
         {
+            Recipe = new Dictionary<int, RecipePart>();
+            Status = OrderStatus.Created;
         }
     }
 }

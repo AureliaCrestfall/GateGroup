@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using gategourmetLibrary.Secret;
 using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 
 namespace gategourmetLibrary.Repo
 {
@@ -73,24 +74,25 @@ namespace gategourmetLibrary.Repo
 
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                "INSERT INTO ordertable (O_ID, O_Made, O_Ready, o_PaySatus) " +
-                "VALUES (@O_ID, @O_Made, @O_Ready, @O_PaySatus)",
+                "INSERT INTO ordertable ( O_Made, O_ready, o_paysatus, O_status) " +
+                "VALUES ( @O_Made, @O_ready, @O_paysatus, @O_status)" +
+                "select scope_identity()",
                 sqlConnection);
 
            
-
-            AddOrderTableCustomert(newOrder.ID, newOrder.CustomerOrder.ID);
-
-            sqlCommand.Parameters.AddWithValue("@O_made", newOrder.OrderMade);
-            //sqlCommand.Parameters.AddWithValue("@O_status", newOrder.Status);
-            sqlCommand.Parameters.AddWithValue("@O_Ready", newOrder.OrderDoneBy);
-            sqlCommand.Parameters.AddWithValue("@O_ID", newOrder.ID);
-            sqlCommand.Parameters.AddWithValue("@O_PaySatus", newOrder.paystatus);
+           
+            Debug.WriteLine(newOrder.OrderMade);
+            sqlCommand.Parameters.AddWithValue("@O_made", newOrder.OrderMade/*.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")*/);
+            sqlCommand.Parameters.AddWithValue("@O_status", newOrder.Status);
+            sqlCommand.Parameters.AddWithValue("@O_ready", newOrder.OrderDoneBy/*.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")*/);
+            sqlCommand.Parameters.AddWithValue("@O_paysatus", newOrder.paystatus);
+            int neworderid = 0;
 
             try
             {
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                neworderid = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                Debug.WriteLine("test id get"+neworderid);
             }
             catch (SqlException sqlError)
             {
@@ -100,21 +102,17 @@ namespace gategourmetLibrary.Repo
             {
                 sqlConnection.Close();
             }
-
+            if (newOrder.CustomerOrder != null)
+            {
+                AddOrderTableCustomert(neworderid, newOrder.CustomerOrder.ID);
+            }
             foreach (KeyValuePair<int,RecipePart> part in newOrder.Recipe)
             {
-                AddRecipePart(part.Value);
-                AddOrderRecipePart(newOrder.ID, part.Value.ID);
+                AddRecipePart(part.Value,neworderid,part.Value.Ingredients);
               
               
             }
-            foreach (KeyValuePair<int, RecipePart> part in newOrder.Recipe)
-            {
-                foreach(Ingredient i in part.Value.Ingredients)
-                {
-                    AddRecipePartIngredient(part.Value.ID, i.ID);
-                }
-            }
+            
             
 
         }
@@ -178,7 +176,7 @@ namespace gategourmetLibrary.Repo
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-             "INSERT INTO recipePart (R_ID, O_ID) " +
+             "INSERT INTO orderTableRecipePart (R_ID, O_ID) " +
              "VALUES (@R_ID, @O_ID)",
              sqlConnection);
 
@@ -186,6 +184,7 @@ namespace gategourmetLibrary.Repo
             sqlCommand.Parameters.AddWithValue("@R_ID", recipePartID);
             try
             {
+                sqlConnection.Open();
                 sqlCommand.ExecuteNonQuery();
             }
             catch (SqlException sqlError)
@@ -197,24 +196,25 @@ namespace gategourmetLibrary.Repo
                 sqlConnection.Close();
             }
         }
-        public void AddRecipePart(RecipePart rp)
+        public void AddRecipePart(RecipePart rp,int i,List<Ingredient> ingredients)
         {
+            rp.status = "not begun";
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                   "INSERT INTO recipePart (R_ID, R_howToPrep, R_name, R_status) " +
-                   "VALUES (@R_ID, @R_howToPrep, @R_name, @R_status)",
+                   "INSERT INTO recipePart ( R_howToPrep, R_name, R_status) " +
+                   "VALUES ( @R_howToPrep, @R_name, @R_status)" +
+                   "select scope_identity()",
                    sqlConnection);
 
-            sqlCommand.Parameters.AddWithValue("@R_ID", rp.ID);
             sqlCommand.Parameters.AddWithValue("@R_howToprep", rp.Assemble);
-            sqlCommand.Parameters.AddWithValue("@r_name", rp.partName);
+            sqlCommand.Parameters.AddWithValue("@R_Name", rp.partName);
             sqlCommand.Parameters.AddWithValue("@R_status", rp.status);
-
+            int newrecipepartid = 0;
 
             try
             {
                 sqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
+                newrecipepartid = Convert.ToInt32(sqlCommand.ExecuteScalar());
             }
             catch (SqlException sqlError)
             {
@@ -223,6 +223,13 @@ namespace gategourmetLibrary.Repo
             finally
             {
                 sqlConnection.Close();
+            }
+            AddOrderRecipePart(i,newrecipepartid);
+            foreach (Ingredient ingr in ingredients)
+            {
+
+                AddRecipePartIngredient(newrecipepartid, ingr.ID);
+
             }
         }
         

@@ -8,13 +8,13 @@
 <!-- My Dashboard -->
 <h2 class="mb-3" style="font-family:'Playfair Display',serif;">My Dashboard</h2>
 
-<a class="btn btn-primary mb-3" asp-page="/NewOrder">Create New Order</a>
-<a class="btn btn-primary mb-3" asp-page="/Contact">Contact</a>
-
+<a class="btn btn-light mb-3" asp-page="/NewOrder">Create New Order</a>
+@* <a class="btn btn-primary mb-3" asp-page="/Contact">Contact</a>
+ *@
 
 <div class="table-responsive">
-    <table class="table table-striped align-middle shadow-sm">
-        <thead class="table-light">
+    <table class="table align-middle shadow-sm text-white">
+        <thead class="text-white">
             <tr>
                 <th>Order</th>
                 <th>Status</th>
@@ -47,7 +47,7 @@
                         {
                             <span class="badge bg-danger">Cancelled</span>
 							}
-		)
+		
                     </td>
 
 

@@ -10,6 +10,7 @@
 </form> *@
 
     <container-sm>
+
         <div class="text-center">
             <h1>Book lokale</h1>
         </div>
@@ -19,7 +20,7 @@
                 <form method="post">
                     <div class="form-group container-fluid">
                         <label for="inputDateTime">ready by: </label>
-                        <input type="datetime-local" asp-for="newOrder.OrderMade" id="StartDateTime" aria-describedby="dateTimeHelp" placeholder="Enter Date/Time" step="3600">
+                        <input type="date" asp-for="newOrder.OrderDoneBy" id="StartDateTime" aria-describedby="dateTimeHelp" placeholder="Enter Date/Time">
                         
                     </div>
                 <div class="form-group container-fluid">
@@ -31,12 +32,84 @@
                    
                 <div class="form-group container-fluid">
                 <label for="inputComment">recipart: </label>
-                    <input type="text" asp-for="RecipePar.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
-                    <input type="text" asp-for="RecipePar.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
+                    <input type="text" asp-for="recipePart1.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
+                    <input type="text" asp-for="recipePart1.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
                     <div class="mt-2">
                         <label for="">ingredients add to the part: </label>
                         <div class="form-group mt-2 d-inline">
-                            <select asp-for="RecipePar.Ingredients">
+                            <select asp-for="Ingredient1">
+                                <option value="0">Select an ingredient </option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                    <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group container-fluid">
+                    <label for="inputComment">recipart: </label>
+                    <input type="text" asp-for="recipePart2.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
+                    <input type="text" asp-for="recipePart2.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
+                </div>
+                    <div class="mt-2">
+                        <label for="">ingredients add to the part: </label>
+                        <div class="form-group mt-2 d-inline">
+                        <select  asp-for="Ingredient2">
+                                <option value="0">Select an ingredient </option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                </div>
+                <div class="form-group container-fluid">
+                    <label for="inputComment">recipart: </label>
+                    <input type="text" asp-for="recipePart3.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
+                    <input type="text" asp-for="recipePart3.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
+                    <div class="mt-2">
+                        <label for="">ingredients add to the part: </label>
+                        <div class="form-group mt-2 d-inline">
+                            <select asp-for="Ingredient3">
+                                <option value="0">Select an ingredient </option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                    <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group container-fluid">
+                        <label for="inputComment">recipart: </label>
+                        <input type="text" asp-for="recipePart4.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
+                        <input type="text" asp-for="recipePart4.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
+                        <div class="mt-2">
+                            <label for="">ingredients add to the part: </label>
+                            <div class="form-group mt-2 d-inline">
+                                <select asp-for="Ingredient4">
+                                    <option value="0">Select an ingredient </option>
+                                    @foreach (var i in Model.Ingredients)
+                                    {
+                                        <option value="@i.ID">@i.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group container-fluid">
+                    <label for="inputComment">recipart: </label>
+                    <input type="text" asp-for="recipePart5.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
+                    <input type="text" asp-for="recipePart5.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
+                    <div class="mt-2">
+                        <label for="">ingredients add to the part: </label>
+                        <div class="form-group mt-2 d-inline">
+                            <select asp-for="Ingredient5">
                                 <option value="0">Select an ingredient </option>
                                 @foreach (var i in Model.Ingredients)
                                 {
@@ -48,6 +121,7 @@
 
                 </div>
 
+                    <input type="hidden" value="@DateTime.Now" asp-for="newOrder.OrderMade" />
                     <button type="submit" class="btn btn-primary mt-5">Submit</button>
                 </form>
                 </<div>
