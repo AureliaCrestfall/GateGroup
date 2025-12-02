@@ -70,6 +70,20 @@ namespace GateGroupWebpages.Pages
                     command.Parameters.AddWithValue("@id", ID);
                     command.ExecuteNonQuery();
                 }
+                string sql3 = @" DELETE FROM OrderTableCustomer WHERE O_ID =@id";
+                using (SqlCommand command = new SqlCommand(sql3, conn))
+                {
+                    command.Parameters.AddWithValue("@id", ID);
+                    command.ExecuteNonQuery();
+                }
+
+                string sql4 = @" DELETE FROM EmployeeRecipePartOrderTable WHERE O_ID =@id";
+                using (SqlCommand command = new SqlCommand(sql4, conn))
+                {
+                    command.Parameters.AddWithValue("@id", ID);
+                    command.ExecuteNonQuery();
+                }
+
 
                 string sql = @" DELETE FROM OrderTable WHERE O_ID =@id";
 
