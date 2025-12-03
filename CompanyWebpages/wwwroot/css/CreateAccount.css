@@ -1,0 +1,12 @@
+﻿.signup-container {
+    max-width: 600px;
+    background-color: #111111;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #242424;
+}
+
+    .signup-container h2 {
+        font-family: 'Playfair Display', serif;
+        color: var(--accent);
+    }

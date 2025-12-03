@@ -1,35 +1,66 @@
 ﻿@page
 @model SignUpCustommerModel
 @{
-}
-<h2>Opret adgangskode for kunde</h2>
-
-<form method="post">
-    <div>
-        <label>Kunde ID:</label>
-        <input type="number" name="customerId" value="@Model.CustomerID" required />
-    </div>
-
-    <div>
-        <label>Adgangskode:</label>
-        <input type="password" name="password" required />
-    </div>
-
-    <div>
-        <label>Gentag adgangskode:</label>
-        <input type="password" name="confirmPassword" required />
-    </div>
-
-    <button type="submit">Gem adgangskode</button>
-</form>
-
-@if (Model.ErrorMessage != null)
-{
-    <p style="color:red;">@Model.ErrorMessage</p>
+    ViewData["Title"] = "Opret adgangskode";
 }
 
-@if (Model.SuccessMessage != null)
-{
-    <p style="color:green;">@Model.SuccessMessage</p>
-}
+<section class="container py-5">
+    <div class="signup-container mx-auto">
 
+        <h2 class="text-center mb-4">Opret adgangskode for kunde</h2>
+
+        <form method="post">
+
+            <!-- Kunde ID -->
+            <div class="mb-3">
+                <label class="form-label">Kunde ID</label>
+                <input type="number"
+                       class="form-control"
+                       name="customerId"
+                       value="@Model.CustomerID"
+                       required />
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+                <label class="form-label">Adgangskode</label>
+                <input type="password"
+                       class="form-control"
+                       name="password"
+                       required />
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-4">
+                <label class="form-label">Gentag adgangskode</label>
+                <input type="password"
+                       class="form-control"
+                       name="confirmPassword"
+                       required />
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary w-100">
+                Gem adgangskode
+            </button>
+
+        </form>
+
+        <!-- Error -->
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger mt-4 text-center">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <!-- Success -->
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="alert alert-success mt-4 text-center">
+                @Model.SuccessMessage
+            </div>
+        }
+
+    </div>
+</section>

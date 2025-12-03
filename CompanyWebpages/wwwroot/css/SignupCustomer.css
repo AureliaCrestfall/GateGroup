@@ -1,0 +1,38 @@
+﻿/* SIGNUP CUSTOMER */
+
+.signup-container {
+    max-width: 600px;
+    background-color: #111111;
+    border: 1px solid #242424;
+    padding: 2rem;
+    border-radius: 12px;
+}
+
+    .signup-container h2 {
+        font-family: 'Playfair Display', serif;
+        color: #D4C48A;
+        margin-bottom: 1.5rem;
+    }
+
+    .signup-container .form-label {
+        color: #E8E8E8;
+    }
+
+    .signup-container .form-control {
+        background-color: #1a1a1a;
+        border: 1px solid #333;
+        color: #E8E8E8;
+    }
+
+        .signup-container .form-control:focus {
+            border-color: #D4C48A;
+            box-shadow: 0 0 4px #D4C48A;
+            background-color: #1f1f1f;
+        }
+
+    .signup-container .btn-primary {
+        width: 100%;
+        padding: 10px;
+        font-weight: bold;
+        border-radius: 6px;
+    }
