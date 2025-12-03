@@ -41,6 +41,8 @@ namespace CompanyWebpages
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
+            builder.Services.AddRazorPages();
+           
 
             var app = builder.Build();
 

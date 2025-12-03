@@ -1,0 +1,211 @@
+﻿@page "{orderId:int}"  
+@model CompanyWebpages.Pages.OrderTrackingModel
+@{
+    ViewData["Title"] = "Ordre Sporing";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Ordre Sporing - Ordre #@Model.OrderId</h2>
+        <a href="/OrderOverview" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Tilbage til oversigt
+        </a>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning mb-4">
+            <h5><i class="bi bi-info-circle-fill"></i> Information</h5>
+            <p class="mb-0">@Model.ErrorMessage</p>
+        </div>
+    }
+
+    @if (Model.Order != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Ordre Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Ordre ID:</strong> @Model.Order.ID
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Oprettet:</strong> @Model.Order.OrderMade.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Færdig senest:</strong> @Model.Order.OrderDoneBy.ToString("yyyy-MM-dd HH:mm")
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Status:</strong> <span class="badge bg-secondary">@Model.Order.Status</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @{
+        var missingItems = Model.OrderItems != null && Model.OrderItems.Any() 
+            ? Model.OrderItems.Where(i => i.Ingredient.Quantity <= 0 || i.Ingredient.Quantity < i.Quantity).ToList() 
+            : new List<OrderItem>();
+        var lowStockItems = Model.OrderItems != null && Model.OrderItems.Any() 
+            ? Model.OrderItems.Where(i => i.Ingredient.Quantity > 0 && i.Ingredient.Quantity >= i.Quantity && i.Ingredient.Quantity < 5).ToList() 
+            : new List<OrderItem>();
+        var availableItems = Model.OrderItems != null && Model.OrderItems.Any() 
+            ? Model.OrderItems.Where(i => i.Ingredient.Quantity >= i.Quantity && i.Ingredient.Quantity >= 5).ToList() 
+            : new List<OrderItem>();
+    }
+
+    @if (Model.OrderItems == null || !Model.OrderItems.Any())
+    {
+        <div class="alert alert-info">
+            <h5><i class="bi bi-info-circle-fill"></i> Ingen varer fundet</h5>
+            <p>Denne ordre har ikke nogen tilknyttede varer at spore endnu.</p>
+            <a href="/OrderOverview" class="btn btn-primary">Tilbage til ordre oversigt</a>
+        </div>
+    }
+    else
+    {
+
+        @if (missingItems.Any())
+        {
+            <div class="alert alert-danger mb-4">
+                <h5><i class="bi bi-exclamation-triangle-fill"></i> Kritisk: @missingItems.Count varer mangler eller er utilstrækkelige</h5>
+                <ul class="mb-0">
+                    @foreach (var item in missingItems)
+                    {
+                        var shortage = item.Quantity - item.Ingredient.Quantity;
+                        <li>
+                            <strong>@item.Ingredient.Name</strong>: 
+                            Behov: @item.Quantity, 
+                            Tilgængelig: @item.Ingredient.Quantity, 
+                            Mangler: @(shortage > 0 ? shortage.ToString() : "0")
+                            - Lager: @item.Warehouse.Name (@item.Warehouse.Location)
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (lowStockItems.Any())
+        {
+            <div class="alert alert-warning mb-4">
+                <h5><i class="bi bi-exclamation-circle-fill"></i> Advarsel: @lowStockItems.Count varer har lavt lager</h5>
+                <ul class="mb-0">
+                    @foreach (var item in lowStockItems)
+                    {
+                        <li>
+                            <strong>@item.Ingredient.Name</strong>: 
+                            Kun @item.Ingredient.Quantity tilbage 
+                            - Lager: @item.Warehouse.Name (@item.Warehouse.Location)
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (!missingItems.Any() && !lowStockItems.Any() && Model.OrderItems.Any())
+        {
+            <div class="alert alert-success mb-4">
+                <h5><i class="bi bi-check-circle-fill"></i> Alle varer er tilgængelige på lageret</h5>
+            </div>
+        }
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Detaljeret lageroversigt</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Ingrediens</th>
+                                <th>Behov i ordre</th>
+                                <th>Tilgængelig på lager</th>
+                                <th>Lager navn</th>
+                                <th>Lagerplacering</th>
+                                <th>Udløbsdato</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                var hasEnough = item.Ingredient.Quantity >= item.Quantity;
+                                var statusClass = !hasEnough ? "bg-danger text-white" :
+                                                  item.Ingredient.Quantity < 5 ? "bg-warning text-dark" :
+                                                  "bg-success text-white";
+                                var statusIcon = !hasEnough ? "❌" :
+                                                item.Ingredient.Quantity < 5 ? "⚠️" :
+                                                "✅";
+
+                                <tr class="@statusClass">
+                                    <td><strong>@item.Ingredient.Name</strong></td>
+                                    <td>@item.Quantity</td>
+                                    <td>
+                                        @item.Ingredient.Quantity
+                                        @if (!hasEnough)
+                                        {
+                                            <span class="badge bg-danger ms-2">Mangler @(item.Quantity - item.Ingredient.Quantity)</span>
+                                        }
+                                    </td>
+                                    <td>@item.Warehouse.Name</td>
+                                    <td>
+                                        <strong>@item.Warehouse.Location</strong>
+                                        <br>
+                                        <small class="text-muted">Warehouse ID: @item.WarehouseId</small>
+                                    </td>
+                                    <td>@item.Ingredient.ExpireDate.ToString("yyyy-MM-dd")</td>
+                                    <td>
+                                        <span>@statusIcon</span>
+                                        @if (!hasEnough)
+                                        {
+                                            <span><strong>Mangler</strong></span>
+                                        }
+                                        else if (item.Ingredient.Quantity < 5)
+                                        {
+                                            <span><strong>Lav lager</strong></span>
+                                        }
+                                        else
+                                        {
+                                            <span><strong>OK</strong></span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-success">@availableItems.Count</h3>
+                        <p class="text-muted mb-0">Tilgængelige varer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-warning">@lowStockItems.Count</h3>
+                        <p class="text-muted mb-0">Lavt lager</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="text-danger">@missingItems.Count</h3>
+                        <p class="text-muted mb-0">Manglende varer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
