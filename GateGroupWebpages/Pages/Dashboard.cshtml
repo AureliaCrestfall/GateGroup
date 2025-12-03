@@ -1,4 +1,5 @@
 ﻿@page
+@using gategourmetLibrary.Models
 @model GateGroupWebpages.Pages.DashboardModel
 @{
     ViewData["Title"] = "Dashboard";
@@ -9,60 +10,74 @@
 <h2 class="mb-3" style="font-family:'Playfair Display',serif;">My Dashboard</h2>
 
 <a class="btn btn-light mb-3" asp-page="/NewOrder">Create New Order</a>
-@* <a class="btn btn-primary mb-3" asp-page="/Contact">Contact</a>
- *@
 
-<div class="table-responsive">
-    <table class="table align-middle shadow-sm text-white">
-        <thead class="text-white">
+@*  dropdown to status options
+ *@
+<form method="get" class="mb-3">
+    <select asp-for="statusFilter"
+    asp-items="Model.StatusOptions"
+    class="form-select w-auto d-inline"
+    onchange="this.form.submit()">
+    </select>
+</form>
+@* show table only if there r orders after filtering
+ *@
+ @if (Model.Orders != null && Model.Orders.Any())
+ {
+    <div class="table-responsive">
+        <table class="table align-middle shadow-sm text-white">
+          <thead class="text-white">
             <tr>
                 <th>Order</th>
                 <th>Status</th>
                 <th>Date</th>
                 <th>Time</th>
-            </tr>
+          </tr>
         </thead>
         <tbody>
-
-        @if (Model.Orders != null && Model.Orders.Any())
-        {
-            foreach (var Order in Model.Orders)
+            @foreach (var Order in Model.Orders)
             {
                 <tr>
                     <td>@Order.ID</td>
                     <td>
-                        @if (Order.Status == gategourmetLibrary.Models.OrderStatus.Created)
+                        @if (Order.Status == OrderStatus.Created)
                         {
                             <span class="badge bg-secondary">Created</span>
                         }
-                        else if (Order.Status == gategourmetLibrary.Models.OrderStatus.InProgress)
+                        else if (Order.Status == OrderStatus.InProgress)
                         {
                             <span class="badge bg-warning text-dark">In Progress</span>
                         }
-                        else if (Order.Status == gategourmetLibrary.Models.OrderStatus.Completed)
+                        else if (Order.Status == OrderStatus.Completed)
                         {
                             <span class="badge bg-success">Completed</span>
                         }
-                        else if (Order.Status == gategourmetLibrary.Models.OrderStatus.Cancelled)
+                        else if (Order.Status == OrderStatus.Cancelled)
                         {
                             <span class="badge bg-danger">Cancelled</span>
-							}
-		
+                        }
                     </td>
+                      <td>@Order.OrderMade.ToShortDateString()</td>
+                      <td>@Order.OrderMade.ToShortTimeString()</td>
 
-
-                    <td>@Order.OrderMade.ToShortDateString()</td>
-                    <td>@Order.OrderMade.ToShortTimeString()</td>
+                    <td class="text-end">
+                        
+                        <form method="post"
+                        asp-page-handler="Delete"
+                        asp-route-id="@Order.ID"
+                        onsubmit="return confirm('Are you sure you want to delete this order?')">
+                        <button class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
                 </tr>
-            }
+                }
+            </tbody>
+            </table>
+            </div>
         }
+        
         else
         {
-            <tr>
-                <td colspan="5" class="text-muted">No Orders yet.</td>
-            </tr>
+                <p class="text-muted">Please select a status to view your orders.</p>
         }
-        </tbody>
-    </table>
-</div>
 

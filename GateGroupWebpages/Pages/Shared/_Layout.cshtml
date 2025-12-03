@@ -24,7 +24,7 @@
                            style="background-color: #000000; border-color: #000000; color: white;"
                            onmouseover="this.style.color='black'; this.style.backgroundColor='white'"
                            onmouseout="this.style.color='white'; this.style.backgroundColor='#000000'">
-                            Log ud
+                            Log out
                         </a>
                     </div>
                 }
@@ -66,14 +66,19 @@
                         <li class="nav-item">
 							<a class="nav-link" href="/Contact">Contact</a>
                         </li>
-                        @if (Context.Session.GetString("IsLoggedIn") == "true")
+
+@*                         @if (Context.Session.GetString("IsLoggedIn") == "true")
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/Logout">Log ud</a>
                             </li>
-                            <li class="nav-item">
-                                <pan class="nav-link text-muted">Hej, @Context.Session.GetString("username") </pan>
+ *@ 
+ 
+                     @if (Context.Session.GetString("IsLoggedIn") == "true")    
+                           { <li class="nav-item">
+                                <pan class="nav-link text-muted">Hello, @Context.Session.GetString("username") </pan>
                             </li>
+
                         }
                         else
                         {
