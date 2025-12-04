@@ -29,7 +29,7 @@ namespace CompanyWebpages.Pages
                 connection.Open();
                    
                 string sql =
-                    @" SELECT EmployeeRecipePartOrderTable.O_ID, EmployeeRecipePartOrderTable.R_ID, rp.R_Name, w.W_Location
+                    @" SELECT EmployeeRecipePartOrderTable.O_ID, EmployeeRecipePartOrderTable.R_ID, rp.R_Name, w.W_Location,rp.R_Status
                     FROM EmployeeRecipePartOrderTable 
                     INNER JOIN RecipePart rp ON EmployeeRecipePartOrderTable.R_ID = rp.R_ID
                     LEFT JOIN werehouseRecipePart wrp ON EmployeeRecipePartOrderTable.R_ID = wrp.R_ID
@@ -60,10 +60,10 @@ namespace CompanyWebpages.Pages
                                 task.Location = "Not registered";
                             }
 
-                            int completedIndex = reader.GetOrdinal("IsCompleted");
-                            task.IsCompleted =
-                                !reader.IsDBNull(completedIndex) &&
-                                reader.GetBoolean(completedIndex);
+                            int completedIndex = reader.GetOrdinal("R_Status");
+                            //task.IsCompleted =
+                            //    !reader.IsDBNull(completedIndex) &&
+                            //    reader.GetBoolean(completedIndex);
 
                             Tasks.Add(task);
                         }
