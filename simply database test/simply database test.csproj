@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GateGroupWebpages\GateGroupWebpages.csproj" />
+    <ProjectReference Include="..\gategourmetLibary\gategourmetLibrary.csproj" />
   </ItemGroup>
 
 </Project>

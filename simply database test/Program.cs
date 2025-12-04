@@ -1,4 +1,4 @@
-﻿using simply_database_test.Secret;
+﻿using gategourmetLibrary.Secret;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +10,7 @@ namespace simply_database_test
         static void Main(string[] args)
         {
             // existing DB/test code
-            connect on = new connect();
+            Connect on = new Connect();
             testrepo test = new testrepo(on.cstring);
 
             List<testallergi> allergi = test.GetAll();
