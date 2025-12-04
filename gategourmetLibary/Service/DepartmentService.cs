@@ -84,5 +84,20 @@ namespace gategourmetLibrary.Service
         {
             _departmentRepo.RemoveStock(ingredient, amount, departmentID, warehouseID);
         }
+        // gets the stock locations for a specific order
+        public List<OrderItem> GetOrderStockLocations(int orderId)
+        {
+            try
+            {
+                return _departmentRepo.GetOrderStockLocations(orderId);
+            }
+            catch (Exception ex)
+            {
+                // Log fejlen eller returner tom liste
+                // Du kan også kaste exception videre hvis det er ønsket
+                throw new Exception($"Kunne ikke hente lagerplaceringer for ordre {orderId}: {ex.Message}", ex);
+            }
+        }
+
     }
 }
