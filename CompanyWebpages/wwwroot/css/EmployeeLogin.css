@@ -1,0 +1,124 @@
+﻿/* full page container for the login */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000000; /* dark background */
+    padding: 20px;
+}
+
+/* card that holds the login form */
+.login-card {
+    background-color: #050505;
+    padding: 2.5rem;
+    border-radius: 10px;
+    border: 1px solid #242424;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+/* header area with icon and title */
+.login-header {
+    text-align: center;
+    margin-bottom: 1.8rem;
+}
+
+    .login-header svg {
+        margin-bottom: 0.8rem;
+    }
+
+.login-title {
+    margin: 0;
+    color: #D4C48A; /* gold accent */
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+}
+
+.subtitle {
+    margin: 4px 0 0 0;
+    color: #b0b0b0;
+    font-size: 0.9rem;
+}
+
+/* form layout */
+.login-form {
+    margin: 1.5rem 0 0 0;
+}
+
+.form-group {
+    margin-bottom: 1.1rem;
+}
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        color: #e0e0e0;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #333333;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    background-color: #111111;
+    color: #f5f5f5;
+}
+
+    .form-control::placeholder {
+        color: #777777;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #D4C48A;
+        box-shadow: 0 0 0 2px rgba(212, 196, 138, 0.15);
+    }
+
+/* login button */
+.btn-login {
+    width: 100%;
+    padding: 0.75rem;
+    background: #D4C48A;
+    color: #111111;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.1s;
+    margin-top: 0.4rem;
+}
+
+    .btn-login:hover {
+        background: #c0b072;
+        transform: translateY(-1px);
+    }
+
+/* error message styling */
+.error-message {
+    background: #3b1111;
+    color: #ffb3b3;
+    padding: 10px 12px;
+    border-radius: 5px;
+    border: 1px solid #6b1c1c;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+}
+
+/* remove number input arrows in most browsers */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

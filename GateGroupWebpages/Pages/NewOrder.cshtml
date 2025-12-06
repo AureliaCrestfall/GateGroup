@@ -1,116 +1,79 @@
 ﻿@page
 @model GateGroupWebpages.Pages.NewOrderModel
 @{
+    ViewData["Title"] = "New Order";
 }
-<h2>Bestil Ret (test side) </h2>
 
-@* <form method="post">
-    <input type="text" name="OrderText" placeholder="Skriv din ordre her..." />
-    <button type="submit">Send Ordre</button>
-</form> *@
+<div class="neworder-container container-sm my-4">
+    <div class="text-center mb-4">
+        <h2 class="neworder-title mb-1">Create New Order</h2>
+        <p class="neworder-subtitle text-muted">
+            Fill in the basic order information and define the recipe parts that belong to this order.
+        </p>
+    </div>
 
-    <container-sm>
-
-        <div class="text-center">
-            <h1>Book lokale</h1>
-        </div>
-
-        <div class="card shadow-sm">
-            <div class="card-body text-center">
-                <form method="post">
-                    <div class="form-group container-fluid">
-                        <label for="inputDateTime">ready by: </label>
-                        <input type="date" asp-for="newOrder.OrderDoneBy" id="StartDateTime" aria-describedby="dateTimeHelp" placeholder="Enter Date/Time">
-                        
-                    </div>
-                <div class="form-group container-fluid">
-
-                <label for="inputDateTime">has it been payed for?: </label>
-                <input type="checkbox" asp-for="newOrder.paystatus">
-                </div>
-
-                   
-                <div class="form-group container-fluid">
-                <label for="inputComment">recipart: </label>
-                    <input type="text" asp-for="recipePart1.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
-                    <input type="text" asp-for="recipePart1.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
-                    <div class="mt-2">
-                        <label for="">ingredients add to the part: </label>
-                        <div class="form-group mt-2 d-inline">
-                            <select asp-for="Ingredient1">
-                                <option value="0">Select an ingredient </option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
-                            </select>
+    <div class="neworder-card card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                <!-- Order information -->
+                <h5 class="mb-3">Order information</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label asp-for="newOrder.OrderDoneBy" class="form-label">Ready by</label>
+                        <input type="date"
+                               asp-for="newOrder.OrderDoneBy"
+                               class="form-control"
+                               id="OrderDoneBy"
+                               aria-describedby="dateHelp" />
+                        <div id="dateHelp" class="form-text">
+                            Select the date when the order must be ready.
                         </div>
                     </div>
 
-                </div>
-                <div class="form-group container-fluid">
-                    <label for="inputComment">recipart: </label>
-                    <input type="text" asp-for="recipePart2.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
-                    <input type="text" asp-for="recipePart2.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
-                </div>
-                    <div class="mt-2">
-                        <label for="">ingredients add to the part: </label>
-                        <div class="form-group mt-2 d-inline">
-                        <select  asp-for="Ingredient2">
-                                <option value="0">Select an ingredient </option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                <option value="@i.ID">@i.Name</option>
-                                }
-                            </select>
-                        </div>
-
-                </div>
-                <div class="form-group container-fluid">
-                    <label for="inputComment">recipart: </label>
-                    <input type="text" asp-for="recipePart3.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
-                    <input type="text" asp-for="recipePart3.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
-                    <div class="mt-2">
-                        <label for="">ingredients add to the part: </label>
-                        <div class="form-group mt-2 d-inline">
-                            <select asp-for="Ingredient3">
-                                <option value="0">Select an ingredient </option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
-                            </select>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <div class="form-check">
+                            <input type="checkbox"
+                                   asp-for="newOrder.paystatus"
+                                   class="form-check-input"
+                                   id="PayStatus" />
+                            <label class="form-check-label" for="PayStatus">
+                                Order has been paid
+                            </label>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-group container-fluid">
-                        <label for="inputComment">recipart: </label>
-                        <input type="text" asp-for="recipePart4.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
-                        <input type="text" asp-for="recipePart4.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
-                        <div class="mt-2">
-                            <label for="">ingredients add to the part: </label>
-                            <div class="form-group mt-2 d-inline">
-                                <select asp-for="Ingredient4">
-                                    <option value="0">Select an ingredient </option>
-                                    @foreach (var i in Model.Ingredients)
-                                    {
-                                        <option value="@i.ID">@i.Name</option>
-                                    }
-                                </select>
+                <hr class="section-divider" />
+
+                <h5 class="mb-3">Recipe parts</h5>
+                <p class="form-text mb-3">
+                    Each recipe part represents one component of the order (for example: “Cold snacks”, “Bread”, “Drinks”).
+                </p>
+
+                <!-- Recipe part 1 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="recipe-section-title mb-3">Recipe part 1</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart1.partName" class="form-label">Part name</label>
+                                <input type="text"
+                                       asp-for="recipePart1.partName"
+                                       class="form-control"
+                                       placeholder="E.g. Cold dishes" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart1.Assemble" class="form-label">How to assemble</label>
+                                <input type="text"
+                                       asp-for="recipePart1.Assemble"
+                                       class="form-control"
+                                       placeholder="Short description of how to prepare" />
                             </div>
                         </div>
-
-                    </div>
-                </div>
-                <div class="form-group container-fluid">
-                    <label for="inputComment">recipart: </label>
-                    <input type="text" asp-for="recipePart5.partName" id="inputForm" aria-describedby="textHelp" placeholder="enter the name of the part">
-                    <input type="text" asp-for="recipePart5.Assemble" id="inputForm" aria-describedby="textHelp" placeholder="enter how to make it">
-                    <div class="mt-2">
-                        <label for="">ingredients add to the part: </label>
-                        <div class="form-group mt-2 d-inline">
-                            <select asp-for="Ingredient5">
-                                <option value="0">Select an ingredient </option>
+                        <div class="mb-2">
+                            <label class="form-label">Ingredients for this part</label>
+                            <select asp-for="Ingredient1" class="form-select">
+                                <option value="0">Select an ingredient</option>
                                 @foreach (var i in Model.Ingredients)
                                 {
                                     <option value="@i.ID">@i.Name</option>
@@ -118,13 +81,149 @@
                             </select>
                         </div>
                     </div>
-
                 </div>
 
-                    <input type="hidden" value="@DateTime.Now" asp-for="newOrder.OrderMade" />
-                    <button type="submit" class="btn btn-primary mt-5">Submit</button>
-                </form>
-                </<div>
+                <!-- Recipe part 2 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="recipe-section-title mb-3">Recipe part 2</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart2.partName" class="form-label">Part name</label>
+                                <input type="text"
+                                       asp-for="recipePart2.partName"
+                                       class="form-control"
+                                       placeholder="E.g. Hot dishes" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart2.Assemble" class="form-label">How to assemble</label>
+                                <input type="text"
+                                       asp-for="recipePart2.Assemble"
+                                       class="form-control"
+                                       placeholder="Short description of how to prepare" />
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Ingredients for this part</label>
+                            <select asp-for="Ingredient2" class="form-select">
+                                <option value="0">Select an ingredient</option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                    <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
                 </div>
-    </container-sm>
 
+                <!-- Recipe part 3 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="recipe-section-title mb-3">Recipe part 3</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart3.partName" class="form-label">Part name</label>
+                                <input type="text"
+                                       asp-for="recipePart3.partName"
+                                       class="form-control"
+                                       placeholder="Enter the name of the part" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart3.Assemble" class="form-label">How to assemble</label>
+                                <input type="text"
+                                       asp-for="recipePart3.Assemble"
+                                       class="form-control"
+                                       placeholder="Describe how to make it" />
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Ingredients for this part</label>
+                            <select asp-for="Ingredient3" class="form-select">
+                                <option value="0">Select an ingredient</option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                    <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe part 4 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="recipe-section-title mb-3">Recipe part 4</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart4.partName" class="form-label">Part name</label>
+                                <input type="text"
+                                       asp-for="recipePart4.partName"
+                                       class="form-control"
+                                       placeholder="Enter the name of the part" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart4.Assemble" class="form-label">How to assemble</label>
+                                <input type="text"
+                                       asp-for="recipePart4.Assemble"
+                                       class="form-control"
+                                       placeholder="Describe how to make it" />
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Ingredients for this part</label>
+                            <select asp-for="Ingredient4" class="form-select">
+                                <option value="0">Select an ingredient</option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                    <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe part 5 -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="recipe-section-title mb-3">Recipe part 5</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart5.partName" class="form-label">Part name</label>
+                                <input type="text"
+                                       asp-for="recipePart5.partName"
+                                       class="form-control"
+                                       placeholder="Enter the name of the part" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="recipePart5.Assemble" class="form-label">How to assemble</label>
+                                <input type="text"
+                                       asp-for="recipePart5.Assemble"
+                                       class="form-control"
+                                       placeholder="Describe how to make it" />
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Ingredients for this part</label>
+                            <select asp-for="Ingredient5" class="form-select">
+                                <option value="0">Select an ingredient</option>
+                                @foreach (var i in Model.Ingredients)
+                                {
+                                    <option value="@i.ID">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden order made date -->
+                <input type="hidden" value="@DateTime.Now" asp-for="newOrder.OrderMade" />
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-neworder mt-3">
+                        Submit order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
