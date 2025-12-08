@@ -1,0 +1,24 @@
+﻿@page "{orderId:int}"
+@model GateGroupWebpages.Pages.OrderDetailsModel
+@{
+	ViewData["Title"] = "The order Details";
+ }
+
+<h2 class="mb-4">Order Details @Model.Order.ID</h2>
+<div> 
+    <p><strong>Status:</strong> @Model.Order.Status</p>
+    <p><strong>Date:</strong> @Model.Order.OrderMade.ToShortDateString()</p>
+    <p><strong>Time:</strong> @Model.Order.OrderMade.ToShortTimeString()</p>
+    <p><strong>Ready By:</strong> @Model.Order.OrderDoneBy</p>
+    <p><strong>Payment Status:</strong> @(Model.Order.paystatus ? "Paid" : "Not Paid")</p>
+
+
+    <form method="post"
+        asp-page-handler="Delete"
+        asp-route-orderId="@Model.Order.ID"
+        class="d-inline"
+        onsubmit="return confirm('Are you sure you want to delete this order?');">
+        <button class="btn btn-sm btn-outline-danger">Delete</button>
+    </form>
+    <a class="btn btn-secondary mt-3" asp-page="/Dashboard">Back to Dashboard</a>
+</div>

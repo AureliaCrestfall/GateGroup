@@ -57,7 +57,13 @@
                             @foreach (Order order in Model.Orders)
                             {
                                 <tr>
-                                    <td>@order.ID</td>
+                                    <td>
+                                        <a asp-page="/OrderDetails"
+                                           asp-route-orderId="@order.ID"
+                                           class="btn btn-sm btn-outline-info">
+                                            @order.ID
+                                        </a>
+                                    </td>
                                     <td>
                                         @if (order.Status == OrderStatus.Created)
                                         {
