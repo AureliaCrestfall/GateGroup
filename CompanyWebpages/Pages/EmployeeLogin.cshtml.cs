@@ -2,6 +2,8 @@ using gategourmetLibrary.Models;
 using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
+
 
 namespace CompanyWebpages.Pages
 {
@@ -15,14 +17,11 @@ namespace CompanyWebpages.Pages
         public string Password { get; set; }
         [BindProperty]
         public string ErrorMessage { get; set; }
-
-
         public IActionResult OnGet()
         {
-            // når man logger ud og ikke mere har adgang til siden (Ordre)
-            HttpContext.Session.Remove("IsLoggedIn");
+            // når man går til login siden, logges brugeren helt ud
+            HttpContext.Session.Clear();
             return Page();
-
         }
         public EmployeeLoginModel(EmployeeService cs)
         {
@@ -51,8 +50,6 @@ namespace CompanyWebpages.Pages
             return Page();
 
         }
-
-
 
 
     }

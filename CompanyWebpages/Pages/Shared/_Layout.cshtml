@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,33 +14,35 @@
     <link rel="stylesheet" href="~/css/CreateAccount.css" />
     <link rel="stylesheet" href="~/css/EmployeeLogin.css" />
 
-
     <style>
         body {
             animation: fadeIn 0.5s ease-in-out;
         }
 
         @@keyframes fadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
+    @{
+        // læser login status og navn 
+        var isLoggedIn = Context.Session.GetString("IsLoggedIn") == "true";
+        var username = Context.Session.GetString("username");
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index"> GatePlanner</a>
+                <a class="navbar-brand" asp-area="" asp-page="/Index">GatePlanner</a>
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -46,26 +50,45 @@
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <!-- Home er altid synlig -->
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/OrderOverview">Ordre Information</a>
-                        </li>
-                       
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Create_account">Opret kunder</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/SignUpCustommer">SignUp</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/EmployeeDashboard">Employee Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/EmployeeLogin">EmployeeLogin</a>
-                        </li>
-                        
+
+                        @if (isLoggedIn)
+                        {
+                            <!-- Disse sider er kun synlige når man er logget ind -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/OrderOverview">Ordre Information</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Create_account">Opret kunder</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/SignUpCustommer">SignUp</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EmployeeDashboard">Employee Dashboard</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <span class="nav-link text-muted">
+                                    Hello, @username
+                                </span>
+                            </li>
+
+                            <!-- Log out  går til employeelogin hvor OnGet rydder session -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EmployeeLogin">Log out</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Når man ikke er logget ind kan man kun se login -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EmployeeLogin">Employee Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
