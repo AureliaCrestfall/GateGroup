@@ -4,6 +4,7 @@ using gategourmetLibrary.Models;
 using gategourmetLibrary.Secret;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
+using gategourmetLibary.Models;
 
 namespace GateGroupWebpages.Pages
 {
@@ -11,6 +12,8 @@ namespace GateGroupWebpages.Pages
     {
         //it holds the order 
         public Order Order { get; set; }
+        //it holds the recipe parts details for the order
+        public List<RecipePartDetails> RecipeParts { get; set; } = new List<RecipePartDetails>(); //Initialize to avoid null reference and it means (= new List<string>(); )
 
         //bind property to get orderId from query string
         [BindProperty(SupportsGet = true)]
@@ -49,6 +52,48 @@ namespace GateGroupWebpages.Pages
                                 // Convert O_status to enum OrderStatus
                                 Status = GetStatus(Convert.ToInt32(reader["O_status"]))
                             };
+                        }
+                    }
+                }
+
+                // SQL query to get recipe parts for the order
+                string sqlParts = @"SELECT RP.R_ID, RP.R_Name, RP.R_HowToPrep
+                                FROM orderTableRecipePart OTP
+                                JOIN RecipePart RP ON OTP.R_ID = RP.R_ID
+                                WHERE OTP.O_ID = @id";
+                using (SqlCommand command = new SqlCommand(sqlParts, conn))
+                    {
+                    command.Parameters.AddWithValue("@id", orderId);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            // Add each recipe part to the list
+                            RecipeParts.Add(new RecipePartDetails
+                            {
+                                R_ID = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                HowToPrep = reader.GetString(2),
+                            });
+                        }
+                    }
+                }
+                foreach (var part in RecipeParts)
+                {
+                    // SQL query to get ingredients for each recipe part
+                    string sqlIngredients = @"SELECT I.I_Name
+                                            FROM IngrefientrecipePart IRP
+                                            JOIN ingredient I ON IRP.I_ID = I.I_ID
+                                            WHERE IRP.R_ID = @rid";
+                    using (SqlCommand command = new SqlCommand(sqlIngredients, conn))
+                    {
+                        command.Parameters.AddWithValue("@rid", part.R_ID);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                part.Ingredients.Add(reader.GetString(0));
+                            }
                         }
                     }
                 }
