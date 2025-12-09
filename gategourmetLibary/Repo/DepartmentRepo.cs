@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using gategourmetLibrary.Models;
+﻿using gategourmetLibrary.Models;
 using Microsoft.Data.SqlClient;
+using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace gategourmetLibrary.Repo
 {
@@ -49,76 +50,77 @@ namespace gategourmetLibrary.Repo
         public List<OrderItem> GetOrderStockLocations(int orderId)
         {
             List<OrderItem> items = new List<OrderItem>();
-            SqlConnection connection = null;
-            SqlDataReader reader = null;
+
+            if (string.IsNullOrEmpty(_connectionString))
+            {
+                throw new Exception("Connection string er null eller tom i DepartmentRepo");
+            }
 
             try
             {
-                connection = new SqlConnection(_connectionString);
-
-                SqlCommand command = new SqlCommand(
-                    "SELECT oi.OI_ID, oi.I_ID, oi.OI_Quantity, oi.W_ID, " +
-                    "i.I_Name, i.I_expireDate, i.I_quntity, " +
-                    "w.W_Name, w.W_Location " +
-                    "FROM OrderItems oi " +
-                    "JOIN Ingredient i ON oi.I_ID = i.I_ID " +
-                    "JOIN Warehouse w ON oi.W_ID = w.W_ID " +
-                    "WHERE oi.Order_ID = @id",
-                    connection);
-
-                command.Parameters.AddWithValue("@id", orderId);
-
-                connection.Open();
-                reader = command.ExecuteReader();
-
-                while (reader.Read())
+                using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
-                    OrderItem item = new OrderItem();
-
-                    item.OrderItemId = (int)reader["OI_ID"];
-                    item.OrderId = orderId;
-                    item.IngredientId = (int)reader["I_ID"];
-                    item.Quantity = (int)reader["OI_Quantity"];
-                    item.WarehouseId = (int)reader["W_ID"];
-
-                    item.Ingredient = new Ingredient
+                    if (connection == null)
                     {
-                        ID = (int)reader["I_ID"],
-                        Name = reader["I_Name"].ToString(),
-                        ExpireDate = (DateTime)reader["I_expireDate"],
-                        Quantity = (int)reader["I_quntity"]
-                    };
+                        throw new Exception("SqlConnection kunne ikke oprettes");
+                    }
 
-                    item.Warehouse = new Warehouse
+                    connection.Open();
+
+                    using (SqlCommand command = new SqlCommand(
+                     "select orderTableRecipePart.O_ID, ingredient.I_Quntity, ingredient.I_ID, ingredient.I_Name, ingredient.I_ExpireDate," +
+                     "warehouse.W_ID, warehouse.W_Name, warehouse.W_Location" +
+                     "from orderTableRecipePart" +
+                     "join RecipePart on RecipePart.R_ID = orderTableRecipePart.R_ID" +
+                     "join IngrefientrecipePart on RecipePart.R_ID = IngrefientrecipePart.R_ID" +
+                     "join ingredient on ingredient.I_ID = IngrefientrecipePart.I_ID" +
+                     "join warehouseIngredient on warehouseIngredient.I_ID = ingredient.I_ID" +
+                     "join warehouse on warehouse.W_ID = warehouseIngredient.I_ID" +
+                      "where O_ID = @id" ,
+                        connection))
                     {
-                        ID = (int)reader["W_ID"],
-                        Name = reader["W_Name"].ToString(),
-                        Location = reader["W_Location"].ToString()
-                    };
+                        command.Parameters.AddWithValue("@id", orderId);
 
-                    items.Add(item);
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                OrderItem item = new OrderItem();
+
+                                item.OrderItemId = (int)reader["orderTableRecipePart.O_ID"];
+                                item.OrderId = orderId;
+                                item.IngredientId = (int)reader["ingredient.I_ID"];
+                                item.Quantity = (int)reader["ingredient.I_quntity"];
+                                item.WarehouseId = (int)reader["warehouse.W_ID"];
+
+                                item.Ingredient = new Ingredient
+                                {
+                                    ID = (int)reader["ingredient.I_ID"],
+                                    Name = reader["ingredient.I_Name"].ToString(),
+                                    ExpireDate = (DateTime)reader["ingredient.I_expireDate"],
+                                    Quantity = (int)reader["ingredient.I_quntity"]
+                                };
+
+                                item.Warehouse = new Warehouse
+                                {
+                                    ID = (int)reader["warehouse.W_ID"],
+                                    Name = reader["warehouse.W_Name"].ToString(),
+                                    Location = reader["warehouse.W_Location"].ToString()
+                                };
+
+                                items.Add(item);
+                            }
+                        }
+                    }
                 }
             }
             catch (SqlException sqlError)
             {
-                // Log fejlen eller kast den videre
                 throw new Exception($"Database fejl i GetOrderStockLocations(): {sqlError.Message}", sqlError);
             }
             catch (Exception ex)
             {
                 throw new Exception($"Fejl i GetOrderStockLocations(): {ex.Message}", ex);
-            }
-            finally
-            {
-                // Sørg for at reader og connection bliver lukket korrekt
-                if (reader != null && !reader.IsClosed)
-                {
-                    reader.Close();
-                }
-                if (connection != null && connection.State != System.Data.ConnectionState.Closed)
-                {
-                    connection.Close();
-                }
             }
 
             return items;
