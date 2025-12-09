@@ -5,11 +5,16 @@
     ViewData["Title"] = "Employee Dashboard";
 }
 
-<h2 class="mb-3" style="font-family:'Playfair Display',serif;">My Tasks</h2>
+<h2 class="mb-2" style="font-family:'Playfair Display',serif;">My tasks</h2>
+<p class="text-muted mb-3">
+    Here you can see your assigned recipe parts, mark them as done and update where they are stored
+    (freezer, fridge or dry storage).
+</p>
 
 @{
     // check if there are any tasks without a registered warehouse location
     bool hasUnassigned = false;
+
     if (Model.Tasks != null)
     {
         foreach (EmployeeTask t in Model.Tasks)
@@ -25,63 +30,68 @@
 
 @if (hasUnassigned)
 {
-    <div class="alert alert-warning">
-        Some tasks do not have a warehouse assigned yet.
+    <div class="alert alert-warning mb-3">
+        Some tasks do not have a storage location yet.
+        Please assign a freezer, fridge or dry storage before the order is sent.
     </div>
 }
 
 <div class="table-responsive">
     <table class="table align-middle shadow-sm text-white">
-        <thead class="text-white">
+        <thead>
             <tr>
-                <th>Order</th>
-                <th>Task</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Actions</th>
-                <th>Update location</th>
+                <th style="width: 8%">Order</th>
+                <th style="width: 28%">Task</th>
+                <th style="width: 18%">Location</th>
+                <th style="width: 14%">Status</th>
+                <th style="width: 16%">Actions</th>
+                <th style="width: 16%">Storage</th>
             </tr>
         </thead>
         <tbody>
-
             @if (Model.Tasks != null && Model.Tasks.Any())
             {
                 foreach (EmployeeTask task in Model.Tasks)
                 {
                     <tr>
                         <td>@task.OrderId</td>
-                        <td>@task.TaskName</td>
+
+                        <td>
+                            <div class="fw-semibold">@task.TaskName</div>
+                            <div class="text-muted small">Recipe part ID: @task.RecipePartId</div>
+                        </td>
 
                         <td>
                             @* show colored badge based on warehouse type *@
                             @if (task.Location == "Freezer")
                             {
-                                <span class="badge bg-primary">Freezer</span>
+                                <span class="badge bg-primary px-3">Freezer</span>
                             }
                             else if (task.Location == "Fridge")
                             {
-                                <span class="badge bg-success">Fridge</span>
+                                <span class="badge bg-success px-3">Fridge</span>
                             }
                             else if (task.Location == "Dry")
                             {
-                                <span class="badge bg-warning text-dark">Dry</span>
+                                <span class="badge bg-warning text-dark px-3">Dry</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary">Not registered</span>
+                                <span class="badge bg-secondary px-3">Not registered</span>
                             }
                         </td>
 
                         <td>
                             @if (task.IsCompleted)
                             {
-                                <span class="badge bg-success">Done</span>
+                                <span class="badge bg-success px-3">Completed</span>
                             }
                             else
                             {
-                                <span class="badge bg-warning text-dark">In Progress</span>
+                                <span class="badge bg-warning text-dark px-3">In progress</span>
                             }
                         </td>
+
                         <td>
                             @if (!task.IsCompleted)
                             {
@@ -95,7 +105,7 @@
                             }
                             else
                             {
-                                <span class="text-muted">Completed</span>
+                                <span class="text-muted small">No actions</span>
                             }
                         </td>
 
@@ -103,7 +113,7 @@
                             <a class="btn btn-sm btn-outline-info"
                                asp-page="/EmployeeTaskLocation"
                                asp-route-recipePartId="@task.RecipePartId">
-                                Change location
+                                Change storage location
                             </a>
                         </td>
                     </tr>
@@ -112,7 +122,9 @@
             else
             {
                 <tr>
-                    <td colspan="6" class="text-muted">No tasks assigned.</td>
+                    <td colspan="6" class="text-muted">
+                        No tasks assigned.
+                    </td>
                 </tr>
             }
         </tbody>

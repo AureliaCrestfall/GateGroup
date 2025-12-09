@@ -1,0 +1,87 @@
+﻿/* Employee dashboard and task location styling */
+
+/* small alert used for "not registered" info */
+.small-alert {
+    padding: 0.6rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* main task table */
+.task-table {
+    color: #f5f5f5;
+    font-size: 0.95rem;
+}
+
+.task-table-header {
+    border-bottom: 1px solid #333333;
+}
+
+    .task-table-header th {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+    }
+
+/* row hover effect */
+.task-table tbody tr:hover {
+    background-color: #141414;
+}
+
+/* small pill badges for locations */
+.badge-chip {
+    border-radius: 999px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* location types */
+.badge-chip-freezer {
+    background-color: #0d6efd; /* blue */
+}
+
+.badge-chip-fridge {
+    background-color: #198754; /* green */
+}
+
+.badge-chip-dry {
+    background-color: #ffc107; /* yellow */
+    color: #212529;
+}
+
+.badge-chip-unknown {
+    background-color: #6c757d; /* grey */
+}
+
+.badge-chip-info {
+    background-color: #0dcaf0; /* cyan */
+    color: #0b1b23;
+}
+
+/* status badges */
+.status-badge {
+    border-radius: 999px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.75rem;
+}
+
+.status-badge-done {
+    background-color: #28a745;
+}
+
+.status-badge-progress {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* buttons in task table */
+.task-action-btn {
+    min-width: 110px;
+}
+
+/* form card spacing on location page */
+.task-location-form {
+    max-width: 550px;
+}
