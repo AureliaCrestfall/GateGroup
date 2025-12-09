@@ -14,6 +14,8 @@ namespace CompanyWebpages.Pages
         public string ErrorMessage { get; set; }
 
 
+       
+
 
         public NewEmployeeModel(EmployeeService es)
         {

@@ -9,41 +9,57 @@
         <p class="mb-0">@Model.ErrorMessage</p>
     </div>
 }
+<section class="container py-5">
+    <div class="signup-container mx-auto">
+
 <form method="Post">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
     <!-- id -->
     <div class="mb-3">
         <label asp-for="newEmployee.Id" class="form-label"></label>
         <input  asp-for="newEmployee.Id" type="number" class="form-control" />
+                <span asp-validation-for="newEmployee.Id" class="text-danger"></span>
+
     </div>
     <!-- Name -->
     <div class="mb-3">
         <label asp-for="newEmployee.Name" class="form-label"></label>
         <input asp-for="newEmployee.Name" class="form-control" />
+                <span asp-validation-for="newEmployee.Name" class="text-danger"></span>
+
     </div>
 
     <!-- Password -->
     <div class="mb-3">
         <label asp-for="newEmployee.Password" class="form-label">Password</label>
         <input asp-for="newEmployee.Password" type="password" class="form-control" />
+        <span asp-validation-for="newEmployee.Password" class="text-danger"></span>
+
     </div>
 
     <!-- Email -->
     <div class="mb-3">
         <label asp-for="newEmployee.Email" class="form-label">Email</label>
         <input asp-for="newEmployee.Email"type="email" class="form-control" />
+                <span asp-validation-for="newEmployee.Email" class="text-danger"></span>
+
     </div>
 
     <!-- WorkPhoneNumber -->
     <div class="mb-3">
         <label asp-for="newEmployee.WorkPhoneNumber" class="form-label"></label>
         <input asp-for="newEmployee.WorkPhoneNumber" class="form-control" />
+                <span asp-validation-for="newEmployee.WorkPhoneNumber" class="text-danger"></span>
+
     </div>
 
     <!-- PersonalPhoneNumber -->
     <div class="mb-4">
         <label asp-for="newEmployee.PersonalPhoneNumber" class="form-label"></label>
         <input asp-for="newEmployee.PersonalPhoneNumber" class="form-control" />
+                <span asp-validation-for="newEmployee.PersonalPhoneNumber" class="text-danger"></span>
+
     </div>
 
     <!-- Submit -->
@@ -52,3 +68,8 @@
     </button>
 
 </form>
+    </div>
+</section>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
