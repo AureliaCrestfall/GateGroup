@@ -20,7 +20,22 @@ namespace gategourmetLibrary.Service
         // employee oprettes
         public void Add(Employee employee)
         {
-            _iemployee.Add(employee);
+            Dictionary<int,Employee> databaseEmployees = GetAll();
+            if (employee != null)
+            {
+                if (!databaseEmployees.ContainsKey(employee.Id))
+                {
+                    _iemployee.Add(employee);
+                }
+                else
+                {
+                    throw new Exception("their already exists an employee with this ID");
+                }
+            }
+            else
+            {
+                throw  new NullReferenceException();
+            }
         }
 
 
@@ -41,7 +56,7 @@ namespace gategourmetLibrary.Service
         }
 
 
-        public List<Employee> GetAll()
+        public Dictionary<int,Employee> GetAll()
         {
             return _iemployee.GetAll();
         }
@@ -52,6 +67,9 @@ namespace gategourmetLibrary.Service
             return _iemployee.Filter(employee);
         }
 
-
+        public Dictionary<int,string> GetAllPostions()
+        {
+            return _iemployee.GetAllPostions();
+        }
     }
 }

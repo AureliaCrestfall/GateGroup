@@ -43,6 +43,7 @@ namespace GateGroupWebpages.Pages
                         //if order found
                         if (reader.Read())
                         {
+                            String strStatus = reader["O_status"].ToString();
                             Order = new Order
                             {
                                 ID = reader.GetInt32(reader.GetOrdinal("O_ID")),
@@ -50,7 +51,7 @@ namespace GateGroupWebpages.Pages
                                 OrderDoneBy = reader.GetDateTime(reader.GetOrdinal("O_Ready")),
                                 paystatus = reader.GetBoolean(reader.GetOrdinal("O_PaySatus")),
                                 // Convert O_status to enum OrderStatus
-                                Status = GetStatus(Convert.ToInt32(reader["O_status"]))
+                                Status = GetStatus(strStatus)
                             };
                         }
                     }
@@ -101,16 +102,18 @@ namespace GateGroupWebpages.Pages
 
         }
         //method to convert int to OrderStatus enum
-        private OrderStatus GetStatus(int status)
+        private OrderStatus GetStatus(string status)
         {
+            // Use a switch expression to match the string value with enum values
             return status switch
             {
-                // these numbers map to the enum values on the database
-                -1 => OrderStatus.Cancelled, // -1 for Cancelled
-                0 => OrderStatus.Created, // 0 for Created
-                1 => OrderStatus.InProgress, // 1 for InProgress
-                2 => OrderStatus.Completed, // 2 for Completed
-                _ => OrderStatus.Created,  // default case
+                // using LAMBDA expression to map string values to enum, It returns the value on the right when the pattern on the left matches.
+                "Cancelled" => OrderStatus.Cancelled, 
+                "Created" => OrderStatus.Created, 
+                "InProgress" => OrderStatus.InProgress, 
+                "Completed" => OrderStatus.Completed,
+                // Fallback case: if an unknown value comes from the database, default to Created to avoid breaking the system.
+                _ => OrderStatus.Created,
             };
         }
 

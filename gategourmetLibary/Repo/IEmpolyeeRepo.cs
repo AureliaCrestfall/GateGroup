@@ -12,8 +12,10 @@ namespace gategourmetLibrary.Repo
         void Add(Employee empolyee);
         Employee Get(int employee);
         void Delete(int empolyee);
-        List<Employee> GetAll();
+        Dictionary<int,Employee> GetAll();
         void Update(Employee empolyee);
         List<Employee> Filter(string empolyee);
+
+        Dictionary<int, string> GetAllPostions();
     }
 }

@@ -3,6 +3,7 @@ using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace GateGroupWebpages.Pages
 {
@@ -43,13 +44,15 @@ namespace GateGroupWebpages.Pages
         public int Ingredient5 { get; set; }
         [BindProperty]
 
-
         public List<Ingredient> Ingredients { get; set; }
-       
+        [BindProperty]
+        public string ErrorMessage { get; set; }
 
 
 
-       
+
+
+
         public NewOrderModel(OrderService os,CustomerService cs)
         {
             
@@ -96,8 +99,20 @@ namespace GateGroupWebpages.Pages
             newOrder.Recipe.Add(3, recipePart3);
             newOrder.Recipe.Add(4, recipePart4);
             newOrder.Recipe.Add(5, recipePart5);
-            _os.AddOrder(newOrder);
-            return Page();
+            try
+            {
+                _os.AddOrder(newOrder);
+
+            }
+            catch(Exception ex)
+            {
+                ErrorMessage = $"{ex.Message}";
+                return Page();
+
+            }
+
+
+            return RedirectToPage("/NewOrder");
         }
 
     }

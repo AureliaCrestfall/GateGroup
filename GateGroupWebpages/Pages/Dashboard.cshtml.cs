@@ -65,8 +65,8 @@ namespace GateGroupWebpages.Pages
                                 OrderMade = reader.GetDateTime(reader.GetOrdinal("O_Made")),
                                 OrderDoneBy = reader.GetDateTime(reader.GetOrdinal("O_Ready")),
                                 paystatus = reader.GetBoolean(reader.GetOrdinal("O_PaySatus")),
-                                Status = GetStatus(Convert.ToInt32(reader["O_status"]))
-                            };
+                                Status = GetStatusFormating (reader["O_status"].ToString())
+                        };
 
                         //add order to list
                         Orders.Add(order);
@@ -142,37 +142,21 @@ namespace GateGroupWebpages.Pages
 
 
         //logic to get order status
-        private OrderStatus GetStatus (int order)
+        private OrderStatus GetStatusFormating(string status)
         {
+            // Use a switch expression to match the string value with enum values
+            return status switch
 
-            // cancelled logic if it has not been ready in 24 hours
-            if (order == -1)
             {
-                return OrderStatus.Cancelled;
-            }
+                // using LAMBDA expression to map string values to enum, It returns the value on the right when the pattern on the left matches.
+                "Created" => OrderStatus.Created,
+                "InProgress" => OrderStatus.InProgress,
+                "Completed" => OrderStatus.Completed,
+                "Cancelled" => OrderStatus.Cancelled,
+                // Fallback case: if an unknown value comes from the database, default to Created to avoid breaking the system.
+                _ => OrderStatus.Created,
 
-            // created logic
-            else if (order == 0)
-            {
-                return OrderStatus.Created;
-            }
-
-            // in progress logic
-            else if (order == 1)
-            {
-                return OrderStatus.InProgress;
-            }
-
-            // completed logic
-            else if (order == 2)
-            {
-                return OrderStatus.Completed;
-            }
-            else 
-            {
-                return OrderStatus.Created;
-
-            }
+            };
 
         }
     }

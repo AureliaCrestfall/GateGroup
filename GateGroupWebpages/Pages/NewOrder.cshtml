@@ -11,6 +11,14 @@
             Fill in the basic order information and define the recipe parts that belong to this order.
         </p>
     </div>
+    
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-warning mb-4">
+            <h5><i class="bi bi-info-circle-fill"></i> Information</h5>
+            <p class="mb-0">@Model.ErrorMessage</p>
+        </div>
+    }
 
     <div class="neworder-card card shadow-sm">
         <div class="card-body">
@@ -224,5 +232,7 @@
         </div>
     </div>
 </div>
+
+
 
 

@@ -334,7 +334,6 @@ namespace gategourmetLibrary.Repo
                 employee.Id = (int)reader["Employee_ID"];
                 employee.Name = reader["E_Name"].ToString();
                 employee.Email = reader["E_Email"].ToString();
-                employee.PhoneNumber = reader["E_PhoneNumber"].ToString();
 
                 employees.Add(employee);
             }

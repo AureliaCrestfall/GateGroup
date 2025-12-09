@@ -19,7 +19,10 @@ namespace gategourmetLibrary.Models
         public string Email { get; set; }
 
         // number of employee
-        public string PhoneNumber {  get; set; }
+        public  string WorkPhoneNumber {  get; set; }
+
+        public string PersonalPhoneNumber { get; set; }
+
         public Employee()
         {
 
