@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36511.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateGroupWebpages", "GateGroupWebpages\GateGroupWebpages.csproj", "{87B26F07-1BD5-4E6C-B1B2-016576B1C77A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gategourmetLibrary", "gategourmetLibary\gategourmetLibrary.csproj", "{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "simply database test", "simply database test\simply database test.csproj", "{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompanyWebpages", "CompanyWebpages\CompanyWebpages.csproj", "{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gategourmetLibary", "gategourmetLibary\gategourmetLibary.csproj", "{B10328C0-1451-4BCD-7495-42D3B72B9C13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GateGroupWebpages", "GateGroupWebpages\GateGroupWebpages.csproj", "{BCE40592-45B5-ECDF-B3B1-DA91B2127893}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{87B26F07-1BD5-4E6C-B1B2-016576B1C77A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87B26F07-1BD5-4E6C-B1B2-016576B1C77A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87B26F07-1BD5-4E6C-B1B2-016576B1C77A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87B26F07-1BD5-4E6C-B1B2-016576B1C77A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD95CEAA-E833-4024-9FB9-9C445F5E0D76}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ADA4677-D688-488B-B8BF-94DE1A66A8C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +25,14 @@ Global
 		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6A14EA0-3CAC-48A5-8E25-10996D460E3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B10328C0-1451-4BCD-7495-42D3B72B9C13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B10328C0-1451-4BCD-7495-42D3B72B9C13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B10328C0-1451-4BCD-7495-42D3B72B9C13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B10328C0-1451-4BCD-7495-42D3B72B9C13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE40592-45B5-ECDF-B3B1-DA91B2127893}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE40592-45B5-ECDF-B3B1-DA91B2127893}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE40592-45B5-ECDF-B3B1-DA91B2127893}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE40592-45B5-ECDF-B3B1-DA91B2127893}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

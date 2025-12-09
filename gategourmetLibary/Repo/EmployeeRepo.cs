@@ -140,7 +140,7 @@ namespace gategourmetLibrary.Models
 
             // SQL kommando: Find medarbejder med dette ID
             SqlCommand command = new SqlCommand(
-                "SELECT * FROM Employee WHERE Employee_ID = @id", connection);
+                "SELECT * FROM Employee WHERE E_ID = @id", connection);
 
             // her sætte vi ID parameter
             command.Parameters.AddWithValue("@id", employee);
@@ -157,10 +157,10 @@ namespace gategourmetLibrary.Models
                 // hvis medarbejdern blev fundet, bliver der oprettet en ny objekt med data fra databasen
                 Employee employees = new Employee()
                 {
-                    Id = (int)reader["Employee_ID"],
+                    Id = (int)reader["E_ID"],
                     Name = reader["E_Name"].ToString(),
                     Email = reader["E_Email"].ToString(),
-                    PhoneNumber = reader["E_PhoneNumber"].ToString()
+                    Password = reader["E_Password"].ToString()
                 };
 
                 // lukker for reader og returner medarbejderen 

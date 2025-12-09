@@ -23,7 +23,15 @@ namespace gategourmetLibrary.Models
         // true if employee has marked this task as completed
         public bool IsCompleted { get; set; }
 
-        public EmployeeTask() { }
+       // status of the task 
+       public OrderStatus Status { get; set; }
+
+        public EmployeeTask() 
+        {
+            // default values when a nex object is created
+            IsCompleted = false;
+            Status = OrderStatus.Created;
+        }
 
     }
 }

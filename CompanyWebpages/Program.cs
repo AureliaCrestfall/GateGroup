@@ -13,40 +13,32 @@ namespace CompanyWebpages
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Henter connection string fra Connect klassen 
+            // get connection string from Connect class
             string connection = new Connect().cstring;
             Debug.WriteLine(connection);
-            // Add services to the container
+
+            // Razor Pages
             builder.Services.AddRazorPages();
 
-            builder.Services.AddSingleton<IOrderRepo>
-            (sp => new OrderRepo(connection));
+            // Repositories that use the connection string
+            builder.Services.AddSingleton<IOrderRepo>(sp => new OrderRepo(connection));
+            builder.Services.AddSingleton<IEmpolyeeRepo>(sp => new EmployeeRepo(connection));
+            builder.Services.AddSingleton<IDepartmentRepo>(sp => new DepartmentRepo(connection));
+            builder.Services.AddSingleton<ICustomerRepo>(sp => new CustomerRepo(connection));
 
+            // Services (DI injects the right repo automatically)
             builder.Services.AddSingleton<OrderService>();
-
-            builder.Services.AddSingleton<IEmpolyeeRepo>
-                (sp => new EmployeeRepo(connection));
-
             builder.Services.AddSingleton<EmployeeService>();
-
-            builder.Services.AddSingleton<IDepartmentRepo>
-                (sp => new DepartmentRepo(connection));
-
             builder.Services.AddSingleton<DepartmentService>();
-
-            builder.Services.AddSingleton<ICustomerRepo>
-                (sp => new CustomerRepo(connection));
-
             builder.Services.AddSingleton<CustomerService>();
 
+            // Session setup
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
-            builder.Services.AddRazorPages();
-           
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline
+            // Pipeline
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
@@ -58,34 +50,12 @@ namespace CompanyWebpages
 
             app.UseRouting();
 
+            app.UseSession();      // session must be before endpoints
             app.UseAuthorization();
-
-            // Til logout knap mm
-            app.UseSession();
 
             app.MapRazorPages();
 
             app.Run();
-            builder.Services.AddSingleton<IOrderRepo, OrderRepo>();
-            //(sp => new OrderRepo(builder.Configuration.GetConnectionString(connection)));
-
-            builder.Services.AddSingleton<OrderService>();
-
-            builder.Services.AddSingleton<IEmpolyeeRepo>
-                (sp => new EmployeeRepo(builder.Configuration.GetConnectionString(connection)));
-
-            builder.Services.AddSingleton<EmployeeService>();
-
-            builder.Services.AddSingleton<IDepartmentRepo>
-                (sp => new DepartmentRepo(builder.Configuration.GetConnectionString(connection)));
-
-            builder.Services.AddSingleton<DepartmentService>();
-
-            builder.Services.AddSingleton<ICustomerRepo>
-                (sp => new CustomerRepo(builder.Configuration.GetConnectionString(connection)));
-
-            builder.Services.AddSingleton<CustomerService>();
-
         }
     }
 }

@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using gategourmetLibrary.Secret;
-using Microsoft.Data.SqlClient;
 using System.Diagnostics;
+using Microsoft.Data.SqlClient;
+
 
 namespace gategourmetLibrary.Repo
 {
@@ -81,7 +82,6 @@ namespace gategourmetLibrary.Repo
 
            
            
-            Debug.WriteLine(newOrder.OrderMade);
             sqlCommand.Parameters.AddWithValue("@O_made", newOrder.OrderMade/*.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")*/);
             sqlCommand.Parameters.AddWithValue("@O_status", newOrder.Status);
             sqlCommand.Parameters.AddWithValue("@O_ready", newOrder.OrderDoneBy/*.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")*/);
@@ -92,7 +92,6 @@ namespace gategourmetLibrary.Repo
             {
                 sqlConnection.Open();
                 neworderid = Convert.ToInt32(sqlCommand.ExecuteScalar());
-                Debug.WriteLine("test id get"+neworderid);
             }
             catch (SqlException sqlError)
             {
@@ -116,17 +115,34 @@ namespace gategourmetLibrary.Repo
             
 
         }
+        // method for cancelling an order 
+        public void CancelOrder(int orderId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(
+                    "UPDATE dbo.OrderTable SET O_Status = @Status WHERE O_ID = @Id",
+                    connection);
+
+                command.Parameters.AddWithValue("@Status", "Cancelled");
+                command.Parameters.AddWithValue("@Id", orderId);
+
+                connection.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
 
 
         public void AddOrderTableCustomert(int orderID,int customerID)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-            "INSERT INTO IngrefientrecipePart (O_ID, C_ID) " +
+            "INSERT INTO OrderTableCustomer (O_ID, C_ID) " +
             "VALUES (@O_ID, @C_ID)",
             sqlConnection);
 
-
+            Debug.WriteLine($"order id is {orderID} customer id is {customerID}");
             sqlCommand.Parameters.AddWithValue("@O_ID", orderID);
             sqlCommand.Parameters.AddWithValue("@C_ID", customerID);
 
@@ -232,12 +248,7 @@ namespace gategourmetLibrary.Repo
 
             }
         }
-        
-
-
-
-
-
+    
         public void Delete(int orderID)
         {
         }
@@ -305,12 +316,23 @@ namespace gategourmetLibrary.Repo
             return
                  null;
         }
-    
-        //returns the list of all orders
+
+        // returns the list of all orders
         public List<Order> GetAllOrders()
         {
-            return null;
+            // get all orders from the database as a dictionary
+            Dictionary<int, Order> ordersFromDatabase = GetAll();
+
+            // if the dictionary is null, return an empty list to avoid null reference errors
+            if (ordersFromDatabase == null)
+            {
+                return new List<Order>();
+            }
+
+            // convert the dictionary values to a list and return it
+            return new List<Order>(ordersFromDatabase.Values);
         }
+
         public List<Ingredient> GetAllIngredients()
         {
             //temporary list to hold Ingredients

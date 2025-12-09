@@ -47,7 +47,7 @@ namespace GateGroupWebpages.Pages
                 conn.Open();
 
                 // SQL query to select orders
-                string sql = @"SELECT O_ID, O_Made, O_Ready, O_PaySatus FROM OrderTable";
+                string sql = @"SELECT O_ID, O_Made, O_Ready, O_PaySatus ,O_status FROM OrderTable";
 
                 //execute command
                 using (SqlCommand command = new SqlCommand(sql, conn))
@@ -65,10 +65,9 @@ namespace GateGroupWebpages.Pages
                                 OrderMade = reader.GetDateTime(reader.GetOrdinal("O_Made")),
                                 OrderDoneBy = reader.GetDateTime(reader.GetOrdinal("O_Ready")),
                                 paystatus = reader.GetBoolean(reader.GetOrdinal("O_PaySatus")),
+                                Status = GetStatus(Convert.ToInt32(reader["O_status"]))
                             };
 
-                        // set order status
-                        order.Status= GetStatus(order);
                         //add order to list
                         Orders.Add(order);
                     }
@@ -143,34 +142,37 @@ namespace GateGroupWebpages.Pages
 
 
         //logic to get order status
-        private OrderStatus GetStatus (Order order)
+        private OrderStatus GetStatus (int order)
         {
-            DateTime now = DateTime.Now;
 
             // cancelled logic if it has not been ready in 24 hours
-            if ( now < order.OrderMade && (now - order.OrderMade).TotalHours > 24)
+            if (order == -1)
             {
                 return OrderStatus.Cancelled;
             }
 
             // created logic
-            if (now < order.OrderMade)
+            else if (order == 0)
             {
                 return OrderStatus.Created;
             }
 
             // in progress logic
-            if (now >= order.OrderMade && now <= order.OrderDoneBy)
+            else if (order == 1)
             {
                 return OrderStatus.InProgress;
             }
 
             // completed logic
-            if (now > order.OrderDoneBy)
+            else if (order == 2)
             {
                 return OrderStatus.Completed;
             }
-            return OrderStatus.Created;
+            else 
+            {
+                return OrderStatus.Created;
+
+            }
 
         }
     }

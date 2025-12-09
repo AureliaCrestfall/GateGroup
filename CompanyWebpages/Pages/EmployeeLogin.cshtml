@@ -1,0 +1,41 @@
+﻿@page
+@model CompanyWebpages.Pages.EmployeeLoginModel
+@{
+    ViewData["Title"] = "Employee Login";
+}
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#D4C48A" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <h2 class="login-title">Log ind</h2>
+            <p class="subtitle">Til køkkensystemet</p>
+        </div>
+
+        <form method="post" class="login-form">
+            <div class="form-group">
+                <label for="userId">Kok ID</label>
+                <input type="number" id="userId" name="UserID" class="form-control"
+                       placeholder="Indtast dit kok ID" required min="1" />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Adgangskode</label>
+                <input type="password" id="password" name="Password" class="form-control"
+                       placeholder="Indtast din adgangskode" required />
+            </div>
+
+            <button type="submit" class="btn-login">Log ind</button>
+        </form>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
+        }
+    </div>
+</div>

@@ -24,4 +24,6 @@ namespace gategourmetLibrary.Models
         Fridge, 
         DryStorage
     }
+
+   
 }

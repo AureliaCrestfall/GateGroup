@@ -8,7 +8,7 @@ namespace GateGroupWebpages.Pages
 {
     public class NewOrderModel : PageModel
     {
-
+        readonly CustomerService _cs;
         readonly OrderService _os;
         [BindProperty]
         public Order newOrder { get; set; }
@@ -49,15 +49,12 @@ namespace GateGroupWebpages.Pages
 
 
 
-        public void OnGet()
-        {
-
-          
-        }
-        public NewOrderModel(OrderService os)
+       
+        public NewOrderModel(OrderService os,CustomerService cs)
         {
             
             _os = os;
+            _cs = cs;
             newOrder = new Order();
             recipePart1 = new RecipePart();
             recipePart2 = new RecipePart();
@@ -70,19 +67,19 @@ namespace GateGroupWebpages.Pages
             
         }
 
-        //public IActionResult OnGet()
-        //{
-        //    // Tjek om brugeren er logget ind før den giver adgang til siden 
-        //    if (HttpContext.Session.GetString("IsLoggedIn") != "true")
-        //    {
-        //        // Hvis IKKE logget ind - send til login siden
-        //        return RedirectToPage("/Login");
-        //    }
+        public IActionResult OnGet()
+        {
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/Login");
+            }
 
-        //    // Hvis logget ind - vis siden som normalt
-        //    return Page();
+            // Hvis logget ind - vis siden som normalt
+            return Page();
 
-        //}
+        }
 
 
         public IActionResult OnPost()
@@ -99,7 +96,6 @@ namespace GateGroupWebpages.Pages
             newOrder.Recipe.Add(3, recipePart3);
             newOrder.Recipe.Add(4, recipePart4);
             newOrder.Recipe.Add(5, recipePart5);
-
             _os.AddOrder(newOrder);
             return Page();
         }

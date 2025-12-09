@@ -1,0 +1,38 @@
+﻿.dashboard-container {
+    max-width: 1000px;
+    margin: 40px auto 60px;
+    padding: 0 16px;
+    color: #f2f2f2;
+}
+
+.dashboard-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: #D4C48A;
+}
+
+.dashboard-subtitle {
+    font-size: 0.95rem;
+    color: #b5b5b5;
+}
+
+.dashboard-card {
+    background-color: #101218;
+    border: 1px solid #2c2f37;
+    border-radius: 12px;
+}
+
+.dashboard-neworder-btn {
+    border-color: #D4C48A;
+    color: #D4C48A;
+}
+
+    .dashboard-neworder-btn:hover {
+        background-color: #D4C48A;
+        color: #111111;
+    }
+
+.dashboard-table {
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}

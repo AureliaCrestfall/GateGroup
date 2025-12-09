@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\gategourmetLibary\gategourmetLibrary.csproj" />
+    <ProjectReference Include="..\gategourmetLibary\gategourmetLibary.csproj" />
   </ItemGroup>
-
 
 </Project>

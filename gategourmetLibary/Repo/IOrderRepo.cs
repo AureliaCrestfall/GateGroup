@@ -21,6 +21,10 @@ namespace gategourmetLibrary.Repo
         Order Get(int orderID);
         //update an existing order by its ID
         void UpdateOrder(int orderID, Order UpdatedOrder);
+
+        // cancels an order
+        void CancelOrder(int orderId);
+
         //returns a list of recipe parts for a specific order by orderID
         List<RecipePart> GetRecipeParts(int orderID);
         //filters orders made by a specific employee
@@ -34,6 +38,8 @@ namespace gategourmetLibrary.Repo
         //filters orders by a specific date
         List<Order> FilterByDate(DateTime date);
         List<Ingredient> GetAllIngredients();
+
+
         //void Add(Order order);
         //Order Get(int orderID);
         //void Delete(int orderPrimaryKey);

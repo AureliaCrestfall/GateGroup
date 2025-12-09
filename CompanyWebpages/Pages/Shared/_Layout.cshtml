@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -10,7 +12,8 @@
     <link rel="stylesheet" href="~/CompanyWebpages.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/SignupCustomer.css" />
     <link rel="stylesheet" href="~/css/CreateAccount.css" />
-
+    <link rel="stylesheet" href="~/css/EmployeeLogin.css" />
+    <link rel="stylesheet" href="~/css/AdminOrderList.css" />
 
     <style>
         body {
@@ -18,52 +21,122 @@
         }
 
         @@keyframes fadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
+    @{
+        // læser login status og navn
+        bool isLoggedIn = Context.Session.GetString("IsLoggedIn") == "true";
+        string username = Context.Session.GetString("username");
+    }
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index"> GatePlanner</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" asp-area="" asp-page="/Index">GatePlanner</a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-sm-inline-flex" id="mainNavbar">
+
+                    <!-- venstre side hovedmenu -->
+                    <ul class="navbar-nav me-auto">
+
+                        <!-- home er altid synlig -->
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/OrderOverview">Ordre Information</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Create_account">Opret kunder</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/SignUpCustommer">SignUp</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/EmployeeDashboard">Employee Dashboard</a>
-                        </li>
+
+                        @if (isLoggedIn)
+                        {
+                            <!-- Orders dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Orders
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/OrderOverview">
+                                            Order overview
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/AdminOrderList">
+                                            Admin orders
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- customers dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    Customers
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/Create_account">
+                                            Create customer
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/SignUpCustommer">
+                                            Sign up customer
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-page="/CustomerAdminList">
+                                            Manage / delete customers
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- Employee dashboard (ingen dropdown) -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EmployeeDashboard">
+                                    My tasks
+                                </a>
+                            </li>
+                        }
                     </ul>
+
+                    <!-- højreside login / logout -->
+                    <ul class="navbar-nav ms-auto">
+                        @if (isLoggedIn)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-muted">
+                                    Hello, @username
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EmployeeLogin">Log out</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EmployeeLogin">Employee Login</a>
+                            </li>
+                        }
+                    </ul>
+
                 </div>
             </div>
         </nav>

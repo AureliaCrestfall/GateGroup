@@ -1,56 +1,87 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using gategourmetLibrary.Models;
 using Microsoft.Data.SqlClient;
 using gategourmetLibrary.Secret;
-
+using Microsoft.AspNetCore.Http;
 
 namespace CompanyWebpages.Pages
 {
     public class EmployeeDashboardModel : PageModel
     {
-        // list that holds all tasks to show in the table
+        // list of all tasks that would be shown on the page
         public List<EmployeeTask> Tasks { get; set; }
 
-        // runs when the page is loaded with On get methos
-        public void OnGet()
+        // runs when the page is loaded
+        public IActionResult OnGet()
         {
-            // create empty list 
+            // read user id from session (employee id here )
+            string userIdString = HttpContext.Session.GetString("userid");
+            string isLoggedIn = HttpContext.Session.GetString("IsLoggedIn");
+
+            // if user is not logged in or id is missing redirect to login
+            if (string.IsNullOrEmpty(userIdString) || isLoggedIn != "true")
+            {
+                return RedirectToPage("/EmployeeLogin");
+            }
+
+            // convert user id from an string to an int
+            int employeeId = Convert.ToInt32(userIdString);
+
+            // create empty list that we will fill with tasks from database
             Tasks = new List<EmployeeTask>();
 
-            // for now we use one fixed employee(id = 1)
-            int employeeId = 1;
-
+            // get connection string from secret class
             string connectionString = new Connect().cstring;
 
+            // open a new sql connection
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                connection.Open();
+                connection.Open(); // open database connection
 
+                // sql that gets order id, recipe part, name, location and status
                 string sql =
-                    @"SELECT erpo.O_ID, erpo.R_ID, rp.R_Name, w.W_Location, erpo.IsCompleted
-                    FROM EmployeeRecipePartOrderTable erpo
-                    INNER JOIN RecipePart rp ON erpo.R_ID = rp.R_ID
-                    LEFT JOIN werehouseRecipePart wrp ON erpo.R_ID = wrp.R_ID
-                    LEFT JOIN warehouse w ON wrp.W_ID = w.W_ID
-                    WHERE erpo.E_ID = @employeeId";
+                    @" SELECT EmployeeRecipePartOrderTable.O_ID, 
+                    EmployeeRecipePartOrderTable.R_ID, rp.R_Name,w.W_Location, rp.R_Status
+                    FROM EmployeeRecipePartOrderTable 
+                    INNER JOIN RecipePart rp 
+                    ON EmployeeRecipePartOrderTable.R_ID = rp.R_ID
+                    LEFT JOIN werehouseRecipePart wrp 
+                    ON EmployeeRecipePartOrderTable.R_ID = wrp.R_ID
+                    LEFT JOIN warehouse w 
+                    ON wrp.W_ID = w.W_ID
+                    WHERE EmployeeRecipePartOrderTable.E_ID = @employeeId";
+
+                // prepare sql command
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
+                    // insert employee id in sql parameter
                     command.Parameters.AddWithValue("@employeeId", employeeId);
 
+                    // execute sql and get result set
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
+                        // read each row one at a time
                         while (reader.Read())
-
                         {
+                            // create new task object for this row
                             EmployeeTask task = new EmployeeTask();
 
+                            // set order id
                             task.OrderId = reader.GetInt32(reader.GetOrdinal("O_ID"));
+
+                            // set recipe part id
                             task.RecipePartId = reader.GetInt32(reader.GetOrdinal("R_ID"));
+
+                            // set task name (recipe part name)
                             task.TaskName = reader["R_Name"].ToString();
 
+                            // get index for W_Location 
                             int locationIndex = reader.GetOrdinal("W_Location");
+
+                            // checks if there is a location value
                             if (!reader.IsDBNull(locationIndex))
                             {
                                 task.Location = reader.GetString(locationIndex);
@@ -60,36 +91,81 @@ namespace CompanyWebpages.Pages
                                 task.Location = "Not registered";
                             }
 
-                            int completedIndex = reader.GetOrdinal("IsCompleted");
-                            task.IsCompleted =
-                                !reader.IsDBNull(completedIndex) &&
-                                reader.GetBoolean(completedIndex);
+                            // get index for R_Status 
+                            int statusIndex = reader.GetOrdinal("R_Status");
 
+                            // check if status has a value
+                            if (!reader.IsDBNull(statusIndex))
+                            {
+                                string statusText = reader.GetString(statusIndex);
+
+                                OrderStatus orderStatus;
+
+                                // try to convert status text to enum
+                                if (Enum.TryParse<OrderStatus>(statusText, out orderStatus))
+                                {
+                                    task.Status = orderStatus;
+                                }
+                                else
+                                {
+                                    task.Status = OrderStatus.Created;
+                                }
+                            }
+                            else
+                            {
+                                task.Status = OrderStatus.Created;
+                            }
+
+                            // set IsCompleted to true if status is completed
+                            task.IsCompleted = (task.Status == OrderStatus.Completed);
+
+                            // add task to list
                             Tasks.Add(task);
                         }
                     }
-
-
                 }
             }
+
+            // return page with tasks list filled
+            return Page();
         }
+
+        // POST handler when employee clicks "mark done"
         public IActionResult OnPostMarkDone(int orderId, int recipePartId)
         {
-            int employeeId = 1;
+            // read user id from session
+            string userIdString = HttpContext.Session.GetString("userid");
+            string isLoggedIn = HttpContext.Session.GetString("IsLoggedIn");
 
+            // if not logged in, send back to login page
+            if (string.IsNullOrEmpty(userIdString) || isLoggedIn != "true")
+            {
+                return RedirectToPage("/EmployeeLogin");
+            }
+
+            int employeeId = Convert.ToInt32(userIdString);
+
+            // get connection string
             string connectionString = new Connect().cstring;
 
+            // open sql connection
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
 
+                // sql that updates recipe part status to Completed
                 string sql =
-                     @"UPDATE EmployeeRecipePartOrderTable
-                     SET IsCompleted = 1
-                     WHERE E_ID = @employeeId AND O_ID = @orderId AND R_ID = @recipePartId";
+                    @"UPDATE rp
+                    SET rp.R_Status = @status
+                    FROM RecipePart rp
+                    INNER JOIN EmployeeRecipePartOrderTable ert ON rp.R_ID = ert.R_ID
+                    WHERE ert.E_ID = @employeeId 
+                    AND ert.O_ID = @orderId 
+                    AND ert.R_ID = @recipePartId";
 
-                using (SqlCommand command = new SqlCommand(sql, connection)) 
+                using (SqlCommand command = new SqlCommand(sql, connection))
                 {
+                    command.Parameters.AddWithValue("@status", OrderStatus.Completed.ToString());
                     command.Parameters.AddWithValue("@employeeId", employeeId);
                     command.Parameters.AddWithValue("@orderId", orderId);
                     command.Parameters.AddWithValue("@recipePartId", recipePartId);
@@ -97,6 +173,8 @@ namespace CompanyWebpages.Pages
                     command.ExecuteNonQuery();
                 }
             }
+
+            // reload page so updated status is shown
             return RedirectToPage();
         }
     }

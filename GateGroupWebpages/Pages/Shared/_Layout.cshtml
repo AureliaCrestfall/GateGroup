@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Login.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GateGroupWebpages.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Contact.css" />
+    <link rel="stylesheet" href="~/css/Neworder.css" />
+    <link rel="stylesheet" href="~/css/Admindashboard.css" />
 </head>
 <body>
     <header>
@@ -19,11 +22,13 @@
 
                 @if (Context.Session.GetString("IsLoggedIn") == "true")
                 {
+
+
                     <div class="ms-auto me-2 d-none d-sm-block">
-                        <a href="/Login" class="btn btn-outline-light btn-sm">
-                            Log out
-                        </a>
+                        <a href="/Login" class="logout-btn btn btn-sm"> Log out </a>
                     </div>
+
+
                 }
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
@@ -53,7 +58,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Login">Log ind</a>
+                                <a class="nav-link" asp-area="" asp-page="/Login">Login</a>
                             </li>
                         }
                     </ul>

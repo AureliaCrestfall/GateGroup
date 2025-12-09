@@ -1,0 +1,76 @@
+﻿/* card styling */
+.admin-orders-card {
+    background-color: #0f0f0f;
+    border: 1px solid #242424;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* overskrift */
+.admin-orders-title {
+    font-family: 'Playfair Display', serif;
+    color: #D4C48A;
+    margin-bottom: 20px;
+}
+
+/* tabelstil */
+.admin-orders-table {
+    width: 100%;
+    color: #e6e6e6;
+    border-collapse: collapse;
+}
+
+    .admin-orders-table thead {
+        background-color: #1c1c1c;
+    }
+
+    .admin-orders-table th {
+        color: #D4C48A;
+        padding: 10px;
+        border-bottom: 1px solid #333;
+    }
+
+    .admin-orders-table td {
+        padding: 12px;
+        border-bottom: 1px solid #222;
+    }
+
+    /* hover */
+    .admin-orders-table tbody tr:hover {
+        background-color: #1a1a1a;
+        transition: 0.2s ease-in-out;
+    }
+
+/* cancel knap */
+.cancel-btn {
+    background-color: #a01c1c;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+    .cancel-btn:hover {
+        background-color: #c42424;
+        transition: 0.2s;
+    }
+
+/* cancelled tekst */
+.cancelled-text {
+    color: #888;
+    font-style: italic;
+}
+
+/* status message */
+.admin-status-message {
+    background-color: #1d1d1d;
+    border: 1px solid #2f2f2f;
+    color: #D4C48A;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}

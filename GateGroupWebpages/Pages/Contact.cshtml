@@ -1,11 +1,29 @@
 ﻿@page
 @model GateGroupWebpages.Pages.ContactModel
 @{
+    ViewData["Title"] = "Contact";
 }
-<h2 class="mb-3" style="font-family:'Playfair Display',serif;">Contact Us</h2>
 
-<div class="feature-card">
-    <p><strong>Email:</strong> exam_project@gategourmet.com</p>
-    <p><strong>Phone:</strong> +45 11 22 33 44</p>
-    <p>If you need help with your order, feel free to contact us.</p>
+<div class="contact-container">
+    <h2 class="contact-title">Contact Us</h2>
+    <p class="contact-intro">
+        If you have questions about your order, production planning or access to the system,
+        you are always welcome to reach out to our support team.
+    </p>
+
+    <div class="contact-card">
+        <div class="contact-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4C48A" stroke-width="1.8">
+                <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
+                <polyline points="3,7 12,13 21,7"></polyline>
+            </svg>
+        </div>
+        <div class="contact-details">
+            <p><strong>Email:</strong> contact@gategourmet.com</p>
+            <p><strong>Phone:</strong> +45 11 22 33 44</p>
+            <p class="contact-note">
+                Support is available on weekdays during production hours.
+            </p>
+        </div>
+    </div>
 </div>

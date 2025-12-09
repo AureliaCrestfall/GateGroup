@@ -22,10 +22,51 @@ namespace gategourmetLibrary.Service
         {
             return _orderRepo.GetAllOrders();
         }
+
+        public void CancelOrder(int orderId)
+        {
+            _orderRepo.CancelOrder(orderId);
+        }
+
         // adds a new order
         public void AddOrder(Order order)
         {
-            _orderRepo.AddOrder(order);
+            if(order != null)
+            {
+                if ((order.OrderDoneBy - order.OrderMade).TotalDays >= 6)
+                {
+                    List<int> invalidRecipeParts = new List<int>();
+                    foreach(KeyValuePair<int,RecipePart> rp in order.Recipe)
+                    {
+                        if (rp.Value.partName == string.Empty || rp.Value.partName == null )
+                        {
+                            invalidRecipeParts.Add(rp.Key);
+                        }
+                    }
+                    foreach(int i in invalidRecipeParts)
+                    {
+                        order.Recipe.Remove(i);
+                    }
+                    if (order.Recipe.Count >0)
+                    {
+                        _orderRepo.AddOrder(order);
+
+                    }
+                    else
+                    {
+                        throw new Exception("order dosn't conatin any vailed recipeParts");
+                    }
+
+                }
+                else
+                {
+                    throw new Exception("Order Ready by is the close to the time of when the order is made is need to be at least 7 days after");
+                }
+            }
+            
+
+
+            
         }
         // deletes an order by ID
         public void DeleteOrder(int orderID)

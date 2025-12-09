@@ -1,0 +1,54 @@
+﻿@page
+@model CompanyWebpages.Pages.AdminOrderListModel
+
+<h2 class="mb-3">Admin – Orders</h2>
+
+@if (!string.IsNullOrEmpty(Model.StatusMessage))
+{
+    <div class="alert alert-info">
+        @Model.StatusMessage
+    </div>
+}
+
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Made</th>
+            <th>Ready</th>
+            <th>Pay status</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (gategourmetLibrary.Models.Order order in Model.Orders)
+        {
+            <tr>
+                <td>@order.ID</td>
+                <td>@order.OrderMade</td>
+                <td>@order.OrderDoneBy</td>
+                <td>
+                    @(order.paystatus ? "Paid" : "Not paid")
+                </td>
+                <td>@order.Status</td>
+                <td>
+                    @if (order.Status != gategourmetLibrary.Models.OrderStatus.Cancelled)
+                    {
+                        <form method="post" asp-page-handler="Cancel">
+                            <input type="hidden" name="orderId" value="@order.ID" />
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Cancel
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Already cancelled</span>
+                    }
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
