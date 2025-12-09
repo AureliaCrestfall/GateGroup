@@ -68,8 +68,8 @@ namespace gategourmetLibrary.Repo
                     connection.Open();
 
                     using (SqlCommand command = new SqlCommand(
-                     "select orderTableRecipePart.O_ID, ingredient.I_Quntity, ingredient.I_ID, ingredient.I_Name, ingredient.I_ExpireDate," +
-                     "warehouse.W_ID, warehouse.W_Name, warehouse.W_Location" +
+                     "select orderTableRecipePart.O_ID as OederRecip, ingredient.I_Quntity as Quntity, ingredient.I_ID as Ingerdient ID, ingredient.I_Name as Name, ingredient.I_ExpireDate as ExpireDate," +
+                     "warehouse.W_ID as Warehouse ID, warehouse.W_Name as Warehouse Name, warehouse.W_Location as warehouse Location" +
                      "from orderTableRecipePart" +
                      "join RecipePart on RecipePart.R_ID = orderTableRecipePart.R_ID" +
                      "join IngrefientrecipePart on RecipePart.R_ID = IngrefientrecipePart.R_ID" +
@@ -87,11 +87,11 @@ namespace gategourmetLibrary.Repo
                             {
                                 OrderItem item = new OrderItem();
 
-                                item.OrderItemId = (int)reader["orderTableRecipePart.O_ID"];
+                                item.OrderItemId = (int)reader["OederRecip"];
                                 item.OrderId = orderId;
-                                item.IngredientId = (int)reader["ingredient.I_ID"];
-                                item.Quantity = (int)reader["ingredient.I_quntity"];
-                                item.WarehouseId = (int)reader["warehouse.W_ID"];
+                                item.IngredientId = (int)reader["Ingerdient ID"];
+                                item.Quantity = (int)reader["Quntity"];
+                                item.WarehouseId = (int)reader["Warehouse ID"];
 
                                 item.Ingredient = new Ingredient
                                 {
