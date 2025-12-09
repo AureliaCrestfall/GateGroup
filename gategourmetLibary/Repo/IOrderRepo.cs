@@ -37,7 +37,8 @@ namespace gategourmetLibrary.Repo
         List<Order> FilterByStatus(OrderStatus status);
         //filters orders by a specific date
         List<Order> FilterByDate(DateTime date);
-        List<Ingredient> GetAllIngredients();
+        Dictionary<int, Ingredient> GetAllIngredients();
+        Dictionary<int, string> GetAllAllergies();
 
 
         //void Add(Order order);

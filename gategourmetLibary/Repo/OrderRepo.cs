@@ -333,15 +333,20 @@ namespace gategourmetLibrary.Repo
             return new List<Order>(ordersFromDatabase.Values);
         }
 
-        public List<Ingredient> GetAllIngredients()
+        public Dictionary<int,Ingredient> GetAllIngredients()
         {
             //temporary list to hold Ingredients
-            List<Ingredient> Ingredients = new List<Ingredient>();
+            Dictionary<int, Ingredient> Ingredients = new Dictionary<int, Ingredient>();
             //using (using) to ensure the connection is closed after use
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 //sql command to select all Ingredients
-                SqlCommand command = new SqlCommand("SELECT * FROM ingredient", connection);
+                SqlCommand command = new SqlCommand("SELECT ingredient.I_ID as ingredientID,ingredient.I_Name as ingredientName " +
+                    ",ingredient.I_Quntity as quntityOfIngredient,ingredient.I_ExpireDate as ingredientExpireDate " +
+                    ",A.A_ID as allergyID,A.A_Name as allergyName " +
+                    "FROM ingredient " +
+                    "join IngredientAllergie as IA on IA.I_ID = ingredient.I_ID " +
+                    "join Allergie as A on A.A_ID = IA.A_ID ", connection);
                 //open database connection
                 connection.Open();
                 //execute command and read data
@@ -349,12 +354,22 @@ namespace gategourmetLibrary.Repo
                 //loop through each returned row
                 while (reader.Read())
                 {
-                    Ingredients.Add(new Ingredient
+                    if (!Ingredients.ContainsKey((int)reader["ingredientID"]))
                     {
-                        ID = (int)reader["I_ID"],
-                        Name = reader["I_Name"].ToString(),
+                        Ingredients.Add((int)reader["ingredientID"], new Ingredient
+                        {
+                            ID = (int)reader["ingredientID"],
+                            Name = reader["ingredientName"].ToString(),
+                            ExpireDate = Convert.ToDateTime(reader["ingredientExpireDate"]),
+                            Quantity = (int)reader["quntityOfIngredient"]
 
-                    });
+                        });
+                    }
+                    if (Ingredients.ContainsKey((int)reader["ingredientID"]))
+                    {
+                        Ingredients[(int)reader["ingredientID"]].Allergies.Add((int)reader["allergyID"], reader["allergyName"].ToString());
+                    }
+
                 }
             }
             //return the list of Ingredients
@@ -416,6 +431,44 @@ namespace gategourmetLibrary.Repo
         public void filterAfterDate(DateTime filterAfterDate)
         {
         }
-       
+
+        public Dictionary<int, string> GetAllAllergies()
+        {
+            Dictionary<int, string> AllergiesFromDatabase = new Dictionary<int, string>();
+
+            SqlConnection sqlConnection = new SqlConnection(_connectionString);
+            SqlCommand sqlCommand = new SqlCommand(
+                "SELECT A_ID,A_Name FROM Allergie",
+                sqlConnection);
+           
+            try
+            {
+                sqlConnection.Open();
+                SqlDataReader sqlReader = sqlCommand.ExecuteReader();
+
+
+                while (sqlReader.Read())
+                {
+                    int id = Convert.ToInt32(sqlReader["A_ID"]);
+                    string name = sqlReader["A_Name"].ToString();
+
+                    AllergiesFromDatabase.Add(id, name);
+                }
+
+                sqlReader.Close();
+            }
+            catch (SqlException sqlError)
+            {
+                throw new Exception("Database error in OrderRepository.AddOrder(): " + sqlError.Message);
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            return AllergiesFromDatabase;
+        }
+
+
     }
 }

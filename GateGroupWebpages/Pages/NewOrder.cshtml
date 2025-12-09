@@ -80,14 +80,20 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient1" class="form-select">
+                            <select asp-for="Ingredient1" class="form-select" asp-items="Model.IngredientOptions">
                                 <option value="0">Select an ingredient</option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
+                               
                             </select>
                         </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">allerie for this part</label>
+                            <select asp-for="allerie1" class="form-select" asp-items="Model.AllerieOptions">
+                                <option value="0">Select an allerie</option>
+
+                            </select>
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -113,12 +119,16 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient2" class="form-select">
+                            <select asp-for="Ingredient2" class="form-select" asp-items="Model.IngredientOptions">
                                 <option value="0">Select an ingredient</option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
+                                
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">allerie for this part</label>
+                            <select asp-for="allerie2" class="form-select" asp-items="Model.AllerieOptions">
+                                <option value="0">Select an allerie</option>
+
                             </select>
                         </div>
                     </div>
@@ -146,12 +156,16 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient3" class="form-select">
+                            <select asp-for="Ingredient3" class="form-select" asp-items="Model.IngredientOptions">
                                 <option value="0">Select an ingredient</option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
+                                
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">allerie for this part</label>
+                            <select asp-for="allerie3" class="form-select" asp-items="Model.AllerieOptions">
+                                <option value="0">Select an allerie</option>
+
                             </select>
                         </div>
                     </div>
@@ -179,12 +193,16 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient4" class="form-select">
+                            <select asp-for="Ingredient4" class="form-select" asp-items="Model.IngredientOptions">
                                 <option value="0">Select an ingredient</option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
+                                
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">allerie for this part</label>
+                            <select asp-for="allerie4" class="form-select" asp-items="Model.AllerieOptions">
+                                <option value="0">Select an allerie</option>
+
                             </select>
                         </div>
                     </div>
@@ -212,12 +230,15 @@
                         </div>
                         <div class="mb-2">
                             <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient5" class="form-select">
-                                <option value="0">Select an ingredient</option>
-                                @foreach (var i in Model.Ingredients)
-                                {
-                                    <option value="@i.ID">@i.Name</option>
-                                }
+                            <select asp-for="Ingredient5" class="form-select" asp-items="Model.IngredientOptions">
+                                
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">allerie for this part</label>
+                            <select asp-for="allerie5" class="form-select" asp-items="Model.AllerieOptions">
+                                <option value="0">Select an allerie</option>
+
                             </select>
                         </div>
                     </div>

@@ -2,6 +2,7 @@ using gategourmetLibrary.Models;
 using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -43,19 +44,37 @@ namespace GateGroupWebpages.Pages
 
         public int Ingredient5 { get; set; }
         [BindProperty]
+        public int allerie1 { get; set; }
+        [BindProperty]
+        public int allerie2 { get; set; }
+        [BindProperty]
 
-        public List<Ingredient> Ingredients { get; set; }
+        public int allerie3 { get; set; }
+        [BindProperty]
+
+        public int allerie4 { get; set; }
+        [BindProperty]
+
+        public int allerie5 { get; set; }
+
         [BindProperty]
         public string ErrorMessage { get; set; }
+     
 
 
+        [BindProperty]
+        public List<SelectListItem> IngredientOptions { get; set; }
+
+        [BindProperty]
+        public List<SelectListItem> AllerieOptions { get; set; }
 
 
+        [BindProperty]
+        Dictionary<int, Ingredient> Ingredients { get; set; }
 
 
         public NewOrderModel(OrderService os,CustomerService cs)
         {
-            
             _os = os;
             _cs = cs;
             newOrder = new Order();
@@ -67,7 +86,22 @@ namespace GateGroupWebpages.Pages
             newOrder.OrderMade = DateTime.Now;
             newOrder.OrderDoneBy = DateTime.Now.AddDays(7).Date;
             Ingredients = _os.GetAllIngredients();
-            
+           Dictionary<int,string> Alleries = _os.GetAllAllergies();
+
+            IngredientOptions = new List<SelectListItem>();
+            foreach(KeyValuePair<int,Ingredient> kv in Ingredients)
+            {
+                IngredientOptions.Add(new SelectListItem(kv.Value.Name, kv.Value.ID.ToString()));
+            }
+            AllerieOptions = new List<SelectListItem>();
+            foreach (KeyValuePair<int, string> kv in Alleries)
+            {
+                AllerieOptions.Add(new SelectListItem(kv.Value, kv.Key.ToString()));
+            }
+
+
+
+
         }
 
         public IActionResult OnGet()
@@ -87,24 +121,71 @@ namespace GateGroupWebpages.Pages
 
         public IActionResult OnPost()
         {
-            
-            recipePart1.Ingredients.Add(new Ingredient(Ingredient1));
-            recipePart2.Ingredients.Add(new Ingredient(Ingredient2));
-            recipePart3.Ingredients.Add(new Ingredient(Ingredient3));
-            recipePart4.Ingredients.Add(new Ingredient(Ingredient4));
-            recipePart5.Ingredients.Add(new Ingredient(Ingredient5));
-           
-            newOrder.Recipe.Add(1,recipePart1);
-            newOrder.Recipe.Add(2, recipePart2);
-            newOrder.Recipe.Add(3, recipePart3);
-            newOrder.Recipe.Add(4, recipePart4);
-            newOrder.Recipe.Add(5, recipePart5);
-            try
+            List<int> slectedAllerieId = new List<int>();
+            if(Ingredient1 != 0)
             {
-                _os.AddOrder(newOrder);
+                recipePart1.Ingredients.Add(Ingredients[Ingredient1]);
+                newOrder.Recipe.Add(1, recipePart1);
+                slectedAllerieId.Add(allerie1);
+            }
+            if (Ingredient2 != 0)
+            {
+                recipePart2.Ingredients.Add(Ingredients[Ingredient2]);
+                newOrder.Recipe.Add(2, recipePart2);
+                slectedAllerieId.Add(allerie2);
 
             }
-            catch(Exception ex)
+            if (Ingredient3 != 0)
+            {
+                recipePart3.Ingredients.Add(Ingredients[Ingredient3]);
+                newOrder.Recipe.Add(3, recipePart3);
+                slectedAllerieId.Add(allerie3);
+
+            }
+            if (Ingredient4 != 0)
+            {
+                recipePart4.Ingredients.Add(Ingredients[Ingredient4]);
+                newOrder.Recipe.Add(4, recipePart4);
+                slectedAllerieId.Add(allerie4);
+            }
+            if (Ingredient5 != 0)
+            {
+                recipePart5.Ingredients.Add(Ingredients[Ingredient5]);
+                newOrder.Recipe.Add(5, recipePart5);
+                slectedAllerieId.Add(allerie5);
+
+            }
+
+
+            try
+            {
+                foreach(KeyValuePair<int,RecipePart> kv in newOrder.Recipe)
+                {
+                    foreach(Ingredient i in kv.Value.Ingredients)
+                    {
+                        foreach(KeyValuePair<int,string> a in i.Allergies)
+                        {
+                            Debug.WriteLine($"the key is {a.Key}");
+                            foreach (int allerieID in slectedAllerieId)
+                            {
+                                if (a.Key == allerieID)
+                                {
+                                    Debug.WriteLine("order triggers your allergie");
+                                    ErrorMessage = $"{i.Name} has one of your {a.Value} allerie";
+                                    return Page();
+                                }
+                            }
+                        }
+                        
+                       
+                    }
+
+                }
+                _os.AddOrder(newOrder);
+
+
+            }
+            catch (Exception ex)
             {
                 ErrorMessage = $"{ex.Message}";
                 return Page();

@@ -42,6 +42,7 @@ namespace gategourmetLibrary.Service
                         {
                             invalidRecipeParts.Add(rp.Key);
                         }
+                        
                     }
                     foreach(int i in invalidRecipeParts)
                     {
@@ -114,12 +115,16 @@ namespace gategourmetLibrary.Service
             return _orderRepo.FilterByDate(date);
         }
 
-        public List<Ingredient> GetAllIngredients()
+        public Dictionary<int, Ingredient> GetAllIngredients()
         {
             return _orderRepo.GetAllIngredients();
         }
+        public Dictionary<int, string> GetAllAllergies()
+        {
+            return _orderRepo.GetAllAllergies();
+        }
 
-       
+
 
     }
 }

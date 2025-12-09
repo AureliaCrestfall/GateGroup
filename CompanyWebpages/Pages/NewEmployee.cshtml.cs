@@ -21,8 +21,21 @@ namespace CompanyWebpages.Pages
             newEmployee = new Employee();
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            // read user id from session (employee id here )
+            string userIdString = HttpContext.Session.GetString("userid");
+            string isLoggedIn = HttpContext.Session.GetString("IsLoggedIn");
+
+            // if user is not logged in or id is missing redirect to login
+            if (string.IsNullOrEmpty(userIdString) || isLoggedIn != "true")
+            {
+                return RedirectToPage("/EmployeeLogin");
+            }
+            else
+            {
+                return Page();
+            }
         }
 
         public IActionResult OnPost()

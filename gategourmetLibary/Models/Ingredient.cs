@@ -20,13 +20,13 @@ namespace gategourmetLibrary.Models
         public int WarehouseId { get; set; }
 
         //List of allergy tags connected to the ingredients (f.ks.lactose )
-        public List<string> Allergies { get; set; }
+        public Dictionary<int,string> Allergies { get; set; }
 
 
         public Ingredient() 
         {
            
-            Allergies = new List<string>();
+            Allergies = new Dictionary<int, string>();
         }
         public Ingredient(int id, string name):this(id)
         {
