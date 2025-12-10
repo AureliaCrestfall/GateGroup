@@ -1,55 +1,104 @@
-﻿@page
+@page
 @model CompanyWebpages.Pages.AdminOrderListModel
-
-<h2 class="mb-3">Admin – Orders</h2>
-
-@if (!string.IsNullOrEmpty(Model.StatusMessage))
-{
-    <div class="alert alert-info">
-        @Model.StatusMessage
-    </div>
+@{
+    ViewData["Title"] = "Order Oversigt";
 }
 
-<table class="table table-dark table-hover">
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            <th>Made</th>
-            <th>Ready</th>
-            <th>Pay status</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (gategourmetLibrary.Models.Order order in Model.Orders)
-        {
-            <tr>
-                <td>@order.ID</td>
-                <td>@order.OrderMade</td>
-                <td>@order.OrderDoneBy</td>
-                <td>
-                    @(order.paystatus ? "Paid" : "Not paid")
-                </td>
-                <td>@order.Status</td>
+<div class="container mt-4 text-light">
+    <h2 class="mb-3">Ordre Oversigt</h2>
 
-                <td>
-                    @* cancel knap vises kun hvis ordren ikke er annulleret *@
-                    @if (order.Status != gategourmetLibrary.Models.OrderStatus.Cancelled)
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success text-dark">
+            <strong>Bekræftet:</strong> @Model.StatusMessage
+        </div>
+    }
+
+    @if (Model.Orders == null || !Model.Orders.Any())
+    {
+        <div class="alert alert-info text-dark">
+            <p>Ingen ordrer fundet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover align-middle">
+                <thead class="table-light text-dark">
+                    <tr>
+                        <th>Ordre ID</th>
+                        <th>Oprettet</th>
+                        <th>Færdig senest</th>
+                        <th>Status</th>
+                        <th>Betalt</th>
+                        <th>Handling</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (gategourmetLibrary.Models.Order order in Model.Orders)
                     {
-                        <form method="post" asp-page-handler="Cancel">
-                            <input type="hidden" name="orderId" value="@order.ID" />
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                Cancel
-                            </button>
-                        </form>
+                        <tr>
+                            <td><strong>@order.ID</strong></td>
+                            <td>@order.OrderMade.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@order.OrderDoneBy.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>
+                                <span class="badge bg-secondary">@order.Status</span>
+                            </td>
+                            <td>
+                                @if (order.paystatus)
+                                {
+                                    <span class="badge bg-success">Betalt</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Ikke betalt</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="/Department/@order.ID"
+                                       class="btn btn-primary btn-sm d-flex align-items-center gap-1"
+                                       onclick="showLoading(this)">
+                                        <span class="spinner-border spinner-border-sm d-none"
+                                              role="status"></span>
+                                        <i class="bi bi-search"></i> Spor ordre
+                                    </a>
+                                    @if (order.Status != gategourmetLibrary.Models.OrderStatus.Cancelled)
+                                    {
+                                        <form method="post" asp-page-handler="Cancel" class="d-inline" id="cancelForm_@order.ID">
+                                            <input type="hidden" name="orderId" value="@order.ID" />
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmCancel(@order.ID)">
+                                                Annuller
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Allerede annulleret</span>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <span class="text-muted">Already cancelled</span>
-                    }
-                </td>
-            </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<script>
+    function showLoading(button) {
+        var spinner = button.querySelector('.spinner-border');
+        if (spinner) {
+            spinner.classList.remove('d-none');
         }
-    </tbody>
-</table>
+        button.disabled = true;
+        button.classList.add('disabled');
+    }
+
+    function confirmCancel(orderId) {
+        if (confirm('Er du sikker på, at du vil annullere ordre #' + orderId + '?')) {
+            document.getElementById('cancelForm_' + orderId).submit();
+        }
+    }
+</script>

@@ -11,7 +11,7 @@ namespace CompanyWebpages.Pages
     // admin page that shows all orders and allows cancelling them
     public class AdminOrderListModel : PageModel
     {
-        // list with all not cancelled orders to show in the table
+        // list with all orders to show in the table
         public List<Order> Orders { get; set; }
 
         // status message shown after cancel
@@ -28,25 +28,16 @@ namespace CompanyWebpages.Pages
             _orderService = new OrderService(orderRepo);
         }
 
-        // hjælper method that loads only non cancelled orders
-        private void LoadActiveOrders()
+        // hjï¿½lper method that loads only non cancelled orders
+        private void LoadAllOrders()
         {
-            List<Order> allOrders = _orderService.GetAllOrders();
-            Orders = new List<Order>();
-
-            foreach (Order order in allOrders)
-            {
-                if (order.Status != OrderStatus.Cancelled)
-                {
-                    Orders.Add(order);
-                }
-            }
+            Orders = _orderService.GetAllOrders();
         }
 
         // runs when the page is loaded with a get metode 
         public void OnGet()
         {
-            LoadActiveOrders();
+            LoadAllOrders();
         }
 
         // runs when the cancel form is posted
@@ -56,7 +47,7 @@ namespace CompanyWebpages.Pages
             _orderService.CancelOrder(orderId);
 
             // set status message so admin can see what happened
-            StatusMessage = "Cancelled order with ID: " + orderId;
+            StatusMessage = "Ordre #" + orderId + " er blevet annulleret.";
 
             // after a POST we redirect to GET so the page reloads clean
             return RedirectToPage();
