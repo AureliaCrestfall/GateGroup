@@ -37,24 +37,34 @@ namespace GateGroupWebpages.Pages.Shared
 
             try
             {
-                if (Password == cust.Password && UserID != null)
+               if(cust != null)
                 {
-                    HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
-                    HttpContext.Session.SetString("username", $"{cust.Name}"); // Gem i session
-                    HttpContext.Session.SetString("userid", $"{cust.ID}");
+                    if (Password == cust.Password && UserID == cust.ID.ToString())
+                    {
+                        HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
+                        HttpContext.Session.SetString("username", $"{cust.Name}"); // Gem i session
+                        HttpContext.Session.SetString("userid", $"{cust.ID}");
 
-                    return RedirectToPage("/Dashboard");
-                    //return RedirectToPage("/NewOrder");
+                        return RedirectToPage("/Dashboard");
+                        //return RedirectToPage("/NewOrder");
 
-                }
+                    }
+                    else
+                    {
+                        ErrorMessage = "Incorrect password, please try again.";
+                        return Page();
+                    }
+               }
                 else
                 {
+
+                    ErrorMessage = "Incorrect Userid, please try again.";
                     return Page();
                 }
+                
             }
             catch(NullReferenceException ex)
             {
-                throw new Exception ($"{ex.Message}");
                 ErrorMessage = "Incorrect password, please try again.";
                 return Page();
             }
