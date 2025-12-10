@@ -4,21 +4,25 @@
     ViewData["Title"] = "Ordre Oversigt";
 }
 
-<div class="container">
-    <h2 class="mb-4">Ordre Oversigt</h2>
-    <p class="text-muted mb-4">Vælg en ordre for at se lagerplaceringer og identificere mangler</p>
+<div class="container mt-4 text-light">
+
+    <h2 class="mb-3">Ordre Oversigt</h2>
+
+    <p class="text-light mb-4">
+        Vælg en ordre for at se lagerplaceringer og identificere mangler
+    </p>
 
     @if (Model.Orders == null || !Model.Orders.Any())
     {
-        <div class="alert alert-info">
+        <div class="alert alert-info text-dark">
             <p>Ingen ordrer fundet.</p>
         </div>
     }
     else
     {
         <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover">
-                <thead class="table-dark">
+            <table class="table table-dark table-striped table-hover align-middle">
+                <thead class="table-light text-dark">
                     <tr>
                         <th>Ordre ID</th>
                         <th>Oprettet</th>
@@ -28,16 +32,19 @@
                         <th>Handling</th>
                     </tr>
                 </thead>
+
                 <tbody>
-                    @foreach (var order in Model.Orders)
+                    @foreach (gategourmetLibrary.Models.Order order in Model.Orders)
                     {
                         <tr>
                             <td><strong>@order.ID</strong></td>
                             <td>@order.OrderMade.ToString("yyyy-MM-dd HH:mm")</td>
                             <td>@order.OrderDoneBy.ToString("yyyy-MM-dd HH:mm")</td>
+
                             <td>
                                 <span class="badge bg-secondary">@order.Status</span>
                             </td>
+
                             <td>
                                 @if (order.paystatus)
                                 {
@@ -45,18 +52,23 @@
                                 }
                                 else
                                 {
-                                    <span class="badge bg-warning">Ikke betalt</span>
+                                    <span class="badge bg-warning text-dark">Ikke betalt</span>
                                 }
                             </td>
+
                             <td>
-                                <a href="/Department/@order.ID" class="btn btn-primary btn-sm" onclick="showLoading(this)">
-                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                <a href="/Department/@order.ID"
+                                   class="btn btn-primary btn-sm d-flex align-items-center gap-1"
+                                   onclick="showLoading(this)">
+                                    <span class="spinner-border spinner-border-sm d-none"
+                                          role="status"></span>
                                     <i class="bi bi-search"></i> Spor ordre
                                 </a>
                             </td>
                         </tr>
                     }
                 </tbody>
+
             </table>
         </div>
     }
@@ -64,14 +76,11 @@
 
 <script>
     function showLoading(button) {
-        // Vis loading spinner
         var spinner = button.querySelector('.spinner-border');
         if (spinner) {
             spinner.classList.remove('d-none');
         }
-        // Disable knappen
         button.disabled = true;
         button.classList.add('disabled');
     }
 </script>
-

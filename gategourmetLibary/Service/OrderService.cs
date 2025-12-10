@@ -124,7 +124,25 @@ namespace gategourmetLibrary.Service
             return _orderRepo.GetAllAllergies();
         }
 
+        // returns all warehouses fks example freezer, fridge, dry storage + used to show choices in dropdown for employees
+        public List<Warehouse> GetAllWarehouses()
+        {
+            return _orderRepo.GetAllWarehouses();
+        }
 
+        // returns the current warehouse location for a specific recipe part
+        public Warehouse GetRecipePartLocation(int recipePartId)
+        {
+            return _orderRepo.GetRecipePartLocation(recipePartId);
+        }
+
+        // updates the warehouse location for a specific recipe part
+        
+        public void UpdateRecipePartLocation(int recipePartId, int warehouseId)
+        {
+            _orderRepo.UpdateRecipePartLocation(recipePartId, warehouseId);
+        }
+        
 
     }
 }

@@ -1,35 +1,35 @@
 ﻿using gategourmetLibrary.Models;
-using gategourmetLibrary.Service;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using gategourmetLibrary.Secret;
 using System.Diagnostics;
-using Microsoft.Data.SqlClient;
-
 
 namespace gategourmetLibrary.Repo
 {
+    // Repository class that handles all database operations related to orders.
+    // This class is responsible for reading and writing order data and related data
+    // (customers, recipe parts, ingredients, warehouses) to the sql database.
     public class OrderRepo : IOrderRepo
-
     {
+        // connection string to the database
         private readonly string _connectionString;
-        public OrderRepo(string connetcion)
+
+        // constructor gets connection string from outside
+        public OrderRepo(string connection)
         {
-            _connectionString = connetcion;
+            _connectionString = connection;
         }
+
+        // Gets all orders from the database as a dictionary.
         public Dictionary<int, Order> GetAll()
         {
-
             Dictionary<int, Order> ordersFromDatabase = new Dictionary<int, Order>();
 
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                "SELECT O_ID,O_Made,O_Ready,O_PaySatus FROM OrderTable",
+                "SELECT O_ID, O_Made, O_Ready, O_PaySatus, O_Status FROM OrderTable",
                 sqlConnection);
-            /*join orderTable on OrderRecipe.O_ID = ordertable.O_ID  join recipePart on OrderRecipe.R_ID = RecipePart.R_ID",*/
+
             try
             {
                 sqlConnection.Open();
@@ -41,16 +41,22 @@ namespace gategourmetLibrary.Repo
                     DateTime made = Convert.ToDateTime(sqlReader["O_Made"]);
                     DateTime ready = Convert.ToDateTime(sqlReader["O_Ready"]);
                     bool paystatus = Convert.ToBoolean(sqlReader["O_PaySatus"]);
-                    //string status =  sqlReader["O_status"].ToString();
-                    //int rID = Convert.ToInt32(sqlReader["R_ID"]);
-                    //string howToPrep = sqlReader["R_HowToPrep"].ToString();
-                    //string name = sqlReader["R_Name"].ToString();
-                    //string rStatus = sqlReader["R_Status"].ToString();
 
+                    // read status from database stored as a string
+                    string statusString = sqlReader["O_Status"].ToString();
 
-                    Order order = new Order(made,ready,id,paystatus);
-                    //get it manually because we dont have it in our DB
-                    order.Status = OrderStatus.Created;
+                    OrderStatus status;
+
+                    // try to map the string to the enum
+                    if (!Enum.TryParse<OrderStatus>(statusString, out status))
+                    {
+                        // fallback if value in DB is invalid or null
+                        status = OrderStatus.Created;
+                    }
+
+                    // create order object
+                    Order order = new Order(made, ready, id, paystatus);
+                    order.Status = status;
 
                     ordersFromDatabase.Add(id, order);
                 }
@@ -59,7 +65,7 @@ namespace gategourmetLibrary.Repo
             }
             catch (SqlException sqlError)
             {
-                throw new Exception("Database error in OrderRepository.AddOrder(): " + sqlError.Message);
+                throw new Exception("Database error in OrderRepository.GetAll(): " + sqlError.Message);
             }
             finally
             {
@@ -68,30 +74,43 @@ namespace gategourmetLibrary.Repo
 
             return ordersFromDatabase;
         }
-        //add a new order to repo
 
+        // Returns all orders as a list 
+        public List<Order> GetAllOrders()
+        {
+            Dictionary<int, Order> ordersFromDatabase = GetAll();
+
+            if (ordersFromDatabase == null)
+            {
+                return new List<Order>();
+            }
+
+            return new List<Order>(ordersFromDatabase.Values);
+        }
+
+        // Adds a new order to the database and related tables
         public void AddOrder(Order newOrder)
         {
-
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                "INSERT INTO ordertable ( O_Made, O_ready, o_paysatus, O_status) " +
-                "VALUES ( @O_Made, @O_ready, @O_paysatus, @O_status)" +
-                "select scope_identity()",
+                "INSERT INTO OrderTable (O_Made, O_Ready, O_PaySatus, O_Status) " +
+                "VALUES (@O_Made, @O_Ready, @O_PaySatus, @O_Status); " +
+                "SELECT SCOPE_IDENTITY();",
                 sqlConnection);
 
-           
-           
-            sqlCommand.Parameters.AddWithValue("@O_made", newOrder.OrderMade/*.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")*/);
-            sqlCommand.Parameters.AddWithValue("@O_status", newOrder.Status);
-            sqlCommand.Parameters.AddWithValue("@O_ready", newOrder.OrderDoneBy/*.ToString("yyyy-MM-ddTHH:mm:ss.fffffff")*/);
-            sqlCommand.Parameters.AddWithValue("@O_paysatus", newOrder.paystatus);
-            int neworderid = 0;
+            sqlCommand.Parameters.AddWithValue("@O_Made", newOrder.OrderMade);
+            sqlCommand.Parameters.AddWithValue("@O_Ready", newOrder.OrderDoneBy);
+            sqlCommand.Parameters.AddWithValue("@O_PaySatus", newOrder.paystatus);
+
+            // store status as string in the database  created, cancelled
+            sqlCommand.Parameters.AddWithValue("@O_Status", newOrder.Status.ToString());
+
+            int newOrderId = 0;
 
             try
             {
                 sqlConnection.Open();
-                neworderid = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                newOrderId = Convert.ToInt32(sqlCommand.ExecuteScalar());
             }
             catch (SqlException sqlError)
             {
@@ -101,21 +120,21 @@ namespace gategourmetLibrary.Repo
             {
                 sqlConnection.Close();
             }
+
+            // link order to customer if it exists
             if (newOrder.CustomerOrder != null)
             {
-                AddOrderTableCustomert(neworderid, newOrder.CustomerOrder.ID);
+                AddOrderTableCustomert(newOrderId, newOrder.CustomerOrder.ID);
             }
-            foreach (KeyValuePair<int,RecipePart> part in newOrder.Recipe)
-            {
-                AddRecipePart(part.Value,neworderid,part.Value.Ingredients);
-              
-              
-            }
-            
-            
 
+            // add recipe parts and ingredients
+            foreach (KeyValuePair<int, RecipePart> part in newOrder.Recipe)
+            {
+                AddRecipePart(part.Value, newOrderId, part.Value.Ingredients);
+            }
         }
-        // method for cancelling an order 
+
+        // Method for cancelling an order and updates status to cancelled in the database
         public void CancelOrder(int orderId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
@@ -124,7 +143,8 @@ namespace gategourmetLibrary.Repo
                     "UPDATE dbo.OrderTable SET O_Status = @Status WHERE O_ID = @Id",
                     connection);
 
-                command.Parameters.AddWithValue("@Status", "Cancelled");
+                // store the enum as string in the database
+                command.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
                 command.Parameters.AddWithValue("@Id", orderId);
 
                 connection.Open();
@@ -132,20 +152,19 @@ namespace gategourmetLibrary.Repo
             }
         }
 
-
-
-        public void AddOrderTableCustomert(int orderID,int customerID)
+        // Links order to customer in junction table OrderTableCustomer.
+        public void AddOrderTableCustomert(int orderID, int customerID)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-            "INSERT INTO OrderTableCustomer (O_ID, C_ID) " +
-            "VALUES (@O_ID, @C_ID)",
-            sqlConnection);
+                "INSERT INTO OrderTableCustomer (O_ID, C_ID) " +
+                "VALUES (@O_ID, @C_ID)",
+                sqlConnection);
 
-            Debug.WriteLine($"order id is {orderID} customer id is {customerID}");
+            Debug.WriteLine("order id is " + orderID + " customer id is " + customerID);
+
             sqlCommand.Parameters.AddWithValue("@O_ID", orderID);
             sqlCommand.Parameters.AddWithValue("@C_ID", customerID);
-
 
             try
             {
@@ -161,17 +180,18 @@ namespace gategourmetLibrary.Repo
                 sqlConnection.Close();
             }
         }
-        public void AddRecipePartIngredient(int recipeID,int ingredientID)
+
+        // adds one relation between a recipe and an ingredient
+        public void AddRecipePartIngredient(int recipeID, int ingredientID)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                        "INSERT INTO IngrefientrecipePart (R_ID, I_ID) " +
-                        "VALUES (@R_ID, @I_ID)",
-                        sqlConnection);
+                "INSERT INTO IngrefientrecipePart (R_ID, I_ID) " +
+                "VALUES (@R_ID, @I_ID)",
+                sqlConnection);
 
             sqlCommand.Parameters.AddWithValue("@R_ID", recipeID);
             sqlCommand.Parameters.AddWithValue("@I_ID", ingredientID);
-
 
             try
             {
@@ -188,16 +208,18 @@ namespace gategourmetLibrary.Repo
             }
         }
 
-        public void AddOrderRecipePart(int orderID,int recipePartID)
+        // adds one relation between an order and a recipe part
+        public void AddOrderRecipePart(int orderID, int recipePartID)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-             "INSERT INTO orderTableRecipePart (R_ID, O_ID) " +
-             "VALUES (@R_ID, @O_ID)",
-             sqlConnection);
+                "INSERT INTO OrderTableRecipePart (R_ID, O_ID) " +
+                "VALUES (@R_ID, @O_ID)",
+                sqlConnection);
 
             sqlCommand.Parameters.AddWithValue("@O_ID", orderID);
             sqlCommand.Parameters.AddWithValue("@R_ID", recipePartID);
+
             try
             {
                 sqlConnection.Open();
@@ -212,25 +234,29 @@ namespace gategourmetLibrary.Repo
                 sqlConnection.Close();
             }
         }
-        public void AddRecipePart(RecipePart rp,int i,List<Ingredient> ingredients)
+
+        // adds a recipe part and its ingredients, then links it to an order
+        public void AddRecipePart(RecipePart recipePart, int orderId, List<Ingredient> ingredients)
         {
-            rp.status = "not begun";
+            recipePart.status = "not begun";
+
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                   "INSERT INTO recipePart ( R_howToPrep, R_name, R_status) " +
-                   "VALUES ( @R_howToPrep, @R_name, @R_status)" +
-                   "select scope_identity()",
-                   sqlConnection);
+                "INSERT INTO RecipePart (R_HowToPrep, R_Name, R_Status) " +
+                "VALUES (@R_HowToPrep, @R_Name, @R_Status); " +
+                "SELECT SCOPE_IDENTITY();",
+                sqlConnection);
 
-            sqlCommand.Parameters.AddWithValue("@R_howToprep", rp.Assemble);
-            sqlCommand.Parameters.AddWithValue("@R_Name", rp.partName);
-            sqlCommand.Parameters.AddWithValue("@R_status", rp.status);
-            int newrecipepartid = 0;
+            sqlCommand.Parameters.AddWithValue("@R_HowToPrep", recipePart.Assemble);
+            sqlCommand.Parameters.AddWithValue("@R_Name", recipePart.partName);
+            sqlCommand.Parameters.AddWithValue("@R_Status", recipePart.status);
+
+            int newRecipePartId = 0;
 
             try
             {
                 sqlConnection.Open();
-                newrecipepartid = Convert.ToInt32(sqlCommand.ExecuteScalar());
+                newRecipePartId = Convert.ToInt32(sqlCommand.ExecuteScalar());
             }
             catch (SqlException sqlError)
             {
@@ -240,27 +266,31 @@ namespace gategourmetLibrary.Repo
             {
                 sqlConnection.Close();
             }
-            AddOrderRecipePart(i,newrecipepartid);
-            foreach (Ingredient ingr in ingredients)
+
+            AddOrderRecipePart(orderId, newRecipePartId);
+
+            foreach (Ingredient ingredient in ingredients)
             {
-
-                AddRecipePartIngredient(newrecipepartid, ingr.ID);
-
+                AddRecipePartIngredient(newRecipePartId, ingredient.ID);
             }
         }
-    
+
         public void Delete(int orderID)
         {
+            // not implemented 
         }
 
-        //returns a specific order by its ID
+        // Returns a specific order by its ID.
         public Order Get(int orderID)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
-            Order order = new Order();
+            Order order = null;
+
             SqlCommand sqlCommand = new SqlCommand(
-                "SELECT O_ID,O_Made,O_Ready,O_PaySatus FROM Ordertable where O_ID = @O_ID ",
+                "SELECT O_ID, O_Made, O_Ready, O_PaySatus, O_Status " +
+                "FROM OrderTable WHERE O_ID = @O_ID",
                 sqlConnection);
+
             sqlCommand.Parameters.AddWithValue("@O_ID", orderID);
 
             try
@@ -268,27 +298,27 @@ namespace gategourmetLibrary.Repo
                 sqlConnection.Open();
                 SqlDataReader sqlReader = sqlCommand.ExecuteReader();
 
-                while (sqlReader.Read())
+                if (sqlReader.Read())
                 {
                     int id = Convert.ToInt32(sqlReader["O_ID"]);
                     DateTime made = Convert.ToDateTime(sqlReader["O_Made"]);
                     DateTime ready = Convert.ToDateTime(sqlReader["O_Ready"]);
                     bool paystatus = Convert.ToBoolean(sqlReader["O_PaySatus"]);
-                    //string status = sqlReader["O_status"].ToString();
+                    string statusString = sqlReader["O_Status"].ToString();
 
-
+                    OrderStatus status;
+                    if (!Enum.TryParse<OrderStatus>(statusString, out status))
+                    {
+                        status = OrderStatus.Created;
+                    }
 
                     order = new Order(made, ready, id, paystatus);
-                    //get it manually because we dont have it in our DB
-                    order.Status = OrderStatus.Created;
-
+                    order.Status = status;
                 }
-                
-
             }
             catch (SqlException sqlError)
             {
-                throw new Exception("Database error in OrderRepository.AddOrder(): " + sqlError.Message);
+                throw new Exception("Database error in OrderRepository.Get(): " + sqlError.Message);
             }
             finally
             {
@@ -296,179 +326,279 @@ namespace gategourmetLibrary.Repo
             }
 
             return order;
-            }
-        
+        }
 
         public void Update(int orderID, Order updateOrder)
         {
-            
-        }   
-       
+            // not used in this project
+        }
 
         public Order filterAfterWhoMade(Employee filterAfterWhoMade)
         {
-            return
-                 null;
+            return null;
         }
 
         public Order filterAfterOrderToday(DateTime filterAfterOrderToday)
         {
-            return
-                 null;
+            return null;
         }
 
-        // returns the list of all orders
-        public List<Order> GetAllOrders()
+        // Returns all ingredients from the database
+        public Dictionary<int, Ingredient> GetAllIngredients()
         {
-            // get all orders from the database as a dictionary
-            Dictionary<int, Order> ordersFromDatabase = GetAll();
+            Dictionary<int, Ingredient> ingredients = new Dictionary<int, Ingredient>();
 
-            // if the dictionary is null, return an empty list to avoid null reference errors
-            if (ordersFromDatabase == null)
-            {
-                return new List<Order>();
-            }
-
-            // convert the dictionary values to a list and return it
-            return new List<Order>(ordersFromDatabase.Values);
-        }
-
-        public Dictionary<int,Ingredient> GetAllIngredients()
-        {
-            //temporary list to hold Ingredients
-            Dictionary<int, Ingredient> Ingredients = new Dictionary<int, Ingredient>();
-            //using (using) to ensure the connection is closed after use
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                //sql command to select all Ingredients
-                SqlCommand command = new SqlCommand("SELECT ingredient.I_ID as ingredientID,ingredient.I_Name as ingredientName " +
-                    ",ingredient.I_Quntity as quntityOfIngredient,ingredient.I_ExpireDate as ingredientExpireDate " +
-                    ",A.A_ID as allergyID,A.A_Name as allergyName " +
+                SqlCommand command = new SqlCommand(
+                    "SELECT ingredient.I_ID as ingredientID, ingredient.I_Name as ingredientName, " +
+                    "ingredient.I_Quntity as quntityOfIngredient, ingredient.I_ExpireDate as ingredientExpireDate, " +
+                    "A.A_ID as allergyID, A.A_Name as allergyName " +
                     "FROM ingredient " +
-                    "join IngredientAllergie as IA on IA.I_ID = ingredient.I_ID " +
-                    "join Allergie as A on A.A_ID = IA.A_ID ", connection);
-                //open database connection
+                    "JOIN IngredientAllergie AS IA ON IA.I_ID = ingredient.I_ID " +
+                    "JOIN Allergie AS A ON A.A_ID = IA.A_ID",
+                    connection);
+
                 connection.Open();
-                //execute command and read data
                 SqlDataReader reader = command.ExecuteReader();
-                //loop through each returned row
+
                 while (reader.Read())
                 {
-                    if (!Ingredients.ContainsKey((int)reader["ingredientID"]))
+                    int ingredientId = (int)reader["ingredientID"];
+
+                    if (!ingredients.ContainsKey(ingredientId))
                     {
-                        Ingredients.Add((int)reader["ingredientID"], new Ingredient
+                        ingredients.Add(ingredientId, new Ingredient
                         {
-                            ID = (int)reader["ingredientID"],
+                            ID = ingredientId,
                             Name = reader["ingredientName"].ToString(),
                             ExpireDate = Convert.ToDateTime(reader["ingredientExpireDate"]),
                             Quantity = (int)reader["quntityOfIngredient"]
-
                         });
                     }
-                    if (Ingredients.ContainsKey((int)reader["ingredientID"]))
-                    {
-                        Ingredients[(int)reader["ingredientID"]].Allergies.Add((int)reader["allergyID"], reader["allergyName"].ToString());
-                    }
 
+                    ingredients[ingredientId].Allergies.Add(
+                        (int)reader["allergyID"],
+                        reader["allergyName"].ToString());
                 }
             }
-            //return the list of Ingredients
-            return Ingredients;
+
+            return ingredients;
         }
-        
-        //delete an order by its ID
+
+        //delete an order by its ID 
         public void DeleteOrder(int orderID)
         {
-
+            // not implemented in this project
         }
-        //update an existing order by its ID
-        public void UpdateOrder(int orderID, Order UpdatedOrder)
+
+        //update an existing order by its ID 
+        public void UpdateOrder(int orderID, Order updatedOrder)
         {
-
+            // not implemented in this project
         }
-       
+
         //returns a list of recipe parts for a specific order by orderID
         public List<RecipePart> GetRecipeParts(int orderID)
         {
             return null;
         }
+
         //filters orders made by a specific employee
         public List<Order> FilterByEmployee(Employee employee)
         {
-             return null;
+            return null;
         }
+
         //filters orders placed today
         public List<Order> FilterByToday(DateTime today)
-        { return null;
+        {
+            return null;
         }
+
         //filters orders for a specific customer/company
         public List<Order> FilterByCompany(Customer customer)
-        {  
-          return null;
+        {
+            return null;
         }
+
         //filters orders by their status
         public List<Order> FilterByStatus(OrderStatus status)
         {
-          return null;
+            return null;
         }
+
         //filters orders by a specific date
         public List<Order> FilterByDate(DateTime date)
         {
             return null;
         }
 
-        
         public void filterAfterCompany(Customer filterAfterCompany)
         {
-           
         }
 
         public void filterAfterStatus(Enum filterAfterStatus)
         {
-           
         }
 
         public void filterAfterDate(DateTime filterAfterDate)
         {
         }
 
+        // Returns all allergies from the database.
         public Dictionary<int, string> GetAllAllergies()
         {
-            Dictionary<int, string> AllergiesFromDatabase = new Dictionary<int, string>();
+            Dictionary<int, string> allergiesFromDatabase = new Dictionary<int, string>();
 
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
-                "SELECT A_ID,A_Name FROM Allergie",
+                "SELECT A_ID, A_Name FROM Allergie",
                 sqlConnection);
-           
+
             try
             {
                 sqlConnection.Open();
                 SqlDataReader sqlReader = sqlCommand.ExecuteReader();
-
 
                 while (sqlReader.Read())
                 {
                     int id = Convert.ToInt32(sqlReader["A_ID"]);
                     string name = sqlReader["A_Name"].ToString();
 
-                    AllergiesFromDatabase.Add(id, name);
+                    allergiesFromDatabase.Add(id, name);
                 }
 
                 sqlReader.Close();
             }
             catch (SqlException sqlError)
             {
-                throw new Exception("Database error in OrderRepository.AddOrder(): " + sqlError.Message);
+                throw new Exception("Database error in OrderRepository.GetAllAllergies(): " + sqlError.Message);
             }
             finally
             {
                 sqlConnection.Close();
             }
 
-            return AllergiesFromDatabase;
+            return allergiesFromDatabase;
         }
 
+        // returns all warehouses (for example freezer, fridge, dry storage)
+        public List<Warehouse> GetAllWarehouses()
+        {
+            // list that will hold all warehouses from the database
+            List<Warehouse> warehouses = new List<Warehouse>();
 
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // select all warehouses from the warehouse table
+                SqlCommand command = new SqlCommand(
+                    "SELECT W_ID, W_Name, W_Type, W_Location FROM dbo.warehouse",
+                    connection);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    // create a new warehouse object for each row
+                    Warehouse warehouse = new Warehouse();
+                    warehouse.ID = Convert.ToInt32(reader["W_ID"]);
+                    warehouse.Name = reader["W_Name"].ToString();
+                    warehouse.Location = reader["W_Location"].ToString();
+
+                    // map W_Type (string in database) to WarehouseType enum in C#
+                    WarehouseType type;
+                    if (Enum.TryParse<WarehouseType>(reader["W_Type"].ToString(), true, out type))
+                    {
+                        warehouse.Type = type;
+                    }
+
+                    // add the warehouse to the list
+                    warehouses.Add(warehouse);
+                }
+            }
+
+            // return the list of all warehouses
+            return warehouses;
+        }
+
+        // returns the warehouse where a specific recipe part is currently stored
+        public Warehouse GetRecipePartLocation(int recipePartId)
+        {
+            // default value is null if no location is found
+            Warehouse warehouse = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                // join between the junction table and warehouse
+                // to find the warehouse for a given recipe part (R_ID)
+                SqlCommand command = new SqlCommand(
+                    "SELECT w.W_ID, w.W_Name, w.W_Type, w.W_Location " +
+                    "FROM dbo.werehouseRecipePart wrp " +
+                    "JOIN dbo.warehouse w ON wrp.W_ID = w.W_ID " +
+                    "WHERE wrp.R_ID = @R_ID",
+                    connection);
+
+                // recipe part id parameter
+                command.Parameters.AddWithValue("@R_ID", recipePartId);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                // if we find a row, we create a warehouse object
+                if (reader.Read())
+                {
+                    warehouse = new Warehouse();
+                    warehouse.ID = Convert.ToInt32(reader["W_ID"]);
+                    warehouse.Name = reader["W_Name"].ToString();
+                    warehouse.Location = reader["W_Location"].ToString();
+
+                    WarehouseType type;
+                    if (Enum.TryParse<WarehouseType>(reader["W_Type"].ToString(), true, out type))
+                    {
+                        warehouse.Type = type;
+                    }
+                }
+            }
+
+            // this is either a warehouse object or null if no location exists yet
+            return warehouse;
+        }
+
+        // updates the warehouse location for a given recipe part
+        public void UpdateRecipePartLocation(int recipePartId, int warehouseId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                // first we try to update an existing row in the junction table
+                SqlCommand update = new SqlCommand(
+                    "UPDATE dbo.werehouseRecipePart " +
+                    "SET W_ID = @W_ID " +
+                    "WHERE R_ID = @R_ID",
+                    connection);
+
+                update.Parameters.AddWithValue("@W_ID", warehouseId);
+                update.Parameters.AddWithValue("@R_ID", recipePartId);
+
+                int rows = update.ExecuteNonQuery();
+
+                // if no rows were updated, it means there is no entry yet, then we insert a new row into the junction table
+                if (rows == 0)
+                {
+                    SqlCommand insert = new SqlCommand(
+                        "INSERT INTO dbo.werehouseRecipePart (W_ID, R_ID) " +
+                        "VALUES (@W_ID, @R_ID)",
+                        connection);
+
+                    insert.Parameters.AddWithValue("@W_ID", warehouseId);
+                    insert.Parameters.AddWithValue("@R_ID", recipePartId);
+
+                    insert.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }

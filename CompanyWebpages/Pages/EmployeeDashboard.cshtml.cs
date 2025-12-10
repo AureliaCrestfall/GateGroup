@@ -9,15 +9,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace CompanyWebpages.Pages
 {
+    // Page model for the employee dashboard
+    // This page shows all tasks, recipe parts assigned to the logged in employee
     public class EmployeeDashboardModel : PageModel
     {
-        // list of all tasks that would be shown on the page
+        // list of all tasks that will be shown on the page
         public List<EmployeeTask> Tasks { get; set; }
 
-        // runs when the page is loaded
+        // runs when the page is loaded with a get request
         public IActionResult OnGet()
         {
-            // read user id from session (employee id here )
+            // read user id from session employee id here
             string userIdString = HttpContext.Session.GetString("userid");
             string isLoggedIn = HttpContext.Session.GetString("IsLoggedIn");
 
@@ -27,7 +29,7 @@ namespace CompanyWebpages.Pages
                 return RedirectToPage("/EmployeeLogin");
             }
 
-            // convert user id from an string to an int
+            // convert user id from a string to an int
             int employeeId = Convert.ToInt32(userIdString);
 
             // create empty list that we will fill with tasks from database
@@ -41,10 +43,9 @@ namespace CompanyWebpages.Pages
             {
                 connection.Open(); // open database connection
 
-                // sql that gets order id, recipe part, name, location and status
+                // sql that gets order id, recipe part id, name, warehouse type and status
                 string sql =
-                    @" SELECT EmployeeRecipePartOrderTable.O_ID, 
-                    EmployeeRecipePartOrderTable.R_ID, rp.R_Name,w.W_Location, rp.R_Status
+                    @"SELECT EmployeeRecipePartOrderTable.O_ID, EmployeeRecipePartOrderTable.R_ID, rp.R_Name, w.W_Type, rp.R_Status
                     FROM EmployeeRecipePartOrderTable 
                     INNER JOIN RecipePart rp 
                     ON EmployeeRecipePartOrderTable.R_ID = rp.R_ID
@@ -78,16 +79,18 @@ namespace CompanyWebpages.Pages
                             // set task name (recipe part name)
                             task.TaskName = reader["R_Name"].ToString();
 
-                            // get index for W_Location 
-                            int locationIndex = reader.GetOrdinal("W_Location");
+                            // get index for W_Type (warehouse type)
+                            int locationIndex = reader.GetOrdinal("W_Type");
 
-                            // checks if there is a location value
+                            // checks if there is a warehouse type value
                             if (!reader.IsDBNull(locationIndex))
                             {
+                                // here we store the warehouse type, example: Freezer, Fridge, Dry
                                 task.Location = reader.GetString(locationIndex);
                             }
                             else
                             {
+                                // if there is no warehouse assigned yet
                                 task.Location = "Not registered";
                             }
 
@@ -130,7 +133,7 @@ namespace CompanyWebpages.Pages
             return Page();
         }
 
-        // POST handler when employee clicks "mark done"
+        // post handler when employee clicks "mark done"
         public IActionResult OnPostMarkDone(int orderId, int recipePartId)
         {
             // read user id from session
@@ -153,7 +156,7 @@ namespace CompanyWebpages.Pages
             {
                 connection.Open();
 
-                // sql that updates recipe part status to Completed
+                // sql that updates recipe part status to completed
                 string sql =
                     @"UPDATE rp
                     SET rp.R_Status = @status
