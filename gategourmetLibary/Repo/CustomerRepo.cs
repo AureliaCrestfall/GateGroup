@@ -64,11 +64,10 @@ namespace gategourmetLibrary.Repo
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 SqlCommand command = new SqlCommand(
-                    "INSERT INTO dbo.Customer (C_ID, C_Name, C_Password) " +
-                    "VALUES (@id, @Name, @Password)", connection);
+                    "INSERT INTO dbo.Customer (C_Name, C_Password) " +
+                    "VALUES (@Name, @Password)", connection);
 
-                // temporary fixed id for testing
-                command.Parameters.AddWithValue("@id", 56);
+                command.Parameters.AddWithValue("@id", Guid.NewGuid().GetHashCode());
                 command.Parameters.AddWithValue("@Name", customer.Name);
                 command.Parameters.AddWithValue("@Password", customer.Password);
 
