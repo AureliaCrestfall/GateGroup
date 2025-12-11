@@ -1,6 +1,7 @@
 ﻿@page
 @model CompanyWebpages.Pages.EmployeeDashboardModel
 @using gategourmetLibrary.Models
+
 @{
     ViewData["Title"] = "Employee Dashboard";
 }
@@ -109,12 +110,30 @@
                             }
                         </td>
 
+                        @* inline dropdown to update storage location for this recipe part *@
                         <td>
-                            <a class="btn btn-sm btn-outline-info"
-                               asp-page="/EmployeeTaskLocation"
-                               asp-route-recipePartId="@task.RecipePartId">
-                                Change storage location
-                            </a>
+                            <form method="post" asp-page-handler="UpdateLocation" class="d-flex">
+                                <!-- which recipe part to update -->
+                                <input type="hidden" name="recipePartId" value="@task.RecipePartId" />
+
+                                <select name="selectedWarehouseId"
+                                        class="form-select form-select-sm me-2">
+                                    <option value="">-- Select warehouse --</option>
+
+                                    @foreach (Warehouse w in Model.Warehouses)
+                                    {
+                                        string selected = task.Location == w.Type.ToString() ? "selected" : "";
+
+                                        <option value="@w.ID" selected="@selected">
+                                            @w.Type.ToString() – @w.Location
+                                        </option>
+                                    }
+                                </select>
+
+                                <button type="submit" class="btn btn-sm btn-outline-info">
+                                    Update
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }
