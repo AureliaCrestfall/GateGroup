@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using gategourmetLibary.Models;
 using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 
@@ -74,6 +75,28 @@ namespace gategourmetLibrary.Service
         public Dictionary<int, Employee> GetEmployeeFromOrderID(int orderid)
         {
             return _iemployee.GetEmployeeFromOrderID(orderid);
+        }
+        public bool LoginAdmin(int employeeId,string password)
+        {
+            if(_iemployee.IsThisAnAdmin(employeeId) == true)
+            {
+                manger loginAttempt = _iemployee.GetManger(employeeId);
+                
+                if(loginAttempt.Password == password)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+
         }
     }
 }

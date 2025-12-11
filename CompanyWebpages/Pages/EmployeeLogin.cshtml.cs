@@ -37,7 +37,10 @@ namespace CompanyWebpages.Pages
                 HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
                 HttpContext.Session.SetString("username", $"{employ.Name}"); // Gem i session
                 HttpContext.Session.SetString("userid", $"{employ.Id}");
-
+                if (_cs.LoginAdmin(Convert.ToInt32(UserID), Password) == true)
+                {
+                    HttpContext.Session.SetString("admin", "true"); // Gem i session
+                }
 
 
                 return RedirectToPage("/EmployeeDashboard");

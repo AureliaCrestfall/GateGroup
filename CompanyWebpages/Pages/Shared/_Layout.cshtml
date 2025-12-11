@@ -39,6 +39,8 @@
         // læser login status og navn
         bool isLoggedIn = Context.Session.GetString("IsLoggedIn") == "true";
         string username = Context.Session.GetString("username");
+        bool admin = Context.Session.GetString("admin") == "true";
+
     }
 
     <header>
@@ -61,7 +63,7 @@
                             <a class="nav-link" asp-area="" asp-page="/Index">Home</a>
                         </li>
 
-                        @if (isLoggedIn)
+                        @if (admin)
                         {
                             <!-- Orders dropdown -->
                             <li class="nav-item dropdown">
