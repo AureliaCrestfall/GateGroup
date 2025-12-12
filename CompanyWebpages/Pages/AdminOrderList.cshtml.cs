@@ -82,6 +82,7 @@ namespace CompanyWebpages.Pages
             ApplyEmployeeFilter();
             ApplyDepartmentFilter();
             ApplyStatusTodayFilter();
+
         }
 
         // helper method that loads all employees into filter list
@@ -199,8 +200,11 @@ namespace CompanyWebpages.Pages
         // så admin kan se ordrestatus for en specifik afdeling
         private void ApplyDepartmentFilter()
         {
+            // build a new list that only contains orders for this department
+            List<Order> filteredOrders = new List<Order>();
             if (!string.IsNullOrEmpty(departmentFilter))
             {
+
                 string connectionString = new Connect().cstring;
 
                 // list with order IDs that belong to the selected department
@@ -236,9 +240,7 @@ namespace CompanyWebpages.Pages
                         }
                     }
                 }
-
-                // build a new list that only contains orders for this department
-                List<Order> filteredOrders = new List<Order>();
+                
 
                 foreach (Order order in Orders)
                 {
@@ -247,7 +249,9 @@ namespace CompanyWebpages.Pages
                         filteredOrders.Add(order);
                     }
                 }
+                
 
+                Orders = filteredOrders;
             }
 
             //filter by date FROM
@@ -267,7 +271,6 @@ namespace CompanyWebpages.Pages
                     .Where(o => o.OrderMade.Date <= ToDate.Value.Date)
                     .ToList();
             }
-
 
 
         }

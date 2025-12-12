@@ -31,10 +31,10 @@ namespace gategourmetLibrary.Repo
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand(
                 "SELECT o.O_ID, o.O_Made, o.O_Ready, o.O_PaySatus, o.O_Status, " +
-                "c.C_ID, c.C_Name, c.C_CompanyName " +
+                "c.C_ID, c.C_Name " +
                 "FROM OrderTable o " +
                 "LEFT JOIN OrderTableCustomer oc ON o.O_ID = oc.O_ID " +
-                "LEFT JOIN Customer c ON oc.C_ID = c.C_ID",
+                "LEFT JOIN Customer c ON oc.C_ID = c.C_ID ",
                 sqlConnection);
 
             try
@@ -74,18 +74,6 @@ namespace gategourmetLibrary.Repo
                             Name = sqlReader["C_Name"].ToString()
                         };
                         
-                        // Try to read CompanyName if available
-                        try
-                        {
-                            if (sqlReader["C_CompanyName"] != DBNull.Value)
-                            {
-                                order.CustomerOrder.CompanyName = sqlReader["C_CompanyName"].ToString();
-                            }
-                        }
-                        catch
-                        {
-                            // Column doesn't exist, leave CompanyName as null
-                        }
                     }
 
                     ordersFromDatabase.Add(id, order);
