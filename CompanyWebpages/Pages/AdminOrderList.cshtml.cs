@@ -25,6 +25,17 @@ namespace CompanyWebpages.Pages
         // this ? makes it optional and allows null values
         public string? empFilter { get; set; }
 
+        //bind property to 
+        [BindProperty(SupportsGet = true)]
+        public DateTime? FromDate { get; set; }
+
+        //bind property to 
+        [BindProperty(SupportsGet = true)]
+        public DateTime? ToDate { get; set; }
+
+
+
+
         //dropdown list of employees
         public List<SelectListItem> Filter { get; set; }
 
@@ -127,6 +138,27 @@ namespace CompanyWebpages.Pages
                     .ToList(); // convert back to list
 
             }
+
+            //filter by date FROM
+            if (FromDate.HasValue)
+            {
+                //keep only orders made on or after FromDate
+                Orders = Orders
+                    .Where(o => o.OrderMade.Date >= FromDate.Value.Date)
+                    .ToList();
+            }
+
+            //filter by date TO
+            if (ToDate.HasValue)
+            {
+                //keep only orders made on or before ToDate
+                Orders = Orders
+                    .Where(o => o.OrderMade.Date <= ToDate.Value.Date)
+                    .ToList();
+            }
+
+
+
         }
 
         

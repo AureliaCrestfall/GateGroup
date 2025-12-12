@@ -28,6 +28,27 @@
 			}
 		</select>   
 
+        <label for="FromDate" class="form-label mb-0 text-light">
+			From:
+        </label>
+        <input type="date"
+               id="FromDate"
+               name="FromDate"
+               class="form-control form-control-sm w-auto"
+               value="@(Model.FromDate?.ToString("yyyy-MM-dd"))"
+			   onchange="this.form.submit()" />
+
+		<label for="ToDate" class="form-label mb-0 text-light">
+			To:
+		</label>
+        <input type="date"
+               id="ToDate"
+               name="ToDate"
+               class="form-control form-control-sm w-auto"
+			   value="@(Model.ToDate?.ToString("yyyy-MM-dd"))"
+			   onchange="this.form.submit()" />
+
+
         @if (!string.IsNullOrEmpty(Model.empFilter))
         {
             <span class="text-info ms-2">
