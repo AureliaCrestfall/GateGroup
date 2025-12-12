@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 using gategourmetLibrary.Secret;
@@ -280,13 +281,12 @@ namespace CompanyWebpages.Pages
                 List<Order> filteredOrders = new List<Order>();
 
                 DateTime today = DateTime.Today;
-
                 foreach (Order order in Orders)
                 {
                     string currentStatus = order.Status.ToString();
 
                     // vi viser kun ordrer, hvor status matcher og datoen for OrderDoneBy er i dag
-                    if (currentStatus == statusFilter && order.OrderDoneBy.Date == today)
+                    if (currentStatus == statusFilter && (order.OrderDoneBy.Date == today|| order.OrderMade.Date == today))
                     {
                         filteredOrders.Add(order);
                     }
