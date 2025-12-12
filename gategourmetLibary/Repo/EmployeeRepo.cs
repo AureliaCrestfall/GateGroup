@@ -1,4 +1,5 @@
-﻿using gategourmetLibrary.Repo;
+﻿using gategourmetLibary.Models;
+using gategourmetLibrary.Repo;
 using gategourmetLibrary.Secret;
 using Microsoft.Data.SqlClient;
 using System;
@@ -321,7 +322,48 @@ namespace gategourmetLibrary.Models
             }
 
             return databasePostions;
+
+
+            
+
+
         }
+
+        public void AddNewAdmin(Admin admin)
+        {
+            SqlConnection connection = new SqlConnection(_connectionString);
+            Add(admin);
+            // sql kommando: der indsætter ny medarbejder i Employee tabellen
+            SqlCommand command = new SqlCommand(
+                "INSERT INTO EmployeePostion (Pos_ID,E_ID) " +
+                "VALUES (@PosId,@Id)",
+                connection);
+
+            // indsætter værdierne i paramenterne
+            command.Parameters.AddWithValue("@Id", admin.Id);
+            command.Parameters.AddWithValue("@PosId", admin.MyPosition.Id);
+
+            try
+            {
+                connection.Open();
+                command.ExecuteNonQuery();
+
+            }
+            catch(SqlException ex)
+            {
+                Debug.WriteLine("this is the ex massage"+ex.Message);
+                throw ex;
+            }
+            finally
+            {
+                connection.Close();
+            }
+
+
+
+        }
+
+
     }
 }
 

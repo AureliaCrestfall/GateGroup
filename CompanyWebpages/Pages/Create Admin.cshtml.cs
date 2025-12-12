@@ -1,0 +1,75 @@
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using gategourmetLibary.Models;
+using gategourmetLibrary.Models;
+using gategourmetLibrary.Service;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace CompanyWebpages.Pages
+{
+    public class Create_AdminModel : PageModel
+    {
+        readonly EmployeeService _employee;
+
+        public Create_AdminModel(EmployeeService employee)
+        {
+            _employee = employee;
+        }
+
+
+        [BindProperty]
+        [Required(ErrorMessage = "Please select a position")]
+        public int? PositionId { get; set; }
+
+
+        [BindProperty]
+        public Admin Admin { get; set; } = new Admin();
+
+
+        public List<SelectListItem> Positions { get; set; }
+       
+        public void OnGet()
+        {
+            // Simuler data - i praksis vil du hente dette fra en database/service
+            Positions = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "1", Text = "System Administrator" },
+                new SelectListItem { Value = "2", Text = "HR Manager" },
+                new SelectListItem { Value = "3", Text = "Deparment Manager" }
+            };
+
+        }
+        
+
+        public IActionResult OnPost()
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    // Genindlæs positions hvis validering fejler
+            //    OnGet();
+            //    Debug.WriteLine("is not valid test");
+            //    return Page();
+
+            //}
+            Admin.MyPosition.Id = Convert.ToInt32(PositionId);
+                _employee.AddNewAdmin(Admin);
+
+
+
+            Debug.WriteLine("admin bliver tilføjet");
+
+            
+            
+
+            // Efter oprettelse - redirect til en bekræftelsesside eller liste
+            return RedirectToPage("/Employees");
+        }
+    }
+        
+        
+
+
+    
+}

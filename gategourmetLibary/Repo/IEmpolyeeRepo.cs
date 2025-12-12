@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using gategourmetLibary.Models;
 using gategourmetLibrary.Models;
 
 namespace gategourmetLibrary.Repo
@@ -15,6 +16,7 @@ namespace gategourmetLibrary.Repo
         Dictionary<int,Employee> GetAll();
         void Update(Employee empolyee);
         List<Employee> Filter(string empolyee);
+        public void AddNewAdmin(Admin admin);
 
         Dictionary<int, string> GetAllPostions();
     }

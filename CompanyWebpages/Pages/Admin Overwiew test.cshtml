@@ -1,0 +1,46 @@
+﻿@page
+@model CompanyWebpages.Pages.Admin_Overwiew_testModel
+@{
+}
+
+<h2>Admin Accounts</h2>
+
+<a asp-page="./Create" class="btn btn-primary mb-3">Create New Admin</a>
+
+@if (Model.Admins == null || !Model.Admins.Any())
+{
+    <div class="alert alert-info">
+        No admin accounts found. <a asp-page="./Create">Create the first one</a>.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var admin in Model.Admins)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0">@admin.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>ID:</strong> @admin.Id<br>
+                            <strong>Email:</strong> @admin.Email<br>
+                            <strong>Work Phone:</strong> @admin.WorkPhoneNumber<br>
+                            <strong>Personal Phone:</strong> @admin.PersonalPhoneNumber
+                        </p>
+                        @if (admin.MyPosition != null)
+                        {
+                            <span class="badge bg-secondary">@admin.MyPosition.Name</span>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

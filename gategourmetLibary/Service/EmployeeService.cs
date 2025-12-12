@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using gategourmetLibary.Models;
 using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 
@@ -71,5 +72,13 @@ namespace gategourmetLibrary.Service
         {
             return _iemployee.GetAllPostions();
         }
+
+        public void AddNewAdmin(Admin admin)
+        {
+            _iemployee.AddNewAdmin(admin);
+        }
+
+
+
     }
 }
