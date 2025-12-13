@@ -10,6 +10,35 @@
 <div class="container mt-4 text-light">
     <h2 class="mb-3">Ordre Oversigt</h2>
 
+    <!-- Filter form -->
+    <div class="card mb-4 bg-dark border-light">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label for="selectedCustomerId" class="form-label">Filtrer efter firma:</label>
+                    <select class="form-select" id="selectedCustomerId" name="selectedCustomerId" onchange="this.form.submit()">
+                        <option value="">Alle firmaer</option>
+                        @if (Model.Customers != null)
+                        {
+                            @foreach (var customer in Model.Customers)
+                            {
+                                <option value="@customer.ID" selected="@(Model.SelectedCustomerId == customer.ID)">
+                                    @(string.IsNullOrEmpty(customer.CompanyName) ? customer.Name : customer.CompanyName)
+                                    @if (!string.IsNullOrEmpty(customer.CompanyName) && customer.Name != customer.CompanyName)
+                                    {
+                                        <text> (@customer.CompanyName)</text>
+                                    }
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <a href="/AdminOrderList" class="btn btn-secondary">Nulstil filter</a>
+                </div>
+            </form>
+        </div>
+    </div>
     @* filter by employee *@
     <form method="get" class="mb-3 d-flex align-items-center gap-2">
         <label for="empFilter" class="form-label mb-0 text-light">Filter by employee:</label>
@@ -104,6 +133,13 @@
                 }
             }
         </select>
+
+         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger text-dark">
+            <strong>Fejl:</strong> @Model.ErrorMessage
+        </div>
+    }
 
         @if (!string.IsNullOrEmpty(Model.statusFilter))
         {

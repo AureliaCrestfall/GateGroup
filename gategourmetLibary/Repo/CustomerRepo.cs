@@ -32,7 +32,11 @@ namespace gategourmetLibrary.Repo
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 // sql command to select all customers
-                SqlCommand command = new SqlCommand("SELECT * FROM dbo.Customer", connection);
+                SqlCommand command = new SqlCommand("select Customer.C_ID as customerID, Customer.C_Name as customerName, Customer.C_Password as customerPassword, " +
+                    "Companies.CVR as companyCVR, Companies.CompanyName as companyName" +
+                    " from Customer " +
+                    "join CompaniesCustomer on CompaniesCustomer.C_ID = Customer.C_ID " +
+                    "join Companies on Companies.CVR = CompaniesCustomer.CVR ", connection);
 
                 // open database connection
                 connection.Open();
@@ -45,23 +49,15 @@ namespace gategourmetLibrary.Repo
                 {
                     var customer = new Customer
                     {
-                        ID = (int)reader["C_ID"],
-                        Name = reader["C_Name"].ToString(),
-                        Password = reader["C_Password"].ToString()
+                        ID = (int)reader["customerID"],
+                        Name = reader["customerName"].ToString(),
+                        Password = reader["customerPassword"].ToString(),
+                        CVR = reader["companyCVR"].ToString(),
+                        CompanyName = reader["companyName"].ToString()
+
                     };
                     
-                    // Try to read CompanyName if the column exists
-                    try
-                    {
-                        if (reader["C_CompanyName"] != DBNull.Value)
-                        {
-                            customer.CompanyName = reader["C_CompanyName"].ToString();
-                        }
-                    }
-                    catch
-                    {
-                        // Column doesn't exist, leave CompanyName as null
-                    }
+                   
                     
                     customers.Add(customer);
                 }

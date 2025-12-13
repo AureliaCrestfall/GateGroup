@@ -22,6 +22,11 @@ namespace CompanyWebpages.Pages
 
         // status message shown after cancel
         public string StatusMessage { get; set; }
+        // error message if something goes wrong
+        public string ErrorMessage { get; set; }
+
+        // list of customers for the filter dropdown
+        public List<Customer> Customers { get; set; }
 
         // bind property to get emp filter from query string (employee dropdown)
         [BindProperty(SupportsGet = true)]
@@ -36,7 +41,9 @@ namespace CompanyWebpages.Pages
         public DateTime? ToDate { get; set; }
 
 
-
+        // selected customer ID for filtering (from query string)
+        [BindProperty(SupportsGet = true)]
+        public int? SelectedCustomerId { get; set; }
 
         //dropdown list of employees
         public List<SelectListItem> Filter { get; set; }
@@ -71,8 +78,10 @@ namespace CompanyWebpages.Pages
         // runs when the page is loaded with a get method 
         public void OnGet()
         {
+
+            LoadCustomers();
             // first we load all orders from the service
-            Orders = _orderService.GetAllOrders();
+            LoadAllOrders();
 
             // then we prepare both dropdowns: employees and departments
             LoadEmployeeFilter();
@@ -84,7 +93,59 @@ namespace CompanyWebpages.Pages
             ApplyStatusTodayFilter();
 
         }
+        // loads all customers for the dropdown
+        private void LoadCustomers()
+        {
+            try
+            {
+                Customers = _customerService.GetAllCustomers();
+                if (Customers == null)
+                {
+                    Customers = new List<Customer>();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Fejl ved indlæsning af kunder: " + ex.Message;
+                Customers = new List<Customer>();
+            }
+        }
 
+        // hj�lper method that loads only non cancelled orders
+        private void LoadAllOrders()
+        {
+            try
+            {
+                if (SelectedCustomerId.HasValue && SelectedCustomerId.Value > 0)
+                {
+                    // Filter by selected customer
+                    Customer selectedCustomer = _customerService.GetCustomer(SelectedCustomerId.Value);
+                    if (selectedCustomer != null)
+                    {
+                        Orders = _orderService.FilterOrdersByCompany(selectedCustomer);
+                    }
+                    else
+                    {
+                        Orders = new List<Order>();
+                    }
+                }
+                else
+                {
+                    // Load all orders
+                    Orders = _orderService.GetAllOrders();
+                }
+
+                if (Orders == null)
+                {
+                    Orders = new List<Order>();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Fejl ved indlæsning af ordrer: " + ex.Message;
+                Orders = new List<Order>();
+            }
+        }
         // helper method that loads all employees into filter list
         private void LoadEmployeeFilter()
         {
