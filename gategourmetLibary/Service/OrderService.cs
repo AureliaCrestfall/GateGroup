@@ -1,148 +1,209 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using gategourmetLibrary.Repo;
 using gategourmetLibrary.Models;
+using gategourmetLibrary.Repo;
 
 namespace gategourmetLibrary.Service
 {
+    // Service responsible for order business rules and validation before repository calls.
     public class OrderService
     {
+        // Repository used for data access (raw SQL lives in repo).
         private readonly IOrderRepo _orderRepo;
 
-        // Constructor to inject the order repository
+        // Constructor - injects the order repository.
         public OrderService(IOrderRepo orderRepo)
         {
             _orderRepo = orderRepo;
         }
-        // gets all orders
+
+        // Returns all orders.
         public List<Order> GetAllOrders()
         {
             return _orderRepo.GetAllOrders();
         }
 
+        // Returns all orders for a specific customer.
+        public List<Order> GetOrdersByCustomerId(int customerId)
+        {
+            return _orderRepo.GetOrdersByCustomerId(customerId);
+        }
+
+        // Cancels an order by id.
         public void CancelOrder(int orderId)
         {
             _orderRepo.CancelOrder(orderId);
         }
 
-        // adds a new order
+        // Adds a new order (validates dates + recipe parts before saving).
         public void AddOrder(Order order)
         {
-            if(order != null)
+            // 1) Null check (fail fast).
+            if (order == null)
             {
-                if ((order.OrderDoneBy - order.OrderMade).TotalDays >= 6)
+                throw new ArgumentNullException(nameof(order), "Order cannot be null.");
+            }
+
+            // 2) Ensure recipe dictionary exists.
+            if (order.Recipe == null)
+            {
+                throw new Exception("Order recipe is missing (Recipe dictionary is null).");
+            }
+
+            // 3) Validate ready-by date (date only to avoid time edge cases).
+            DateTime madeDate = order.OrderMade.Date;
+            DateTime readyDate = order.OrderDoneBy.Date;
+
+            double daysBetween = (readyDate - madeDate).TotalDays;
+
+            // Requirement: ready-by must be at least 7 days after made date.
+            if (daysBetween < 7)
+            {
+                throw new Exception("Ready by date must be at least 7 days after the order is made.");
+            }
+
+            // 4) Validate recipe parts.
+            // We remove parts that are unusable. If part name is missing but ingredients exist, we set a default name.
+            List<int> recipePartKeysToRemove = new List<int>();
+
+            foreach (KeyValuePair<int, RecipePart> recipeEntry in order.Recipe)
+            {
+                int recipePartNumber = recipeEntry.Key;
+                RecipePart recipePart = recipeEntry.Value;
+
+                // If the recipe part object is null, it cannot be used.
+                if (recipePart == null)
                 {
-                    List<int> invalidRecipeParts = new List<int>();
-                    foreach(KeyValuePair<int,RecipePart> rp in order.Recipe)
-                    {
-                        if (rp.Value.partName == string.Empty || rp.Value.partName == null )
-                        {
-                            invalidRecipeParts.Add(rp.Key);
-                        }
-                        
-                    }
-                    foreach(int i in invalidRecipeParts)
-                    {
-                        order.Recipe.Remove(i);
-                    }
-                    if (order.Recipe.Count >0)
-                    {
-                        _orderRepo.AddOrder(order);
-
-                    }
-                    else
-                    {
-                        throw new Exception("order dosn't conatin any vailed recipeParts");
-                    }
-
+                    recipePartKeysToRemove.Add(recipePartNumber);
                 }
                 else
                 {
-                    throw new Exception("Order Ready by is the close to the time of when the order is made is need to be at least 7 days after");
+                    // Check if part has ingredients.
+                    bool hasIngredients = recipePart.Ingredients != null && recipePart.Ingredients.Count > 0;
+
+                    // If name is missing but ingredients exist, create a default name.
+                    if (string.IsNullOrWhiteSpace(recipePart.partName))
+                    {
+                        if (hasIngredients)
+                        {
+                            recipePart.partName = "Recipe part " + recipePartNumber;
+                        }
+                        else
+                        {
+                            // No name and no ingredients -> not valid.
+                            recipePartKeysToRemove.Add(recipePartNumber);
+                        }
+                    }
+
+                    // If it has no ingredients, it is not useful to store.
+                    if (!hasIngredients)
+                    {
+                        recipePartKeysToRemove.Add(recipePartNumber);
+                    }
                 }
             }
-            
 
+            // Remove invalid parts.
+            foreach (int key in recipePartKeysToRemove)
+            {
+                if (order.Recipe.ContainsKey(key))
+                {
+                    order.Recipe.Remove(key);
+                }
+            }
 
-            
+            // 5) Ensure we still have at least one valid recipe part.
+            if (order.Recipe.Count == 0)
+            {
+                throw new Exception("Order does not contain any valid recipe parts. Please select ingredients (and optionally names).");
+            }
+
+            // 6) Save order.
+            _orderRepo.AddOrder(order);
         }
-        // deletes an order by ID
-        public void DeleteOrder(int orderID)
+
+        // Deletes an order by id.
+        public void DeleteOrder(int orderId)
         {
-            _orderRepo.DeleteOrder(orderID);
+            _orderRepo.DeleteOrder(orderId);
         }
-        // updates an existing order
-        public void UpdateOrder(int orderID, Order updatedOrder)
+
+        // Updates an existing order by id.
+        public void UpdateOrder(int orderId, Order updatedOrder)
         {
-            _orderRepo.UpdateOrder(orderID, updatedOrder);
+            _orderRepo.UpdateOrder(orderId, updatedOrder);
         }
-        // gets a specific order by ID
-        public Order GetOrder(int orderID)
+
+        // Returns a specific order by id.
+        public Order GetOrder(int orderId)
         {
-            return _orderRepo.Get(orderID);
+            return _orderRepo.Get(orderId);
         }
-        // gets recipe parts for a specific order
-        public List<RecipePart> GetOrderRecipeParts(int orderID)
+
+        // Returns recipe parts for a specific order.
+        public List<RecipePart> GetOrderRecipeParts(int orderId)
         {
-            return _orderRepo.GetRecipeParts(orderID);
+            return _orderRepo.GetRecipeParts(orderId);
         }
-        // to filter orders by employee
+
+        // Filters orders by employee.
         public List<Order> FilterOrdersByEmployee(Employee employee)
         {
             return _orderRepo.FilterByEmployee(employee);
         }
-        // to filter orders placed today
+
+        // Filters orders placed today.
         public List<Order> FilterOrdersByToday(DateTime today)
         {
             return _orderRepo.FilterByToday(today);
         }
-        // to filter orders by company
+
+        // Filters orders by customer/company.
         public List<Order> FilterOrdersByCompany(Customer customer)
         {
             return _orderRepo.FilterByCompany(customer);
         }
-        // to filter orders by status
+
+        // Filters orders by status.
         public List<Order> FilterOrdersByStatus(OrderStatus status)
         {
             return _orderRepo.FilterByStatus(status);
         }
-        // to filter orders by date
+
+        // Filters orders by date.
         public List<Order> FilterOrdersByDate(DateTime date)
         {
             return _orderRepo.FilterByDate(date);
         }
 
+        // Returns all ingredients (id -> ingredient).
         public Dictionary<int, Ingredient> GetAllIngredients()
         {
             return _orderRepo.GetAllIngredients();
         }
+
+        // Returns all allergies (id -> allergy name).
         public Dictionary<int, string> GetAllAllergies()
         {
             return _orderRepo.GetAllAllergies();
         }
 
-        // returns all warehouses fks example freezer, fridge, dry storage + used to show choices in dropdown for employees
+        // Returns all warehouses (freezer, fridge, dry storage etc).
         public List<Warehouse> GetAllWarehouses()
         {
             return _orderRepo.GetAllWarehouses();
         }
 
-        // returns the current warehouse location for a specific recipe part
+        // Returns the current warehouse location for a recipe part.
         public Warehouse GetRecipePartLocation(int recipePartId)
         {
             return _orderRepo.GetRecipePartLocation(recipePartId);
         }
 
-        // updates the warehouse location for a specific recipe part
-        
+        // Updates the warehouse location for a recipe part.
         public void UpdateRecipePartLocation(int recipePartId, int warehouseId)
         {
             _orderRepo.UpdateRecipePartLocation(recipePartId, warehouseId);
         }
-        
-
     }
 }

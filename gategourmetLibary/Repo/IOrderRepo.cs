@@ -1,62 +1,65 @@
-﻿using gategourmetLibrary.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using gategourmetLibrary.Models;
 
 namespace gategourmetLibrary.Repo
 {
-    // Interface for order repository.
-    // This defines all methods that the OrderRepo class must implement.
+    // Interface for order data access and raw sql 
+  
     public interface IOrderRepo
     {
-        // returns the list of all orders
+        // Returns all orders in the system
         List<Order> GetAllOrders();
 
-        // add a new order to repo
+        // Returns all orders for a specific customer
+        List<Order> GetOrdersByCustomerId(int customerId);
+
+        // Adds a new order to the database
         void AddOrder(Order order);
 
-        // delete an order by its ID
-        void DeleteOrder(int orderID);
+        // Deletes an order by its ID
+        void DeleteOrder(int orderId);
 
-        // returns a specific order by its ID
-        Order Get(int orderID);
+        // Updates an existing order
+        void UpdateOrder(int orderId, Order updatedOrder);
 
-        // update an existing order by its ID
-        void UpdateOrder(int orderID, Order UpdatedOrder);
+        // Returns a single order by ID
+        Order Get(int orderId);
 
-        // cancels an order
-        void CancelOrder(int orderId);
+        // Returns all recipe parts belonging to an order
+        List<RecipePart> GetRecipeParts(int orderId);
 
-        // returns a list of recipe parts for a specific order by orderID
-        List<RecipePart> GetRecipeParts(int orderID);
-
-        // filters orders made by a specific employee
+        // Returns orders assigned to a specific employee
         List<Order> FilterByEmployee(Employee employee);
 
-        // filters orders placed today
+        // Returns orders created today
         List<Order> FilterByToday(DateTime today);
 
-        // filters orders for a specific customer/company
+        // Returns orders for a specific company/customer
         List<Order> FilterByCompany(Customer customer);
 
-        // filters orders by their status
+        // Returns orders with a specific status
         List<Order> FilterByStatus(OrderStatus status);
 
-        // filters orders by a specific date
+        // Returns orders from a specific date
         List<Order> FilterByDate(DateTime date);
 
-        // returns all ingredients
+        // Returns all ingredients (ID -> Ingredient)
         Dictionary<int, Ingredient> GetAllIngredients();
 
-        // returns all allergies
+        // Returns all allergies (ID -> allergy name)
         Dictionary<int, string> GetAllAllergies();
 
-        // returns the warehouse where a given recipe part is stored
+        // Returns all warehouse locations
+        List<Warehouse> GetAllWarehouses();
+
+        // Returns the current warehouse location of a recipe part
         Warehouse GetRecipePartLocation(int recipePartId);
 
-        // updates the warehouse location for a given recipe part
+        // Updates the warehouse location of a recipe part
         void UpdateRecipePartLocation(int recipePartId, int warehouseId);
 
-        // returns all warehouses (freezer, fridge, dry storage)
-        List<Warehouse> GetAllWarehouses();
+        // Cancels an order (status update)
+        void CancelOrder(int orderId);
     }
 }

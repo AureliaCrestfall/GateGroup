@@ -1,69 +1,73 @@
 ﻿@page
 @using gategourmetLibrary.Models
 @model GateGroupWebpages.Pages.DashboardModel
+
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="dashboard-container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="container mt-4">
+
+    <!-- header -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
         <div>
-            <h2 class="dashboard-title mb-1">My Dashboard</h2>
-            <p class="dashboard-subtitle mb-0">
-                Overview of your orders grouped by status.
-            </p>
+            <h2 class="mb-1" style="font-family:'Playfair Display', serif;">My Dashboard</h2>
+            <p class="text-muted mb-0">Overview of your orders. You can filter them by status.</p>
         </div>
 
-        <a class="btn btn-outline-light btn-sm dashboard-neworder-btn" asp-page="/NewOrder">
+        <a class="btn btn-outline-light btn-sm align-self-sm-center"
+           asp-page="/NewOrder">
             + Create new order
         </a>
     </div>
 
-    <div class="card dashboard-card shadow-sm">
+    <!-- card -->
+    <div class="card bg-dark text-light shadow-sm border-0">
         <div class="card-body">
-            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-                <form method="get" class="d-flex align-items-center gap-2">
-                    <label class="form-label mb-0" for="statusFilter">Filter by status:</label>
-                    <select asp-for="statusFilter"
+
+            <!-- filter and count -->
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+
+                <form method="get" class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 w-100 w-sm-auto">
+                    <label for="StatusFilter" class="form-label mb-0">Filter by status:</label>
+
+                    <select asp-for="StatusFilter"
                             asp-items="Model.StatusOptions"
-                            class="form-select form-select-sm w-auto"
-                            id="statusFilter"
+                            id="StatusFilter"
+                            class="form-select form-select-sm w-100 w-sm-auto"
                             onchange="this.form.submit()">
                     </select>
                 </form>
 
-                @if (Model.Orders != null && Model.Orders.Any())
+                @if (Model.Orders != null && Model.Orders.Count > 0)
                 {
                     <span class="text-muted small">
-                        Showing @Model.Orders.Count() order(s)
+                        Showing @Model.Orders.Count order(s)
                     </span>
                 }
             </div>
 
-            @if (Model.Orders != null && Model.Orders.Any())
+            @if (Model.Orders != null && Model.Orders.Count > 0)
             {
-                <div class="table-responsive">
-                    <table class="table align-middle table-dark table-borderless dashboard-table">
-                        <thead>
+                <!-- DESKTOP/TABLET TABLE (LG and up) -->
+                <div class="table-responsive d-none d-lg-block">
+                    <table class="table table-dark table-borderless align-middle mb-0">
+                        <thead class="border-bottom border-secondary">
                             <tr>
-                                <th>Order</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th class="text-end">Actions</th>
+                                <th style="width: 120px;">Order ID</th>
+                                <th style="width: 140px;">Status</th>
+                                <th style="width: 140px;">Date</th>
+                                <th style="width: 90px;">Time</th>
+                                <th class="text-end" style="width: 260px;">Actions</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @foreach (Order order in Model.Orders)
                             {
                                 <tr>
-                                    <td>
-                                        <a asp-page="/OrderDetails"
-                                           asp-route-orderId="@order.ID"
-                                           class="btn btn-sm btn-outline-info">
-                                            @order.ID
-                                        </a>
-                                    </td>
+                                    <td class="fw-semibold text-nowrap">#@order.ID</td>
+
                                     <td>
                                         @if (order.Status == OrderStatus.Created)
                                         {
@@ -82,22 +86,92 @@
                                             <span class="badge bg-danger">Cancelled</span>
                                         }
                                     </td>
-                                    <td>@order.OrderMade.ToShortDateString()</td>
-                                    <td>@order.OrderMade.ToShortTimeString()</td>
+
+                                    <td class="text-nowrap">@order.OrderMade.ToString("dd-MM-yyyy")</td>
+                                    <td class="text-nowrap">@order.OrderMade.ToString("HH:mm")</td>
 
                                     <td class="text-end">
-                                        <form method="post"
-                                              asp-page-handler="Delete"
-                                              asp-route-id="@order.ID"
-                                              class="d-inline"
-                                              onsubmit="return confirm('Are you sure you want to delete this order?');">
-                                            <button class="btn btn-sm btn-outline-danger">Delete</button>
-                                        </form>
+                                        <div class="d-inline-flex gap-2">
+                                            <a asp-page="/OrderDetails"
+                                               asp-route-orderId="@order.ID"
+                                               class="btn btn-sm btn-primary fw-semibold px-3">
+                                                View details
+                                            </a>
+
+                                            <form method="post"
+                                                  asp-page-handler="Delete"
+                                                  asp-route-id="@order.ID"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to delete this order?');">
+                                                <input type="hidden" asp-for="StatusFilter" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger px-3">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+                </div>
+
+                <!-- MOBILE CARDS (below LG) -->
+                <div class="d-block d-lg-none">
+                    @foreach (Order order in Model.Orders)
+                    {
+                        <div class="card bg-black border border-secondary mb-3">
+                            <div class="card-body">
+
+                                <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                                    <div class="fw-semibold text-nowrap">Order #@order.ID</div>
+
+                                    <div>
+                                        @if (order.Status == OrderStatus.Created)
+                                        {
+                                            <span class="badge bg-secondary">Created</span>
+                                        }
+                                        else if (order.Status == OrderStatus.InProgress)
+                                        {
+                                            <span class="badge bg-warning text-dark">In progress</span>
+                                        }
+                                        else if (order.Status == OrderStatus.Completed)
+                                        {
+                                            <span class="badge bg-success">Completed</span>
+                                        }
+                                        else if (order.Status == OrderStatus.Cancelled)
+                                        {
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="small text-secondary mb-3">
+                                    <div><span class="text-light">Date:</span> @order.OrderMade.ToString("dd-MM-yyyy")</div>
+                                    <div><span class="text-light">Time:</span> @order.OrderMade.ToString("HH:mm")</div>
+                                </div>
+
+                                <div class="d-grid gap-2">
+                                    <a asp-page="/OrderDetails"
+                                       asp-route-orderId="@order.ID"
+                                       class="btn btn-primary fw-semibold">
+                                        View details
+                                    </a>
+
+                                    <form method="post"
+                                          asp-page-handler="Delete"
+                                          asp-route-id="@order.ID"
+                                          onsubmit="return confirm('Are you sure you want to delete this order?');">
+                                        <input type="hidden" asp-for="StatusFilter" />
+                                        <button type="submit" class="btn btn-outline-danger w-100">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
                 </div>
             }
             else
@@ -107,6 +181,7 @@
                     Try choosing another status or create a new order.
                 </p>
             }
+
         </div>
     </div>
 </div>
