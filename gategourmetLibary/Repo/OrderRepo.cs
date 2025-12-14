@@ -226,7 +226,7 @@ namespace gategourmetLibrary.Repo
             }
         }
 
-        // adds one relation between an order and a recipe part
+        // adds one relation between an order and a recipe part 
         public void AddOrderRecipePart(int orderID, int recipePartID)
         {
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
