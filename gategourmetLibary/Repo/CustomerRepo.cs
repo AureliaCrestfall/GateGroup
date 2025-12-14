@@ -35,8 +35,8 @@ namespace gategourmetLibrary.Repo
                 SqlCommand command = new SqlCommand("select Customer.C_ID as customerID, Customer.C_Name as customerName, Customer.C_Password as customerPassword, " +
                     "Companies.CVR as companyCVR, Companies.CompanyName as companyName" +
                     " from Customer " +
-                    "join CompaniesCustomer on CompaniesCustomer.C_ID = Customer.C_ID " +
-                    "join Companies on Companies.CVR = CompaniesCustomer.CVR ", connection);
+                    "LEFT join CompaniesCustomer on CompaniesCustomer.C_ID = Customer.C_ID " +
+                    "LEFT join Companies on Companies.CVR = CompaniesCustomer.CVR ", connection);
 
                 // open database connection
                 connection.Open();
@@ -51,14 +51,19 @@ namespace gategourmetLibrary.Repo
                     {
                         ID = (int)reader["customerID"],
                         Name = reader["customerName"].ToString(),
-                        Password = reader["customerPassword"].ToString(),
-                        CVR = reader["companyCVR"].ToString(),
-                        CompanyName = reader["companyName"].ToString()
+                        Password = reader["customerPassword"].ToString()
 
                     };
-                    
-                   
-                    
+                    if (reader["companyCVR"] != DBNull.Value)
+                    {
+                        customer.CVR = reader["companyCVR"].ToString();
+                    }
+                    if (reader["companyName"] != DBNull.Value)
+                    {
+                        customer.CompanyName = reader["companyName"].ToString();
+                    }
+
+
                     customers.Add(customer);
                 }
             }
