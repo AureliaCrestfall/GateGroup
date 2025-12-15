@@ -21,7 +21,7 @@ namespace gategourmetLibrary.Repo
         Order Get(int orderID);
 
         // update an existing order by its ID
-        void UpdateOrder(int orderID, Order UpdatedOrder);
+        void UpdateOrder(int orderID, Order updatedOrder);
 
         // cancels an order
         void CancelOrder(int orderId);
@@ -34,6 +34,9 @@ namespace gategourmetLibrary.Repo
 
         // filters orders placed today
         List<Order> FilterByToday(DateTime today);
+
+        // filters orders by department
+        List<Order> FilterByDepartment(int departmentId);
 
         // filters orders for a specific customer/company
         List<Order> FilterByCompany(Customer customer);

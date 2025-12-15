@@ -55,7 +55,7 @@ namespace gategourmetLibrary.Service
                     }
                     else
                     {
-                        throw new Exception("order dosn't conatin any vailed recipeParts");
+                        throw new Exception("order dosn't conatin any vailed recipeparts");
                     }
 
                 }
@@ -128,6 +128,12 @@ namespace gategourmetLibrary.Service
         public List<Warehouse> GetAllWarehouses()
         {
             return _orderRepo.GetAllWarehouses();
+        }
+
+        // to filter orders by department
+        public List<Order> FilterOrdersByDepartment(int departmentId)
+        {
+            return _orderRepo.FilterByDepartment(departmentId);
         }
 
         // returns the current warehouse location for a specific recipe part

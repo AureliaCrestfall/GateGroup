@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using gategourmetLibrary.Models;
 using gategourmetLibrary.Repo;
 using gategourmetLibrary.Secret;
@@ -12,9 +11,7 @@ using Microsoft.Data.SqlClient;
 
 namespace CompanyWebpages.Pages
 {
-    // Admin page that shows all orders and allows cancelling them.
-    // Her har admin mulighed for at filtrere på employee, department
-    // og nu også status på dagens ordrer.
+    // Admin page that shows all orders and allows cancelling 
     public class AdminOrderListModel : PageModel
     {
         // list with all orders to show in the table
@@ -28,24 +25,22 @@ namespace CompanyWebpages.Pages
         // list of customers for the filter dropdown
         public List<Customer> Customers { get; set; }
 
-        // bind property to get emp filter from query string (employee dropdown)
+        // bind property to filter from query string (employee dropdown)
         [BindProperty(SupportsGet = true)]
         public string empFilter { get; set; }
 
-        //bind property to 
+        // bind property to date range
         [BindProperty(SupportsGet = true)]
         public DateTime? FromDate { get; set; }
 
-        //bind property to 
         [BindProperty(SupportsGet = true)]
         public DateTime? ToDate { get; set; }
 
-
-        // selected customer ID for filtering (from query string)
+        // selected customer ID for filtering 
         [BindProperty(SupportsGet = true)]
         public int? SelectedCustomerId { get; set; }
 
-        //dropdown list of employees
+        // dropdown list of employees
         public List<SelectListItem> Filter { get; set; }
 
         // bind property to get department filter from query string (department dropdown)
@@ -55,13 +50,13 @@ namespace CompanyWebpages.Pages
         // dropdown list of departments
         public List<SelectListItem> DepartmentFilter { get; set; }
 
-        // NEW: bind property to get status filter for user story "filter by status today"
+        // bind property to get status filter for user story "filter by status today"
         [BindProperty(SupportsGet = true)]
         public string statusFilter { get; set; }
 
         // service that handles order logic
         private readonly OrderService _orderService;
-        
+
         // service that handles customer logic
         private readonly CustomerService _customerService;
 
@@ -78,21 +73,16 @@ namespace CompanyWebpages.Pages
         // runs when the page is loaded with a get method 
         public void OnGet()
         {
-
             LoadCustomers();
-            // first we load all orders from the service
             LoadAllOrders();
-
-            // then we prepare both dropdowns: employees and departments
             LoadEmployeeFilter();
             LoadDepartmentFilter();
 
-            // afterwards we apply filters if admin has selected something
             ApplyEmployeeFilter();
             ApplyDepartmentFilter();
             ApplyStatusTodayFilter();
-
         }
+
         // loads all customers for the dropdown
         private void LoadCustomers()
         {
@@ -111,15 +101,15 @@ namespace CompanyWebpages.Pages
             }
         }
 
-        // hj�lper method that loads only non cancelled orders
+        // helper method that loads orders 
         private void LoadAllOrders()
         {
             try
             {
                 if (SelectedCustomerId.HasValue && SelectedCustomerId.Value > 0)
                 {
-                    // Filter by selected customer
                     Customer selectedCustomer = _customerService.GetCustomer(SelectedCustomerId.Value);
+
                     if (selectedCustomer != null)
                     {
                         Orders = _orderService.FilterOrdersByCompany(selectedCustomer);
@@ -131,7 +121,6 @@ namespace CompanyWebpages.Pages
                 }
                 else
                 {
-                    // Load all orders
                     Orders = _orderService.GetAllOrders();
                 }
 
@@ -146,6 +135,7 @@ namespace CompanyWebpages.Pages
                 Orders = new List<Order>();
             }
         }
+
         // helper method that loads all employees into filter list
         private void LoadEmployeeFilter()
         {
@@ -165,7 +155,6 @@ namespace CompanyWebpages.Pages
                     {
                         while (reader.Read())
                         {
-                            // value = E_ID, text = E_Name
                             SelectListItem item = new SelectListItem(
                                 reader["E_Name"].ToString(),
                                 reader["E_ID"].ToString()
@@ -189,7 +178,6 @@ namespace CompanyWebpages.Pages
             {
                 conn.Open();
 
-                // vi bruger D_ID og D_Name fra Department
                 string sql = @"SELECT D_ID, D_Name FROM Department ORDER BY D_Name";
 
                 using (SqlCommand command = new SqlCommand(sql, conn))
@@ -217,10 +205,8 @@ namespace CompanyWebpages.Pages
             {
                 string connectionString = new Connect().cstring;
 
-                // list to hold employee order IDs
                 List<int> empOrdersIds = new List<int>();
 
-                // get all O_IDs for this employee from EmployeeRecipePartOrderTable
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
@@ -242,7 +228,6 @@ namespace CompanyWebpages.Pages
                     }
                 }
 
-                // build a new list with only the orders belonging to this employee
                 List<Order> filteredOrders = new List<Order>();
 
                 foreach (Order order in Orders)
@@ -257,100 +242,74 @@ namespace CompanyWebpages.Pages
             }
         }
 
-        // applies department filter if departmentFilter has a value
-        // så admin kan se ordrestatus for en specifik afdeling
+        // applies department filter and optional date range
         private void ApplyDepartmentFilter()
         {
-            // build a new list that only contains orders for this department
-            List<Order> filteredOrders = new List<Order>();
+            // 1) Department filter moved to repo/service
             if (!string.IsNullOrEmpty(departmentFilter))
             {
+                int departmentId = int.Parse(departmentFilter);
 
-                string connectionString = new Connect().cstring;
+                Orders = _orderService.FilterOrdersByDepartment(departmentId);
 
-                // list with order IDs that belong to the selected department
-                List<int> depOrderIds = new List<int>();
-
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                if (Orders == null)
                 {
-                    conn.Open();
-
-                    // Vi finder alle ordrer, som har recipe parts i et warehouse,
-                    // der er knyttet til den valgte department via WarehouseDepartment
-                    string sql =
-                        @"SELECT DISTINCT ot.O_ID
-                          FROM OrderTable ot
-                          JOIN orderTableRecipePart otr ON ot.O_ID = otr.O_ID
-                          JOIN RecipePart rp ON rp.R_ID = otr.R_ID
-                          JOIN werehouseRecipePart wrp ON wrp.R_ID = rp.R_ID
-                          JOIN warehouse w ON w.W_ID = wrp.W_ID
-                          JOIN WarehouseDepartment wd ON wd.W_ID = w.W_ID
-                          WHERE wd.D_ID = @depId";
-
-                    using (SqlCommand cmd = new SqlCommand(sql, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@depId", int.Parse(departmentFilter));
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                int orderId = reader.GetInt32(0);
-                                depOrderIds.Add(orderId);
-                            }
-                        }
-                    }
+                    Orders = new List<Order>();
                 }
-                
+            }
+
+            // 2) FromDate filter
+            if (FromDate.HasValue)
+            {
+                List<Order> fromFiltered = new List<Order>();
 
                 foreach (Order order in Orders)
                 {
-                    if (depOrderIds.Contains(order.ID))
+                    if (order.OrderMade.Date >= FromDate.Value.Date)
                     {
-                        filteredOrders.Add(order);
+                        fromFiltered.Add(order);
                     }
                 }
-                
 
-                Orders = filteredOrders;
+                Orders = fromFiltered;
             }
 
-            //filter by date FROM
-            if (FromDate.HasValue)
-            {
-                //keep only orders made on or after FromDate
-                Orders = Orders
-                    .Where(o => o.OrderMade.Date >= FromDate.Value.Date)
-                    .ToList();
-            }
-
-            //filter by date TO
+            // 3) ToDate filter 
             if (ToDate.HasValue)
             {
-                //keep only orders made on or before ToDate
-                Orders = Orders
-                    .Where(o => o.OrderMade.Date <= ToDate.Value.Date)
-                    .ToList();
+                List<Order> toFiltered = new List<Order>();
+
+                foreach (Order order in Orders)
+                {
+                    if (order.OrderMade.Date <= ToDate.Value.Date)
+                    {
+                        toFiltered.Add(order);
+                    }
+                }
+
+                Orders = toFiltered;
             }
-
-
         }
 
-        // applies status filter only on today's orders
-        // Dette opfylder user story "filter by status på dagens ordre"
+        // applies status filter only on todays orders
         private void ApplyStatusTodayFilter()
         {
             if (!string.IsNullOrEmpty(statusFilter))
             {
+                List<Order> todaysOrders = _orderService.FilterOrdersByToday(DateTime.Today);
+
+                if (todaysOrders == null)
+                {
+                    todaysOrders = new List<Order>();
+                }
+
                 List<Order> filteredOrders = new List<Order>();
 
-                DateTime today = DateTime.Today;
-                foreach (Order order in Orders)
+                foreach (Order order in todaysOrders)
                 {
                     string currentStatus = order.Status.ToString();
 
-                    // vi viser kun ordrer, hvor status matcher og datoen for OrderDoneBy er i dag
-                    if (currentStatus == statusFilter && (order.OrderDoneBy.Date == today|| order.OrderMade.Date == today))
+                    if (currentStatus == statusFilter)
                     {
                         filteredOrders.Add(order);
                     }
@@ -363,13 +322,10 @@ namespace CompanyWebpages.Pages
         // runs when the cancel form is posted
         public IActionResult OnPostCancel(int orderId)
         {
-            // call service to cancel the order
             _orderService.CancelOrder(orderId);
 
-            // set status message so admin can see what happened
             StatusMessage = "Ordre #" + orderId + " er blevet annulleret.";
 
-            // after a post we redirect to get so the page reloads clean
             return RedirectToPage();
         }
     }

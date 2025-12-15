@@ -1,11 +1,9 @@
-﻿using gategourmetLibary.Models;
-using gategourmetLibrary.Models;
+﻿using gategourmetLibrary.Models;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Reflection.PortableExecutable;
 
 namespace gategourmetLibrary.Repo
 {
@@ -73,7 +71,6 @@ namespace gategourmetLibrary.Repo
                             ID = Convert.ToInt32(sqlReader["C_ID"]),
                             Name = sqlReader["C_Name"].ToString()
                         };
-                        
                     }
 
                     ordersFromDatabase.Add(id, order);
@@ -334,13 +331,11 @@ namespace gategourmetLibrary.Repo
                     {
                         status = OrderStatus.Created;
                     }
-                        int rID = Convert.ToInt32(sqlReader["rid"]);
-                        string rName =  sqlReader["rname"].ToString();
-                        string howtoprep = sqlReader["howtoprep"].ToString();
-                        string rStatus = sqlReader["rstatus"].ToString();
 
-
-
+                    int rID = Convert.ToInt32(sqlReader["rid"]);
+                    string rName = sqlReader["rname"].ToString();
+                    string howtoprep = sqlReader["howtoprep"].ToString();
+                    string rStatus = sqlReader["rstatus"].ToString();
 
                     if (order.ID != id)
                     {
@@ -463,7 +458,91 @@ namespace gategourmetLibrary.Repo
         //filters orders placed today
         public List<Order> FilterByToday(DateTime today)
         {
-            return null;
+            List<Order> orders = new List<Order>();
+
+            DateTime startDate = today.Date;
+            DateTime endDate = today.Date.AddDays(1);
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(
+                    "SELECT O_ID, O_Made, O_Ready, O_PaySatus, O_Status " +
+                    "FROM dbo.OrderTable " +
+                    "WHERE O_Made >= @StartDate AND O_Made < @EndDate",
+                    connection);
+
+                command.Parameters.AddWithValue("@StartDate", startDate);
+                command.Parameters.AddWithValue("@EndDate", endDate);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int id = Convert.ToInt32(reader["O_ID"]);
+                    DateTime made = Convert.ToDateTime(reader["O_Made"]);
+                    DateTime ready = Convert.ToDateTime(reader["O_Ready"]);
+                    bool paystatus = Convert.ToBoolean(reader["O_PaySatus"]);
+                    string statusString = reader["O_Status"].ToString();
+
+                    OrderStatus status;
+                    if (!Enum.TryParse<OrderStatus>(statusString, out status))
+                    {
+                        status = OrderStatus.Created;
+                    }
+
+                    Order order = new Order(made, ready, id, paystatus);
+                    order.Status = status;
+
+                    orders.Add(order);
+                }
+            }
+
+            return orders;
+        }
+
+        // filters orders by department
+        public List<Order> FilterByDepartment(int departmentId)
+        {
+            List<Order> orders = new List<Order>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(
+                    "SELECT DISTINCT o.O_ID, o.O_Made, o.O_Ready, o.O_PaySatus, o.O_Status " +
+                    "FROM dbo.OrderTable o " +
+                    "INNER JOIN dbo.EmployeeRecipePartOrderTable ero ON o.O_ID = ero.O_ID " +
+                    "INNER JOIN dbo.EmployeeDepartment ed ON ero.E_ID = ed.E_ID " +
+                    "WHERE ed.D_ID = @DepartmentId",
+                    connection);
+
+                command.Parameters.AddWithValue("@DepartmentId", departmentId);
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int id = Convert.ToInt32(reader["O_ID"]);
+                    DateTime made = Convert.ToDateTime(reader["O_Made"]);
+                    DateTime ready = Convert.ToDateTime(reader["O_Ready"]);
+                    bool paystatus = Convert.ToBoolean(reader["O_PaySatus"]);
+                    string statusString = reader["O_Status"].ToString();
+
+                    OrderStatus status;
+                    if (!Enum.TryParse<OrderStatus>(statusString, out status))
+                    {
+                        status = OrderStatus.Created;
+                    }
+
+                    Order order = new Order(made, ready, id, paystatus);
+                    order.Status = status;
+
+                    orders.Add(order);
+                }
+            }
+
+            return orders;
         }
 
         //filters orders for a specific customer/company
@@ -580,12 +659,10 @@ namespace gategourmetLibrary.Repo
         // returns all warehouses (for example freezer, fridge, dry storage)
         public List<Warehouse> GetAllWarehouses()
         {
-            // list that will hold all warehouses from the database
             List<Warehouse> warehouses = new List<Warehouse>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // select all warehouses from the warehouse table
                 SqlCommand command = new SqlCommand(
                     "SELECT W_ID, W_Name, W_Type, W_Location FROM dbo.warehouse",
                     connection);
@@ -595,38 +672,30 @@ namespace gategourmetLibrary.Repo
 
                 while (reader.Read())
                 {
-                    // create a new warehouse object for each row
                     Warehouse warehouse = new Warehouse();
                     warehouse.ID = Convert.ToInt32(reader["W_ID"]);
                     warehouse.Name = reader["W_Name"].ToString();
                     warehouse.Location = reader["W_Location"].ToString();
 
-                    // map W_Type (string in database) to WarehouseType enum in C#
                     WarehouseType type;
                     if (Enum.TryParse<WarehouseType>(reader["W_Type"].ToString(), true, out type))
                     {
                         warehouse.Type = type;
                     }
 
-                    // add the warehouse to the list
                     warehouses.Add(warehouse);
                 }
             }
 
-            // return the list of all warehouses
             return warehouses;
         }
 
-        // returns the warehouse where a specific recipe part is currently stored
         public Warehouse GetRecipePartLocation(int recipePartId)
         {
-            // default value is null if no location is found
             Warehouse warehouse = null;
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                // join between the junction table and warehouse
-                // to find the warehouse for a given recipe part (R_ID)
                 SqlCommand command = new SqlCommand(
                     "SELECT w.W_ID, w.W_Name, w.W_Type, w.W_Location " +
                     "FROM dbo.werehouseRecipePart wrp " +
@@ -634,13 +703,11 @@ namespace gategourmetLibrary.Repo
                     "WHERE wrp.R_ID = @R_ID",
                     connection);
 
-                // recipe part id parameter
                 command.Parameters.AddWithValue("@R_ID", recipePartId);
 
                 connection.Open();
                 SqlDataReader reader = command.ExecuteReader();
 
-                // if we find a row, we create a warehouse object
                 if (reader.Read())
                 {
                     warehouse = new Warehouse();
@@ -656,18 +723,15 @@ namespace gategourmetLibrary.Repo
                 }
             }
 
-            // this is either a warehouse object or null if no location exists yet
             return warehouse;
         }
 
-        // updates the warehouse location for a given recipe part
         public void UpdateRecipePartLocation(int recipePartId, int warehouseId)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                // first we try to update an existing row in the junction table
                 SqlCommand update = new SqlCommand(
                     "UPDATE dbo.werehouseRecipePart " +
                     "SET W_ID = @W_ID " +
@@ -679,7 +743,6 @@ namespace gategourmetLibrary.Repo
 
                 int rows = update.ExecuteNonQuery();
 
-                // if no rows were updated, it means there is no entry yet, then we insert a new row into the junction table
                 if (rows == 0)
                 {
                     SqlCommand insert = new SqlCommand(
