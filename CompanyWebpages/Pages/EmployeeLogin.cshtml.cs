@@ -9,7 +9,7 @@ namespace CompanyWebpages.Pages
 {
     public class EmployeeLoginModel : PageModel
     {
-        readonly EmployeeService _cs;
+        readonly EmployeeService _es;
         [BindProperty]
         public string UserID { get; set; }
 
@@ -23,33 +23,42 @@ namespace CompanyWebpages.Pages
             HttpContext.Session.Clear();
             return Page();
         }
-        public EmployeeLoginModel(EmployeeService cs)
+        public EmployeeLoginModel(EmployeeService es)
         {
-            _cs = cs;
+            _es = es;
 
         }
 
         public IActionResult OnPost()
         {
-            Employee employ = _cs.Get(Convert.ToInt32(UserID));
-            if (Password == employ.Password && UserID != null)
+            Employee employ = _es.Get(Convert.ToInt32(UserID));
+            if (employ != null)
             {
-                HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
-                HttpContext.Session.SetString("username", $"{employ.Name}"); // Gem i session
-                HttpContext.Session.SetString("userid", $"{employ.Id}");
-                if (_cs.LoginAdmin(Convert.ToInt32(UserID), Password) == true)
+                if (Password == employ.Password && Convert.ToInt32(UserID) == employ.Id)
                 {
-                    HttpContext.Session.SetString("admin", "true"); // Gem i session
+                    HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
+                    HttpContext.Session.SetString("username", $"{employ.Name}"); // Gem i session
+                    HttpContext.Session.SetString("userid", $"{employ.Id}");
+                    if (_es.LoginAdmin(Convert.ToInt32(UserID), Password) == true)
+                    {
+                        HttpContext.Session.SetString("admin", "true"); // Gem i session
+                    }
+
+
+                    return RedirectToPage("/EmployeeDashboard");
+                    //return RedirectToPage("/NewOrder");
+
                 }
-
-
-                return RedirectToPage("/EmployeeDashboard");
-                //return RedirectToPage("/NewOrder");
-
+            }
+            else
+            {
+                // Hvis id IKKE er korrekt
+                ErrorMessage = "Incorrect id, please try again.";
+                return Page();
             }
 
-            // Hvis password IKKE er korrekt
-            ErrorMessage = "Incorrect password, please try again.";
+                // Hvis password IKKE er korrekt
+                ErrorMessage = "Incorrect password, please try again.";
             return Page();
 
         }

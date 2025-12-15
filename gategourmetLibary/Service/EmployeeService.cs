@@ -80,16 +80,23 @@ namespace gategourmetLibrary.Service
         {
             if(_iemployee.IsThisAnAdmin(employeeId) == true)
             {
-                Admin loginAttempt = _iemployee.GetManger(employeeId);
-                
-                if(loginAttempt.Password == password)
+                Admin loginAttempt = _iemployee.GetAdmin(employeeId);
+                if(loginAttempt != null)
                 {
-                    return true;
+                    if (loginAttempt.Password == password)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
                     return false;
                 }
+
             }
             else
             {

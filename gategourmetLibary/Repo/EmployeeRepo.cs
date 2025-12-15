@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace gategourmetLibrary.Models
 {
@@ -409,7 +410,7 @@ namespace gategourmetLibrary.Models
         }
         public bool IsThisAnAdmin(int employeeID)
         {
-            Position positionCheck = null;
+
             SqlConnection sqlConnection = new SqlConnection(_connectionString);
             SqlCommand sqlCommand = new SqlCommand("select Pos_ID from EmployeePostion" +
                 " where EmployeePostion.E_ID =@id"
@@ -420,19 +421,21 @@ namespace gategourmetLibrary.Models
 
             try
             {
-
-
                 sqlConnection.Open();
                 SqlDataReader sqlReader = sqlCommand.ExecuteReader();
 
                 while (sqlReader.Read())
                 {
-                    positionCheck = new Position
+                    if (Convert.ToInt32(sqlReader["Pos_ID"]) != null)
                     {
-                        Id = Convert.ToInt32(sqlReader["Pos_ID"])
-                    };
-                }
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
 
+                }
                 sqlReader.Close();
             }
             catch (SqlException sqlError)
@@ -443,24 +446,18 @@ namespace gategourmetLibrary.Models
             {
                 sqlConnection.Close();
             }
+            return false;
 
-            if(positionCheck != null)
-            {
-                return true;
 
-            }
-            else
-            {
-                return false;           
-            }
         }
-        public Admin GetManger(int id)
+        public Admin GetAdmin(int id)
         {
 
             SqlConnection connection = new SqlConnection(_connectionString);
 
             // SQL kommando: Find medarbejder med dette ID
-               SqlCommand command = new SqlCommand("select Employee.E_Name as employeeName, Employee.E_ID as employeeId,Employee.E_Email as employeeEmail," +
+               SqlCommand command = new SqlCommand("select Employee.E_Name as employeeName, Employee.E_ID as employeeId " +
+                   ",Employee.E_Email as employeeEmail," +
                 " Employee.E_Password as employeePassword" +
                 ",Postion.Pos_ID as postionid, Postion.Pos_Name as posname from Employee" +
                 " join EmployeePostion on EmployeePostion.E_ID = Employee.E_ID" +
@@ -469,39 +466,51 @@ namespace gategourmetLibrary.Models
             // her sætte vi ID parameter
             command.Parameters.AddWithValue("@id", id);
 
-            // vi åbner forbindelsen til databasen 
-            connection.Open();
-
-            //sql commando til finde resultat
-            SqlDataReader reader = command.ExecuteReader();
-
-            //hvis der findes en medarbejder med dette ID
-            if (reader.Read())
+            try
             {
-                // hvis medarbejdern blev fundet, bliver der oprettet en ny objekt med data fra databasen
-                Admin admin = new Admin()
+
+            
+                 // vi åbner forbindelsen til databasen 
+                connection.Open();
+
+                //sql commando til finde resultat
+                SqlDataReader reader = command.ExecuteReader();
+
+                //hvis der findes en medarbejder med dette ID
+                while (reader.Read())
                 {
-                    Id = (int)reader["employeeId"],
-                    Name = reader["employeeName"].ToString(),
-                    Email = reader["employeeEmail"].ToString(),
-                    Password = reader["employeePassword"].ToString()
-                };
-                admin.MyPosition.Id = (int)reader["postionid"];
-                admin.MyPosition.Name = reader["posname"].ToString();
+                    // hvis medarbejdern blev fundet, bliver der oprettet en ny objekt med data fra databasen
+                   Admin admin = new Admin()
+                    {
+                        Id = (int)reader["employeeId"],
+                        Name = reader["employeeName"].ToString(),
+                        Email = reader["employeeEmail"].ToString(),
+                        Password = reader["employeePassword"].ToString()
+                    };
+                    admin.MyPosition.Id = (int)reader["postionid"];
+                    admin.MyPosition.Name = reader["posname"].ToString();
 
 
-                // lukker for reader og returner medarbejderen 
-                reader.Close();
-                return admin;
+                    // lukker for reader og returner medarbejderen 
+                    reader.Close();
+                    return admin;
 
 
+                }   
             }
-            else // hvis der ikke findes en medarbejder med det ID
+            catch (SqlException sqlError)
             {
-                // luk for reader og returner null
-                reader.Close();
-                return null;
+                throw new Exception("Database error in EmployeeRepo.IsThisAnAdmin(): " + sqlError.Message);
             }
+            finally
+            {
+                connection.Close();
+               
+            }
+
+            //returner null
+                return null;
+            
         }
 
 

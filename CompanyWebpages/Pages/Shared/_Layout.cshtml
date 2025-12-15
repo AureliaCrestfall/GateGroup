@@ -68,13 +68,13 @@
                             <!-- Orders dropdown -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                     Orders
                                 </a>
                                 <ul class="dropdown-menu">                                    
                                     <li>
                                         <a class="dropdown-item" asp-page="/AdminOrderList">
-                                             orders overview 
+                                            orders overview 
                                         </a>
                                     </li>
                                 </ul>
@@ -83,7 +83,7 @@
                             <!-- customers dropdown -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                     Customers
                                 </a>
                                 <ul class="dropdown-menu">
@@ -119,14 +119,18 @@
                                     </li>
                                 </ul>
                             </li>
+                            }
+                            @if (isLoggedIn)
+                            {
+                                <!-- Employee dashboard (ingen dropdown) -->
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-page="/EmployeeDashboard">
+                                        My tasks
+                                    </a>
+                                </li>
+                            }
 
-                            <!-- Employee dashboard (ingen dropdown) -->
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/EmployeeDashboard">
-                                    My tasks
-                                </a>
-                            </li>
-                        }
+                        
                     </ul>
 
                     <!-- højreside login / logout -->
