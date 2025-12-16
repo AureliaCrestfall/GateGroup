@@ -5,52 +5,107 @@
 }
 
 <section class="container py-5">
+
     <div class="row align-items-center gy-4">
-        <!-- Tekst til venstre -->
-        <div class="col-lg-6 text-center text-lg-start">
-            <h1 class="display-5 mb-3" style="font-family:'Playfair Display', Georgia, serif;">
-               Welcome to GateGourmet
+
+        <!-- Text -->
+        <div class="col-12 col-lg-6 text-center text-lg-start">
+
+            <h1 class="display-5 mb-3 page-title">
+                Welcome to GateGourmet
             </h1>
+
             <p class="lead text-muted mb-4">
-                GateGourmet is an international catering company that produces and delivers meals for airlines, rail operators, and airport lounges. <strong>We manage the entire process — from menu planning and food preparation to packing and delivery — ensuring that every meal arrives on time and at a consistent quality.</strong>,
-                With specialized teams and close coordination between kitchen and logistics, we help create a professional and reliable dining experience for passengers during their journey.
+                GateGourmet is an international catering company that produces and delivers meals
+                for airlines, rail operators, and airport lounges.
+                <strong>
+                    We manage the entire process — from menu planning and food preparation to
+                    packing and delivery — ensuring that every meal arrives on time and at a
+                    consistent quality.
+                </strong>
+                With specialized teams and close coordination between kitchen and logistics,
+                we help create a professional and reliable dining experience for passengers
+                during their journey.
             </p>
+
             <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
-                <span class="align-self-center">Read more about who we are and how we work →</span>
-                <a asp-page="/About" class="btn btn-outline-light px-4">About Us</a>
+                <span class="align-self-center text-muted">
+                    Read more about who we are and how we work →
+                </span>
+
+                <a asp-page="/About" class="btn btn-outline-primary px-4">
+                    About us
+                </a>
             </div>
+
         </div>
 
-        <!-- Billede til højre -->
-        <div class="col-lg-6 text-center">
+        <!-- Image -->
+        <div class="col-12 col-lg-6 text-center">
             <img src="~/img/gg-gategourmet.jpg"
-                 alt="GateGourmet Hero"
-                 class="img-fluid rounded shadow"
+                 alt="GateGourmet production overview"
+                 class="img-fluid rounded shadow-sm"
                  loading="lazy" />
         </div>
+
     </div>
+
 </section>
 
-<hr class="hr-gold" />
+<hr class="my-5" />
 
 <section class="container py-5">
+
     <div class="text-center mb-5">
-        <h2 style="font-family:'Playfair Display', Georgia, serif;">Why Choose GateGourmet?</h2>
-        <p class="text-muted">Because precision matters in the world of travel catering.</p>
+        <h2 class="page-title mb-2">
+            Why choose GateGourmet?
+        </h2>
+        <p class="text-muted">
+            Because precision matters in the world of travel catering.
+        </p>
     </div>
 
     <div class="row g-4 text-center">
-        <div class="col-md-4">
-            <h5 class="price-gold">✔ Reliability</h5>
-            <p>Every order is prepared and delivered according to strict timelines that match scheduled flights and rail departures. Punctuality and workflow coordination are at the heart of our production.</p>
+
+        <div class="col-12 col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Reliability</h5>
+                    <p class="text-muted mb-0">
+                        Every order is prepared and delivered according to strict timelines that
+                        match scheduled flights and rail departures. Punctuality and workflow
+                        coordination are at the heart of our production.
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h5 class="price-gold">✔ Consistent Quality</h5>
-            <p>From economy meals to premium dining concepts, we follow standardized processes that ensure the same high level of quality — regardless of volume, destination, or passenger segment.</p>
+
+        <div class="col-12 col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Consistent quality</h5>
+                    <p class="text-muted mb-0">
+                        From economy meals to premium dining concepts, we follow standardized
+                        processes that ensure the same high level of quality — regardless of
+                        volume, destination, or passenger segment.
+                    </p>
+                </div>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h5 class="price-gold">✔ Seamless Collaboration</h5>
-            <p>Chefs, planners, warehouse employees and logistics specialists work in one coordinated flow. This minimizes bottlenecks and ensures a smooth handover from the kitchen to the aircraft or lounge.</p>
+
+        <div class="col-12 col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3">Seamless collaboration</h5>
+                    <p class="text-muted mb-0">
+                        Chefs, planners, warehouse employees and logistics specialists work in one
+                        coordinated flow. This minimizes bottlenecks and ensures a smooth handover
+                        from the kitchen to the aircraft or lounge.
+                    </p>
+                </div>
+            </div>
         </div>
+
     </div>
+
 </section>

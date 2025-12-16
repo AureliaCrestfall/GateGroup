@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -15,10 +17,17 @@
 </head>
 
 <body>
+    @{
+        bool isLoggedIn = Context.Session.GetString("IsLoggedIn") == "true";
+        string username = Context.Session.GetString("username");
+    }
+
     <header>
-        <nav class="navbar navbar-expand-sm navbar-dark border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-dark border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" href="/">GateGourmet</a>
+
+                <a class="navbar-brand fw-semibold" asp-page="/Index">GateGourmet</a>
+
                 <button class="navbar-toggler"
                         type="button"
                         data-bs-toggle="collapse"
@@ -29,33 +38,40 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Navbar -->
                 <div class="collapse navbar-collapse" id="mainNavbar">
-                    <ul class="navbar-nav">
+
+                    <!-- Left menu -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                         <li class="nav-item">
-                            <a class="nav-link" href="/About">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Contact">Contact</a>
+                            <a class="nav-link" asp-page="/About">About</a>
                         </li>
 
-                        @if (Context.Session.GetString("IsLoggedIn") == "true")
+                        <li class="nav-item">
+                            <a class="nav-link" asp-page="/Contact">Contact</a>
+                        </li>
+
+                        @if (isLoggedIn)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="/Dashboard">Dashboard</a>
+                                <a class="nav-link" asp-page="/Dashboard">Dashboard</a>
                             </li>
                         }
                     </ul>
+
+                    <!-- Right menu -->
                     <ul class="navbar-nav ms-auto align-items-center">
-                        @if (Context.Session.GetString("IsLoggedIn") == "true")
+                        @if (isLoggedIn)
                         {
                             <li class="nav-item me-2">
                                 <span class="nav-link text-muted">
-                                    Hello, @Context.Session.GetString("username")
+                                    Hello, @username
                                 </span>
                             </li>
+
                             <li class="nav-item">
-                                <a href="/Login" class="btn btn-sm btn-outline-light">
+                                <!-- Your current solution logs out by going to /Login (same as your old code) -->
+                                <a asp-page="/Login" class="btn btn-sm btn-outline-light">
                                     Log out
                                 </a>
                             </li>
@@ -81,17 +97,14 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="border-top footer text-muted mt-4">
+        <div class="container py-3">
             &copy; 2025 - GateGroupWebpages -
-            <a href="/Privacy">Privacy</a>
+            <a asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

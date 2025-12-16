@@ -4,48 +4,75 @@
     ViewData["Title"] = "Log in";
 }
 
-<div class="login-container">
-    <div class="login-card">
+<div class="container py-5">
 
-        <!-- Ikon + titel -->
-        <div class="login-icon-wrapper">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="h5 mb-0">Log in</h2>
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-muted text-center mb-4">
+                        Enter your user ID and password to access the system.
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger text-center" role="alert">
+                            @Model.ErrorMessage
+                        </div>
+                    }
+
+                    <form method="post">
+
+                        <!-- User ID -->
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">
+                                User ID
+                            </label>
+                            <input type="text"
+                                   id="userId"
+                                   name="UserID"
+                                   class="form-control"
+                                   placeholder="Enter your user ID"
+                                   required />
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                Password
+                            </label>
+                            <input type="password"
+                                   id="password"
+                                   name="Password"
+                                   class="form-control"
+                                   placeholder="Enter your password"
+                                   required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Log in
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <div class="card-footer text-center text-muted small">
+                    If you experience login issues, please contact an administrator.
+                </div>
+
+            </div>
+
         </div>
-
-        <h2 class="login-title text-center">Password</h2>
-
-        <form method="post" class="login-form">
-            <div class="form-group mb-3">
-                <input type="text"
-                       id="userId"
-                       name="UserID"
-                       class="form-control"
-                       placeholder="Insert your user ID"
-                       required />
-            </div>
-
-            <div class="form-group mb-4">
-                <input type="password"
-                       id="password"
-                       name="Password"
-                       class="form-control"
-                       placeholder="Insert your password"
-                       required />
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">
-                Log in
-            </button>
-        </form>
-
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-            <div class="alert alert-danger mt-3 text-center">
-                @Model.ErrorMessage
-            </div>
-        }
     </div>
+
 </div>

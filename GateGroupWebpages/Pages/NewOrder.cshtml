@@ -1,35 +1,45 @@
 ﻿@page
 @model GateGroupWebpages.Pages.NewOrderModel
 @{
-    ViewData["Title"] = "New Order";
+    ViewData["Title"] = "New order";
 }
 
-<div class="neworder-container container-sm my-4">
+<div class="container py-4">
+
+    <!-- Header -->
     <div class="text-center mb-4">
-        <h2 class="neworder-title mb-1">Create New Order</h2>
-        <p class="neworder-subtitle text-muted">
-            Fill in the basic order information and define the recipe parts that belong to this order.
+        <h1 class="h3 mb-2">Create new order</h1>
+        <p class="text-muted mb-0">
+            Add the basic order details and define the recipe parts for this order.
         </p>
     </div>
-    
+
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
-        <div class="alert alert-warning mb-4">
-            <h5><i class="bi bi-info-circle-fill"></i> Information</h5>
-            <p class="mb-0">@Model.ErrorMessage</p>
+        <div class="alert alert-warning" role="alert">
+            <strong>Information:</strong> @Model.ErrorMessage
         </div>
     }
 
-    <div class="neworder-card card shadow-sm">
+    <div class="card shadow-sm">
         <div class="card-body">
+
             <form method="post">
+
                 <!-- Order information -->
-                <h5 class="mb-3">Order information</h5>
-                <div class="row mb-3">
-                    <div class="col-md-6 mb-3 mb-md-0">
-                        <label asp-for="newOrder.OrderDoneBy" class="form-label">Ready by</label>
-                        <input type="date"
-                               asp-for="newOrder.OrderDoneBy"
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                    <h2 class="h5 mb-0">Order information</h2>
+                    <span class="text-muted small">Fields marked with * are recommended</span>
+                </div>
+
+                <div class="row g-3 mb-3">
+
+                    <div class="col-12 col-md-6">
+                        <label asp-for="newOrder.OrderDoneBy" class="form-label">
+                            Ready by *
+                        </label>
+                        <input asp-for="newOrder.OrderDoneBy"
+                               type="date"
                                class="form-control"
                                id="OrderDoneBy"
                                aria-describedby="dateHelp" />
@@ -38,10 +48,10 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6 d-flex align-items-center">
+                    <div class="col-12 col-md-6 d-flex align-items-end">
                         <div class="form-check">
-                            <input type="checkbox"
-                                   asp-for="newOrder.paystatus"
+                            <input asp-for="newOrder.paystatus"
+                                   type="checkbox"
                                    class="form-check-input"
                                    id="PayStatus" />
                             <label class="form-check-label" for="PayStatus">
@@ -49,87 +59,91 @@
                             </label>
                         </div>
                     </div>
+
                 </div>
 
-                <hr class="section-divider" />
+                <hr class="my-4" />
 
-                <h5 class="mb-3">Recipe parts</h5>
-                <p class="form-text mb-3">
-                    Each recipe part represents one component of the order (for example: “Cold snacks”, “Bread”, “Drinks”).
+                <!-- Recipe parts -->
+                <h2 class="h5 mb-2">Recipe parts</h2>
+                <p class="text-muted mb-4">
+                    Each recipe part is one component of the order (for example: “Cold snacks”, “Bread”, “Drinks”).
                 </p>
 
                 <!-- Recipe part 1 -->
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h6 class="recipe-section-title mb-3">Recipe part 1</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+                        <h3 class="h6 mb-3">Recipe part 1</h3>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
                                 <label asp-for="recipePart1.partName" class="form-label">Part name</label>
-                                <input type="text"
-                                       asp-for="recipePart1.partName"
+                                <input asp-for="recipePart1.partName"
+                                       type="text"
                                        class="form-control"
-                                       placeholder="E.g. Cold dishes" />
+                                       placeholder="e.g. Cold dishes" />
                             </div>
-                            <div class="col-md-6 mb-3">
+
+                            <div class="col-12 col-md-6">
                                 <label asp-for="recipePart1.Assemble" class="form-label">How to assemble</label>
-                                <input type="text"
-                                       asp-for="recipePart1.Assemble"
+                                <input asp-for="recipePart1.Assemble"
+                                       type="text"
                                        class="form-control"
-                                       placeholder="Short description of how to prepare" />
+                                       placeholder="Short preparation instructions" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Ingredient</label>
+                                <select asp-for="Ingredient1" class="form-select" asp-items="Model.IngredientOptions">
+                                    <option value="0">Select an ingredient</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Allergy</label>
+                                <select asp-for="allerie1" class="form-select" asp-items="Model.AllerieOptions">
+                                    <option value="0">Select an allergy</option>
+                                </select>
                             </div>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient1" class="form-select" asp-items="Model.IngredientOptions">
-                                <option value="0">Select an ingredient</option>
-                               
-                            </select>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label">allerie for this part</label>
-                            <select asp-for="allerie1" class="form-select" asp-items="Model.AllerieOptions">
-                                <option value="0">Select an allerie</option>
-
-                            </select>
-                        </div>
-                        
                     </div>
                 </div>
 
                 <!-- Recipe part 2 -->
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h6 class="recipe-section-title mb-3">Recipe part 2</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="recipePart2.partName" class="form-label">Part name</label>
-                                <input type="text"
-                                       asp-for="recipePart2.partName"
-                                       class="form-control"
-                                       placeholder="E.g. Hot dishes" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="recipePart2.Assemble" class="form-label">How to assemble</label>
-                                <input type="text"
-                                       asp-for="recipePart2.Assemble"
-                                       class="form-control"
-                                       placeholder="Short description of how to prepare" />
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient2" class="form-select" asp-items="Model.IngredientOptions">
-                                <option value="0">Select an ingredient</option>
-                                
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">allerie for this part</label>
-                            <select asp-for="allerie2" class="form-select" asp-items="Model.AllerieOptions">
-                                <option value="0">Select an allerie</option>
+                        <h3 class="h6 mb-3">Recipe part 2</h3>
 
-                            </select>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="recipePart2.partName" class="form-label">Part name</label>
+                                <input asp-for="recipePart2.partName"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="e.g. Hot dishes" />
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="recipePart2.Assemble" class="form-label">How to assemble</label>
+                                <input asp-for="recipePart2.Assemble"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Short preparation instructions" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Ingredient</label>
+                                <select asp-for="Ingredient2" class="form-select" asp-items="Model.IngredientOptions">
+                                    <option value="0">Select an ingredient</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Allergy</label>
+                                <select asp-for="allerie2" class="form-select" asp-items="Model.AllerieOptions">
+                                    <option value="0">Select an allergy</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -137,36 +151,38 @@
                 <!-- Recipe part 3 -->
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h6 class="recipe-section-title mb-3">Recipe part 3</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="recipePart3.partName" class="form-label">Part name</label>
-                                <input type="text"
-                                       asp-for="recipePart3.partName"
-                                       class="form-control"
-                                       placeholder="Enter the name of the part" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="recipePart3.Assemble" class="form-label">How to assemble</label>
-                                <input type="text"
-                                       asp-for="recipePart3.Assemble"
-                                       class="form-control"
-                                       placeholder="Describe how to make it" />
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient3" class="form-select" asp-items="Model.IngredientOptions">
-                                <option value="0">Select an ingredient</option>
-                                
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">allerie for this part</label>
-                            <select asp-for="allerie3" class="form-select" asp-items="Model.AllerieOptions">
-                                <option value="0">Select an allerie</option>
+                        <h3 class="h6 mb-3">Recipe part 3</h3>
 
-                            </select>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="recipePart3.partName" class="form-label">Part name</label>
+                                <input asp-for="recipePart3.partName"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Enter the part name" />
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="recipePart3.Assemble" class="form-label">How to assemble</label>
+                                <input asp-for="recipePart3.Assemble"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Short preparation instructions" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Ingredient</label>
+                                <select asp-for="Ingredient3" class="form-select" asp-items="Model.IngredientOptions">
+                                    <option value="0">Select an ingredient</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Allergy</label>
+                                <select asp-for="allerie3" class="form-select" asp-items="Model.AllerieOptions">
+                                    <option value="0">Select an allergy</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -174,87 +190,99 @@
                 <!-- Recipe part 4 -->
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h6 class="recipe-section-title mb-3">Recipe part 4</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="recipePart4.partName" class="form-label">Part name</label>
-                                <input type="text"
-                                       asp-for="recipePart4.partName"
-                                       class="form-control"
-                                       placeholder="Enter the name of the part" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="recipePart4.Assemble" class="form-label">How to assemble</label>
-                                <input type="text"
-                                       asp-for="recipePart4.Assemble"
-                                       class="form-control"
-                                       placeholder="Describe how to make it" />
-                            </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient4" class="form-select" asp-items="Model.IngredientOptions">
-                                <option value="0">Select an ingredient</option>
-                                
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">allerie for this part</label>
-                            <select asp-for="allerie4" class="form-select" asp-items="Model.AllerieOptions">
-                                <option value="0">Select an allerie</option>
+                        <h3 class="h6 mb-3">Recipe part 4</h3>
 
-                            </select>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label asp-for="recipePart4.partName" class="form-label">Part name</label>
+                                <input asp-for="recipePart4.partName"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Enter the part name" />
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label asp-for="recipePart4.Assemble" class="form-label">How to assemble</label>
+                                <input asp-for="recipePart4.Assemble"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="Short preparation instructions" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Ingredient</label>
+                                <select asp-for="Ingredient4" class="form-select" asp-items="Model.IngredientOptions">
+                                    <option value="0">Select an ingredient</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Allergy</label>
+                                <select asp-for="allerie4" class="form-select" asp-items="Model.AllerieOptions">
+                                    <option value="0">Select an allergy</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recipe part 5 -->
-                <div class="card mb-3">
+                <div class="card mb-4">
                     <div class="card-body">
-                        <h6 class="recipe-section-title mb-3">Recipe part 5</h6>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
+                        <h3 class="h6 mb-3">Recipe part 5</h3>
+
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
                                 <label asp-for="recipePart5.partName" class="form-label">Part name</label>
-                                <input type="text"
-                                       asp-for="recipePart5.partName"
+                                <input asp-for="recipePart5.partName"
+                                       type="text"
                                        class="form-control"
-                                       placeholder="Enter the name of the part" />
+                                       placeholder="Enter the part name" />
                             </div>
-                            <div class="col-md-6 mb-3">
+
+                            <div class="col-12 col-md-6">
                                 <label asp-for="recipePart5.Assemble" class="form-label">How to assemble</label>
-                                <input type="text"
-                                       asp-for="recipePart5.Assemble"
+                                <input asp-for="recipePart5.Assemble"
+                                       type="text"
                                        class="form-control"
-                                       placeholder="Describe how to make it" />
+                                       placeholder="Short preparation instructions" />
                             </div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Ingredients for this part</label>
-                            <select asp-for="Ingredient5" class="form-select" asp-items="Model.IngredientOptions">
-                                <option value="0">Select an ingredient</option>
 
-                            </select>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">allerie for this part</label>
-                            <select asp-for="allerie5" class="form-select" asp-items="Model.AllerieOptions">
-                                <option value="0">Select an allerie</option>
+                            <div class="col-12">
+                                <label class="form-label">Ingredient</label>
+                                <select asp-for="Ingredient5" class="form-select" asp-items="Model.IngredientOptions">
+                                    <option value="0">Select an ingredient</option>
+                                </select>
+                            </div>
 
-                            </select>
+                            <div class="col-12">
+                                <label class="form-label">Allergy</label>
+                                <select asp-for="allerie5" class="form-select" asp-items="Model.AllerieOptions">
+                                    <option value="0">Select an allergy</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                    <input type="hidden" value="@DateTime.Now" asp-for="newOrder.OrderMade" />
-                    <input type="hidden" value="@HttpContext.Session.GetString("userid")" asp-for="newOrder.CustomerOrder.ID" />
-                    <button type="submit" class="btn btn-primary mt-5">Submit</button>
-                </form>
-                </<div>
+                <!-- Hidden fields -->
+                <input type="hidden" value="@DateTime.Now" asp-for="newOrder.OrderMade" />
+                <input type="hidden" value="@HttpContext.Session.GetString("userid")" asp-for="newOrder.CustomerOrder.ID" />
+
+                <!-- Actions -->
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+                    <a asp-page="/Dashboard" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        Submit order
+                    </button>
                 </div>
+
+            </form>
+
         </div>
     </div>
+
 </div>
-
-
-
-
