@@ -5,11 +5,20 @@ using gategourmetLibrary.Secret;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using gategourmetLibrary.Repo;
+using gategourmetLibrary.Service;
 
 namespace GateGroupWebpages.Pages
 {
     public class DashboardModel : PageModel
     {
+        private readonly OrderService _orderService;
+
+        public DashboardModel(OrderService orderService)
+        {
+            _orderService = orderService;
+        }
+
         //list to hold orders
         public List<Order> Orders { get; set; }
 
@@ -24,7 +33,9 @@ namespace GateGroupWebpages.Pages
         //it runs when the page is loaded
         public void OnGet()
         {
-            Orders = new List<Order>() ;
+
+
+            Orders = _orderService.GetAllOrders();
 
             //default filter (Created)
             if (String.IsNullOrEmpty(statusFilter))
@@ -43,41 +54,8 @@ namespace GateGroupWebpages.Pages
                 new SelectListItem("Completed", "Completed"),
                 new SelectListItem("Cancelled", "Cancelled")
             };
-            
-            //get constring(DB) from connect class
-            string connectionString = new Connect().cstring;
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                //open connection
-                conn.Open();
 
-                // SQL query to select orders
-                string sql = @"SELECT O_ID, O_Made, O_Ready, O_PaySatus ,O_status FROM OrderTable";
-
-                //execute command
-                using (SqlCommand command = new SqlCommand(sql, conn))
-                //read data
-                using (SqlDataReader reader = command.ExecuteReader())
-
-                {
-                    //loop through the data
-                    while (reader.Read())
-                    {
-                        //create order object
-                        Order order = new Order
-                            {
-                                ID = reader.GetInt32(reader.GetOrdinal("O_ID")),
-                                OrderMade = reader.GetDateTime(reader.GetOrdinal("O_Made")),
-                                OrderDoneBy = reader.GetDateTime(reader.GetOrdinal("O_Ready")),
-                                paystatus = reader.GetBoolean(reader.GetOrdinal("O_PaySatus")),
-                                Status = GetStatusFormating (reader["O_status"].ToString())
-                        };
-
-                        //add order to list
-                        Orders.Add(order);
-                    }
-                }
-            }
+           
 
             //if user has selected a status filter, filter the orders by using LINQ
                 //'out' keyword allows the method to return an additional value through this variable
@@ -96,42 +74,7 @@ namespace GateGroupWebpages.Pages
         //delete handler/method
         public IActionResult OnPostDelete(int ID)
         {
-            // get constring from connect class
-            string connectionString = new Connect().cstring;
-            using (SqlConnection conn = new SqlConnection(connectionString))
-            {
-                // open connection
-                conn.Open();
-                string sql2 = @" DELETE FROM orderTableRecipePart WHERE O_ID =@id";
-                using (SqlCommand command = new SqlCommand(sql2, conn))
-                {
-                    command.Parameters.AddWithValue("@id", ID);
-                    command.ExecuteNonQuery();
-                }
-                string sql3 = @" DELETE FROM OrderTableCustomer WHERE O_ID =@id";
-                using (SqlCommand command = new SqlCommand(sql3, conn))
-                {
-                    command.Parameters.AddWithValue("@id", ID);
-                    command.ExecuteNonQuery();
-                }
-
-                string sql4 = @" DELETE FROM EmployeeRecipePartOrderTable WHERE O_ID =@id";
-                using (SqlCommand command = new SqlCommand(sql4, conn))
-                {
-                    command.Parameters.AddWithValue("@id", ID);
-                    command.ExecuteNonQuery();
-                }
-
-
-                string sql = @" DELETE FROM OrderTable WHERE O_ID =@id";
-
-                //execute command
-                using (SqlCommand command = new SqlCommand(sql, conn))
-                {
-                    command.Parameters.AddWithValue("@id", ID);
-                    command.ExecuteNonQuery();
-                }
-            }
+            _orderService.DeleteOrder(ID);
             return RedirectToPage();
 
         }

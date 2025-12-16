@@ -17,6 +17,12 @@ namespace gategourmetLibrary.Service
         {
             _orderRepo = orderRepo;
         }
+
+        public Dictionary<int,Order> GetAll()
+        {
+            return _orderRepo.GetAll();
+        }
+
         // gets all orders
         public List<Order> GetAllOrders()
         {
@@ -70,9 +76,9 @@ namespace gategourmetLibrary.Service
             
         }
         // deletes an order by ID
-        public void DeleteOrder(int orderID)
+        public void DeleteOrder(int ID)
         {
-            _orderRepo.DeleteOrder(orderID);
+            _orderRepo.DeleteOrder(ID);
         }
         // updates an existing order
         public void UpdateOrder(int orderID, Order updatedOrder)
