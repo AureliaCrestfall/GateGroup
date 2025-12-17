@@ -16,13 +16,20 @@
                 Review order information and recipe parts.
             </div>
         </div>
-
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-warning" role="alert">
+                <strong>Information:</strong> @Model.ErrorMessage
+            </div>
+        }
         <!-- Single Back button  -->
         <a class="btn btn-outline-light" asp-page="/Dashboard">
             Back to Dashboard
         </a>
     </div>
-
+    @if (string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+ 
     <!-- Order summary -->
     <div class="card bg-dark border-secondary text-light shadow-sm mb-4">
         <div class="card-body">
@@ -128,7 +135,7 @@
             Delete order
         </button>
     </div>
-</div>
+
 
 <!-- Delete confirmation  -->
 <div class="modal fade"
@@ -179,3 +186,4 @@
         </div>
     </div>
 </div>
+}

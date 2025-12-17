@@ -19,8 +19,10 @@ namespace GateGroupWebpages.Pages
         public OrderDetailsModel(OrderService orderService)
         {
             _orderService = orderService;
+            Order = new Order();
         }
-
+        [BindProperty]
+        public string ErrorMessage { get; set; }
 
         //it holds the order 
         public Order Order { get; set; }
@@ -34,7 +36,16 @@ namespace GateGroupWebpages.Pages
         //it runs when the page is loaded (Get request)
         public void OnGet(int orderid)
         {
-            Order = _orderService.GetOrder(orderid);
+            try
+            {
+                Order = _orderService.GetOrder(orderid);
+            }
+            catch(Exception ex)
+            {
+                ErrorMessage = ex.Message;
+                Order.ID = orderid;
+            }
+            
             
         }
         //method to convert int to OrderStatus enum

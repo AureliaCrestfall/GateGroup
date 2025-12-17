@@ -314,9 +314,9 @@ namespace gategourmetLibrary.Repo
                 "  i.I_ID as ingID, i.I_Name as ingeName" +
                 "   FROM OrderTable" +
                 "   left join orderTableRecipePart OTP on OTP.O_ID = OrderTable.o_ID " +
-                "   JOIN RecipePart RP ON OTP.R_ID = RP.R_ID   " +
-                "   join IngrefientrecipePart IR on IR.R_ID = RP.R_ID     " +
-                "   join ingredient i on i.I_ID = IR.I_ID " +
+                "  left JOIN RecipePart RP ON OTP.R_ID = RP.R_ID   " +
+                "  left join IngrefientrecipePart IR on IR.R_ID = RP.R_ID     " +
+                "  left join ingredient i on i.I_ID = IR.I_ID " +
                 " where ordertable.O_ID = @id",
                 sqlConnection);
 
@@ -340,49 +340,78 @@ namespace gategourmetLibrary.Repo
                     {
                         status = OrderStatus.Created;
                     }
-
-                    int rID = Convert.ToInt32(sqlReader["rid"]);
-                    string rName = sqlReader["rname"].ToString();
-                    string howtoprep = sqlReader["howtoprep"].ToString();
-                    string rStatus = sqlReader["rstatus"].ToString();
-                    int ingID = Convert.ToInt32(sqlReader["ingID"]);
-                    string ingeName = sqlReader["ingeName"].ToString();
+                    if (!DBNull.Value.Equals(sqlReader["rid"]))
+                    {
+                        int rID = Convert.ToInt32(sqlReader["rid"]);
+                        string rName = sqlReader["rname"].ToString();
+                        string howtoprep = sqlReader["howtoprep"].ToString();
+                        string rStatus = sqlReader["rstatus"].ToString();
+                        int ingID = Convert.ToInt32(sqlReader["ingID"]);
+                        string ingeName = sqlReader["ingeName"].ToString();
+                    }
+                    
 
                     if (order.ID != id)
                     {
                         order = new Order(made, ready, id, paystatus, status);
+                        if (!DBNull.Value.Equals(sqlReader["rid"]))
+                        {
+                            int rID = Convert.ToInt32(sqlReader["rid"]);
+                            string rName = sqlReader["rname"].ToString();
+                            string howtoprep = sqlReader["howtoprep"].ToString();
+                            string rStatus = sqlReader["rstatus"].ToString();
+                            int ingID = Convert.ToInt32(sqlReader["ingID"]);
+                            string ingeName = sqlReader["ingeName"].ToString();
 
-                        order.Recipe.Add(rID, new RecipePart
+                            order.Recipe.Add(rID, new RecipePart
+                            {
+                                ID = rID,
+                                partName = rName,
+                                Assemble = howtoprep,
+                                status = rStatus,
+                                Ingredients = new List<Ingredient>()
+                            });
+                            order.Recipe[rID].Ingredients.Add(new Ingredient
+                            {
+                                ID = ingID,
+                                Name = ingeName
+                            });
+                        }
+                        else
                         {
-                            ID = rID,
-                            partName = rName,
-                            Assemble = howtoprep,
-                            status = rStatus,
-                            Ingredients = new List<Ingredient>()
-                        });
-                        order.Recipe[rID].Ingredients.Add(new Ingredient
-                        {
-                            ID = ingID,
-                            Name = ingeName
-                        });
+                            throw new Exception(" this order dosn't have any recipe parts ");
+                        }
+                        
                     }
                     else
                     {
-                        order.Recipe.Add(rID, new RecipePart
+                        if (!DBNull.Value.Equals(sqlReader["rid"]))
                         {
-                            ID = rID,
-                            partName = rName,
-                            Assemble = howtoprep,
-                            status = rStatus,
-                            Ingredients = new List<Ingredient>()
+                            int rID = Convert.ToInt32(sqlReader["rid"]);
+                            string rName = sqlReader["rname"].ToString();
+                            string howtoprep = sqlReader["howtoprep"].ToString();
+                            string rStatus = sqlReader["rstatus"].ToString();
+                            int ingID = Convert.ToInt32(sqlReader["ingID"]);
+                            string ingeName = sqlReader["ingeName"].ToString();
+                            order.Recipe.Add(rID, new RecipePart
+                            {
+                                ID = rID,
+                                partName = rName,
+                                Assemble = howtoprep,
+                                status = rStatus,
+                                Ingredients = new List<Ingredient>()
 
-                        });
-                        order.Recipe[rID].Ingredients.Add(new Ingredient
+                            });
+                            order.Recipe[rID].Ingredients.Add(new Ingredient
+                            {
+                                ID = ingID,
+                                Name = ingeName
+                            });
+                        }
+                        else
                         {
-                            ID = ingID,
-                            Name = ingeName
-                        });
-
+                            throw new Exception(" this order dosn't have any recipe parts ");
+                        }
                     }
                 }
             }
@@ -394,7 +423,8 @@ namespace gategourmetLibrary.Repo
             {
                 sqlConnection.Close();
             }
-
+            Debug.WriteLine(order.ID + " order id in repo is");
+            
             return order;
         }
 
