@@ -14,7 +14,7 @@ namespace GateGourmetLibaryTest
     {
         [Theory]
         [InlineData(1)]
-        public void AddTest(int id)
+        public async Task AddTest(int id)
         {
             FakeOrderRepo orderRepo = new FakeOrderRepo();
             OrderService orderService = new OrderService(orderRepo);
@@ -33,7 +33,7 @@ namespace GateGourmetLibaryTest
         }
 
         [Fact]
-        public void FilterByStatus()
+        public async Task FilterByStatus()
         {
             FakeOrderRepo orderRepo = new FakeOrderRepo();
             OrderService orderService = new OrderService(orderRepo);
@@ -70,7 +70,7 @@ namespace GateGourmetLibaryTest
 
 
            Assert.NotEqual(testList.Count, FilteredList.Count);
-
+           Assert.Equal(testList.Count, orderRepo.ListOrders.Count);
 
 
 
