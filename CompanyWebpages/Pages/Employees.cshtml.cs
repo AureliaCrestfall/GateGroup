@@ -2,6 +2,7 @@ using gategourmetLibrary.Models;
 using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics;
 
 namespace CompanyWebpages.Pages
 {
@@ -18,6 +19,7 @@ namespace CompanyWebpages.Pages
 
         [TempData]
         public string ErrorMessage { get; set; }
+
 
 
         public EmployeesModel (EmployeeService employeeService)
@@ -37,6 +39,7 @@ namespace CompanyWebpages.Pages
 
         public IActionResult OnPostDelete(int id)
         {
+            Debug.WriteLine("OnPostDelete called");
             try
             { 
                 _employeeService.delete(id);

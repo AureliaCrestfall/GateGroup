@@ -5,6 +5,7 @@ using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace GateGroupWebpages.Pages
 {
@@ -13,6 +14,8 @@ namespace GateGroupWebpages.Pages
         // Service used to access order logic
         private readonly OrderService _orderService;
 
+        [BindProperty]
+        public string SuccessMessage { get; set; }
         // Constructor injection of service
         public DashboardModel(OrderService orderService)
         {
@@ -32,7 +35,44 @@ namespace GateGroupWebpages.Pages
         // Runs when the page is loaded
         public void OnGet()
         {
-            int id =Convert.ToInt32(HttpContext.Session.GetString("userid"));
+            Load();
+        }
+
+        // Handles delete button click
+        public IActionResult OnPostDelete(int id)
+        {
+            Debug.WriteLine("delete was called");
+            _orderService.DeleteOrder(id);
+            SuccessMessage = $"order with ID {id} was deleted successfully.";
+            Load();
+            return Page();
+        }
+
+        // Converts status string from database into OrderStatus enum
+        private OrderStatus GetStatusFormatting(string status)
+        {
+            switch (status)
+            {
+                case "Created":
+                    return OrderStatus.Created;
+
+                case "InProgress":
+                    return OrderStatus.InProgress;
+
+                case "Completed":
+                    return OrderStatus.Completed;
+
+                case "Cancelled":
+                    return OrderStatus.Cancelled;
+
+                default:
+                    // Fallback if database contains unexpected value
+                    return OrderStatus.Created;
+            }
+        }
+        public void Load()
+        {
+            int id = Convert.ToInt32(HttpContext.Session.GetString("userid"));
             // Get all orders from service
             Orders = _orderService.GetAllOrdersFromid(id);
 
@@ -68,38 +108,8 @@ namespace GateGroupWebpages.Pages
                     }
                 }
 
-                
+
                 Orders = filteredOrders;
-            }
-        }
-
-        // Handles delete button click
-        public IActionResult OnPostDelete(int id)
-        {
-            _orderService.DeleteOrder(id);
-            return RedirectToPage();
-        }
-
-        // Converts status string from database into OrderStatus enum
-        private OrderStatus GetStatusFormatting(string status)
-        {
-            switch (status)
-            {
-                case "Created":
-                    return OrderStatus.Created;
-
-                case "InProgress":
-                    return OrderStatus.InProgress;
-
-                case "Completed":
-                    return OrderStatus.Completed;
-
-                case "Cancelled":
-                    return OrderStatus.Cancelled;
-
-                default:
-                    // Fallback if database contains unexpected value
-                    return OrderStatus.Created;
             }
         }
     }
