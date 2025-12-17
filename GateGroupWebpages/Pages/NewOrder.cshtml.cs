@@ -59,6 +59,9 @@ namespace GateGroupWebpages.Pages
 
         [BindProperty]
         public string ErrorMessage { get; set; }
+
+        [BindProperty]
+        public string SuccessMessage { get; set; }
      
 
 
@@ -83,27 +86,14 @@ namespace GateGroupWebpages.Pages
             recipePart3 = new RecipePart();
             recipePart4 = new RecipePart();
             recipePart5 = new RecipePart();
-            newOrder.OrderMade = DateTime.Now;
-            newOrder.OrderDoneBy = DateTime.Now.AddDays(7).Date;
-            Ingredients = _os.GetAllIngredients();
-           Dictionary<int,string> Alleries = _os.GetAllAllergies();
+            Load();
 
-            IngredientOptions = new List<SelectListItem>();
-            foreach(KeyValuePair<int,Ingredient> kv in Ingredients)
-            {
-                IngredientOptions.Add(new SelectListItem(kv.Value.Name, kv.Value.ID.ToString()));
-            }
-            AllerieOptions = new List<SelectListItem>();
-            foreach (KeyValuePair<int, string> kv in Alleries)
-            {
-                AllerieOptions.Add(new SelectListItem(kv.Value, kv.Key.ToString()));
-            }
 
 
 
 
         }
-         
+
 
         public IActionResult OnGet()
         {
@@ -171,9 +161,28 @@ namespace GateGroupWebpages.Pages
                             {
                                 if (a.Key == allerieID)
                                 {
-                                    Debug.WriteLine("order triggers your allergie");
                                     ErrorMessage = $"{i.Name} has one of your {a.Value} allerie";
-                                    newOrder.OrderMade = DateTime.Now;
+                                    Load();
+                                    return Page();
+                                }
+                            }
+                        }
+                        
+                       
+                    }
+
+                }
+
+                _os.AddOrder(newOrder);
+                SuccessMessage = "order has been added";
+                Load();
+                return Page();
+
+
+            }
+            catch (Exception ex)
+            {
+                newOrder.OrderMade = DateTime.Now;
                                     newOrder.OrderDoneBy = DateTime.Now.AddDays(7).Date;
                                     Ingredients = _os.GetAllIngredients();
                                     Dictionary<int, string> Alleries = _os.GetAllAllergies();
@@ -188,36 +197,6 @@ namespace GateGroupWebpages.Pages
                                     {
                                         AllerieOptions.Add(new SelectListItem(akv.Value, akv.Key.ToString()));
                                     }
-                                    return Page();
-                                }
-                            }
-                        }
-                        
-                       
-                    }
-
-                }
-                _os.AddOrder(newOrder);
-
-
-            }
-            catch (Exception ex)
-            {
-                newOrder.OrderMade = DateTime.Now;
-                newOrder.OrderDoneBy = DateTime.Now.AddDays(7).Date;
-                Ingredients = _os.GetAllIngredients();
-                Dictionary<int, string> Alleries = _os.GetAllAllergies();
-
-                IngredientOptions = new List<SelectListItem>();
-                foreach (KeyValuePair<int, Ingredient> ikv in Ingredients)
-                {
-                    IngredientOptions.Add(new SelectListItem(ikv.Value.Name, ikv.Value.ID.ToString()));
-                }
-                AllerieOptions = new List<SelectListItem>();
-                foreach (KeyValuePair<int, string> akv in Alleries)
-                {
-                    AllerieOptions.Add(new SelectListItem(akv.Value, akv.Key.ToString()));
-                }
                 ErrorMessage = $"{ex.Message}";
                 return Page();
 
@@ -225,6 +204,24 @@ namespace GateGroupWebpages.Pages
 
 
             return RedirectToPage("/NewOrder");
+        }
+        public void Load()
+        {
+            newOrder.OrderMade = DateTime.Now;
+            newOrder.OrderDoneBy = DateTime.Now.AddDays(7).Date;
+            Ingredients = _os.GetAllIngredients();
+            Dictionary<int, string> Alleries = _os.GetAllAllergies();
+
+            IngredientOptions = new List<SelectListItem>();
+            foreach (KeyValuePair<int, Ingredient> ikv in Ingredients)
+            {
+                IngredientOptions.Add(new SelectListItem(ikv.Value.Name, ikv.Value.ID.ToString()));
+            }
+            AllerieOptions = new List<SelectListItem>();
+            foreach (KeyValuePair<int, string> akv in Alleries)
+            {
+                AllerieOptions.Add(new SelectListItem(akv.Value, akv.Key.ToString()));
+            }
         }
 
     }

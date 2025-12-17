@@ -20,6 +20,12 @@
             <strong>Information:</strong> @Model.ErrorMessage
         </div>
     }
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-warning" role="alert">
+            <strong>Information:</strong> @Model.SuccessMessage
+        </div>
+    }
 
     <div class="card shadow-sm">
         <div class="card-body">
