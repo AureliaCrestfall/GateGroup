@@ -309,12 +309,15 @@ namespace gategourmetLibrary.Repo
 
             SqlCommand sqlCommand = new SqlCommand(
                 "SELECT OrderTable.O_ID as orderID, OrderTable.O_Made as made, OrderTable.O_Ready as ready," +
-                " OrderTable.O_PaySatus as paysatus, OrderTable.O_Status as orderstatus, " +
-                "RP.R_ID as rid, RP.R_Name as rname, RP.R_HowToPrep as howtoprep,RP.R_Status as rstatus" +
-                " FROM OrderTable" +
-                " left join orderTableRecipePart OTP on OTP.O_ID = OrderTable.o_ID " +
-                "JOIN RecipePart RP ON OTP.R_ID = RP.R_ID " +
-                "WHERE OrderTable.O_ID = @id",
+                "  OrderTable.O_PaySatus as paysatus, OrderTable.O_Status as orderstatus, " +
+                "  RP.R_ID as rid, RP.R_Name as rname, RP.R_HowToPrep as howtoprep,RP.R_Status as rstatus, " +
+                "  i.I_ID as ingID, i.I_Name as ingeName" +
+                "   FROM OrderTable" +
+                "   left join orderTableRecipePart OTP on OTP.O_ID = OrderTable.o_ID " +
+                "   JOIN RecipePart RP ON OTP.R_ID = RP.R_ID   " +
+                "   join IngrefientrecipePart IR on IR.R_ID = RP.R_ID     " +
+                "   join ingredient i on i.I_ID = IR.I_ID " +
+                " where ordertable.O_ID = @id",
                 sqlConnection);
 
             sqlCommand.Parameters.AddWithValue("@id", orderID);
@@ -342,6 +345,8 @@ namespace gategourmetLibrary.Repo
                     string rName = sqlReader["rname"].ToString();
                     string howtoprep = sqlReader["howtoprep"].ToString();
                     string rStatus = sqlReader["rstatus"].ToString();
+                    int ingID = Convert.ToInt32(sqlReader["ingID"]);
+                    string ingeName = sqlReader["ingeName"].ToString();
 
                     if (order.ID != id)
                     {
@@ -352,7 +357,13 @@ namespace gategourmetLibrary.Repo
                             ID = rID,
                             partName = rName,
                             Assemble = howtoprep,
-                            status = rStatus
+                            status = rStatus,
+                            Ingredients = new List<Ingredient>()
+                        });
+                        order.Recipe[rID].Ingredients.Add(new Ingredient
+                        {
+                            ID = ingID,
+                            Name = ingeName
                         });
                     }
                     else
@@ -362,8 +373,16 @@ namespace gategourmetLibrary.Repo
                             ID = rID,
                             partName = rName,
                             Assemble = howtoprep,
-                            status = rStatus
+                            status = rStatus,
+                            Ingredients = new List<Ingredient>()
+
                         });
+                        order.Recipe[rID].Ingredients.Add(new Ingredient
+                        {
+                            ID = ingID,
+                            Name = ingeName
+                        });
+
                     }
                 }
             }
