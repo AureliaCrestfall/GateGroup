@@ -22,5 +22,9 @@ namespace gategourmetLibrary.Repo
         Dictionary<int, Employee> GetEmployeeFromOrderID(int orderid);
         bool IsThisAnAdmin(int employeeID);
         Admin GetManger(int id);
+        Dictionary<int, string> GetEmployeesForFilter();
+        List<int> GetOrderIdsByEmployeeId(int employeeId);
+        List<EmployeeTask> GetEmployeeTasks(int employeeId);
+        void MarkTaskDone(int employeeId, int orderId, int recipePartId);
     }
 }

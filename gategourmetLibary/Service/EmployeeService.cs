@@ -104,6 +104,26 @@ namespace gategourmetLibrary.Service
             _iemployee.AddNewAdmin(admin);
         }
 
+        public Dictionary<int, string> GetEmployeesForFilter()
+        {
+            return _iemployee.GetEmployeesForFilter();
+        }
+
+        public List<int> GetOrderIdsByEmployeeId(int employeeId)
+        {
+            return _iemployee.GetOrderIdsByEmployeeId(employeeId);
+        }
+
+        public List<EmployeeTask> GetEmployeeTasks(int employeeId)
+        {
+            return _iemployee.GetEmployeeTasks(employeeId);
+        }
+
+        public void MarkTaskDone(int employeeId, int orderId, int recipePartId)
+        {
+            _iemployee.MarkTaskDone(employeeId, orderId, recipePartId);
+        }
+
 
 
     }

@@ -142,6 +142,111 @@ namespace gategourmetLibrary.Service
             return _orderRepo.FilterByDepartment(departmentId);
         }
 
+        // Filters the provided orders list to only include orders whose IDs are in orderIds.
+        // This is used by UI flows that already loaded Orders and then want to apply an "allowed IDs" filter.
+        public List<Order> FilterOrdersByOrderIds(List<Order> orders, ICollection<int> orderIds)
+        {
+            if (orders == null || orders.Count == 0)
+            {
+                return new List<Order>();
+            }
+
+            if (orderIds == null || orderIds.Count == 0)
+            {
+                return new List<Order>();
+            }
+
+            HashSet<int> allowed = orderIds as HashSet<int> ?? new HashSet<int>(orderIds);
+
+            List<Order> filtered = new List<Order>();
+            foreach (Order order in orders)
+            {
+                if (order != null && allowed.Contains(order.ID))
+                {
+                    filtered.Add(order);
+                }
+            }
+
+            return filtered;
+        }
+
+        // Filters orders by created date range (OrderMade) if from/to values are provided.
+        public List<Order> FilterOrdersByCreatedDateRange(List<Order> orders, DateTime? fromDate, DateTime? toDate)
+        {
+            if (orders == null || orders.Count == 0)
+            {
+                return new List<Order>();
+            }
+
+            DateTime? from = fromDate?.Date;
+            DateTime? to = toDate?.Date;
+
+            List<Order> filtered = new List<Order>();
+            foreach (Order order in orders)
+            {
+                if (order == null)
+                {
+                    continue;
+                }
+
+                DateTime made = order.OrderMade.Date;
+
+                if (from.HasValue && made < from.Value)
+                {
+                    continue;
+                }
+
+                if (to.HasValue && made > to.Value)
+                {
+                    continue;
+                }
+
+                filtered.Add(order);
+            }
+
+            return filtered;
+        }
+
+        // Applies a status filter only to orders created today. Matches the AdminOrderList behavior.
+        // If statusFilter is empty/null, the input list is returned unchanged.
+        public List<Order> FilterOrdersByStatusForOrdersCreatedToday(List<Order> orders, string statusFilter)
+        {
+            if (orders == null || orders.Count == 0)
+            {
+                return new List<Order>();
+            }
+
+            if (string.IsNullOrEmpty(statusFilter))
+            {
+                return orders;
+            }
+
+            DateTime today = DateTime.Today;
+            List<Order> filtered = new List<Order>();
+
+            foreach (Order order in orders)
+            {
+                if (order == null)
+                {
+                    continue;
+                }
+
+                bool isToday = order.OrderMade.Date == today;
+                if (!isToday)
+                {
+                    continue;
+                }
+
+                string currentStatus = order.Status.ToString();
+                if (currentStatus == statusFilter)
+                {
+                    filtered.Add(order);
+                }
+            }
+
+            return filtered;
+        }
+
         // returns the current warehouse location for a specific recipe part
         public Warehouse GetRecipePartLocation(int recipePartId)
         {

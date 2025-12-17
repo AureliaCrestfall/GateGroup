@@ -18,23 +18,7 @@
         </div>
     </div>
 
-    @{
-        bool hasUnassigned = false;
-
-        if (Model.Tasks != null)
-        {
-            foreach (EmployeeTask employeeTask in Model.Tasks)
-            {
-                if (employeeTask.Location == "Not registered")
-                {
-                    hasUnassigned = true;
-                    break;
-                }
-            }
-        }
-    }
-
-    @if (hasUnassigned)
+    @if (Model.HasUnassignedLocation)
     {
         <div class="gp-note mb-3" role="note">
             <div class="gp-note-title">Action needed</div>
