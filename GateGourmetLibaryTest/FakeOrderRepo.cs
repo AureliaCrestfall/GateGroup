@@ -12,6 +12,7 @@ namespace GateGourmetLibaryTest
     {
 
         public Dictionary<int,Order> DictOrders = new Dictionary<int, Order>();
+        public List<Order> ListOrders = new List<Order>();
 
         public void AddOrder(Order order)
         {
@@ -50,7 +51,7 @@ namespace GateGourmetLibaryTest
 
         public List<Order> FilterByStatus(OrderStatus status)
         {
-            throw new NotImplementedException();
+            return ListOrders;
         }
 
         public List<Order> FilterByToday(DateTime today)
@@ -79,6 +80,11 @@ namespace GateGourmetLibaryTest
         }
 
         public List<Order> GetAllOrders()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Order> GetAllOrdersFromid(int id)
         {
             throw new NotImplementedException();
         }

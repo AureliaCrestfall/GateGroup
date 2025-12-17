@@ -32,6 +32,49 @@ namespace GateGourmetLibaryTest
             Assert.Equal(id, orderRepo.DictOrders[id].ID);
         }
 
+        [Fact]
+        public void FilterByStatus()
+        {
+            FakeOrderRepo orderRepo = new FakeOrderRepo();
+            OrderService orderService = new OrderService(orderRepo);
+            List<Order> testList = new List<Order>();
+
+            for(int i = 0; i < 10; i++)
+            {
+                testList.Add(new Order
+                {
+                    ID = i,
+
+                    Status = OrderStatus.Created
+                });
+
+            }
+
+
+
+            foreach(Order o in testList)
+            {
+              Order or = new Order
+                {
+                    ID = o.ID,
+                    OrderMade = DateTime.Now,
+                    OrderDoneBy = DateTime.Now.AddDays(7),
+
+
+                } ;
+                or.Recipe.Add(1, new RecipePart());
+                 or.Recipe[1].partName = "test";
+                orderService.AddOrder(or);
+            }
+           List<Order> FilteredList = orderService.FilterOrdersByStatus(OrderStatus.Cancelled);
+
+
+           Assert.NotEqual(testList.Count, FilteredList.Count);
+
+
+
+
+        }
 
     }
 }

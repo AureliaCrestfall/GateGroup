@@ -43,6 +43,8 @@ namespace gategourmetLibrary.Models
             Items = new List<OrderItem>();
             Status = OrderStatus.Created;
         }
+
+        
     }
 
 
