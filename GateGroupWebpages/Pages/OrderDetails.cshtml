@@ -70,7 +70,7 @@
         Recipe Parts
     </h3>
 
-    @if (Model.RecipeParts != null && Model.RecipeParts.Any())
+    @if (Model.Order.Recipe != null && Model.Order.Recipe.Any())
     {
         <div class="card bg-dark border-secondary text-light shadow-sm mb-4">
             <div class="card-body p-0">
@@ -84,15 +84,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var part in Model.RecipeParts)
+                            @foreach (var part in Model.Order.Recipe)
                             {
                                 <tr>
-                                    <td class="fw-semibold">@part.Name</td>
-                                    <td>@part.HowToPrep</td>
+                                    <td class="fw-semibold">@part.Value.partName</td>
+                                    <td>@part.Value.Assemble</td>
                                     <td>
-                                        @if (part.Ingredients != null && part.Ingredients.Any())
+                                        @if (part.Value.Ingredients != null && part.Value.Ingredients.Any())
                                         {
-                                            foreach (var ingredient in part.Ingredients)
+                                            foreach (var ingredient in part.Value.Ingredients)
                                             {
                                                 <span class="badge bg-secondary me-1 mb-1">
                                                     @ingredient
