@@ -1,66 +1,101 @@
 ﻿@page
 @model SignUpCustommerModel
 @{
-    ViewData["Title"] = "Opret adgangskode";
+    ViewData["Title"] = "Create password";
 }
 
-<section class="container py-5">
-    <div class="signup-container mx-auto">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
 
-        <h2 class="text-center mb-4">Opret adgangskode for kunde</h2>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="h5 mb-0">Create customer password</h2>
+                </div>
 
-        <form method="post">
+                <div class="card-body">
 
-            <!-- Kunde ID -->
-            <div class="mb-3">
-                <label class="form-label">Kunde ID</label>
-                <input type="number"
-                       class="form-control"
-                       name="customerId"
-                       value="@Model.CustomerID"
-                       required />
+                    <p class="text-muted text-center mb-4">
+                        Set a password for the customer account.
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="gp-note mb-3 text-center" role="note">
+                            <div class="gp-note-title">Error</div>
+                            <div class="gp-note-text">
+                                @Model.ErrorMessage
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+                    {
+                        <div class="gp-note mb-3 text-center" role="note">
+                            <div class="gp-note-title">Success</div>
+                            <div class="gp-note-text">
+                                @Model.SuccessMessage
+                            </div>
+                        </div>
+                    }
+
+                    <form method="post">
+
+                        <!-- Customer ID -->
+                        <div class="mb-3">
+                            <label class="form-label" for="customerId">Customer ID</label>
+                            <input type="number"
+                                   class="form-control"
+                                   id="customerId"
+                                   name="customerId"
+                                   value="@Model.CustomerID"
+                                   min="1"
+                                   required />
+                            <div class="form-text text-muted">
+                                Enter the customer ID you want to set a password for.
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Password</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   required />
+                            <div class="form-text text-muted">
+                                Use a strong password you can remember.
+                            </div>
+                        </div>
+
+                        <!-- Confirm password -->
+                        <div class="mb-4">
+                            <label class="form-label" for="confirmPassword">Confirm password</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="confirmPassword"
+                                   name="confirmPassword"
+                                   required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Save password
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
             </div>
 
-            <!-- Password -->
-            <div class="mb-3">
-                <label class="form-label">Adgangskode</label>
-                <input type="password"
-                       class="form-control"
-                       name="password"
-                       required />
+            <div class="text-center mt-3">
+                <a asp-page="/Index" class="btn btn-link">
+                    Back to home
+                </a>
             </div>
 
-            <!-- Confirm Password -->
-            <div class="mb-4">
-                <label class="form-label">Gentag adgangskode</label>
-                <input type="password"
-                       class="form-control"
-                       name="confirmPassword"
-                       required />
-            </div>
-
-            <!-- Submit -->
-            <button type="submit" class="btn btn-primary w-100">
-                Gem adgangskode
-            </button>
-
-        </form>
-
-        <!-- Error -->
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-            <div class="alert alert-danger mt-4 text-center">
-                @Model.ErrorMessage
-            </div>
-        }
-
-        <!-- Success -->
-        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
-        {
-            <div class="alert alert-success mt-4 text-center">
-                @Model.SuccessMessage
-            </div>
-        }
-
+        </div>
     </div>
-</section>
+</div>

@@ -1,75 +1,113 @@
 ﻿@page
 @model CompanyWebpages.Pages.NewEmployeeModel
 @{
+    ViewData["Title"] = "Create employee";
 }
-@if (!string.IsNullOrEmpty(Model.ErrorMessage))
-{
-    <div class="alert alert-warning mb-4">
-        <h5><i class="bi bi-info-circle-fill"></i> Information</h5>
-        <p class="mb-0">@Model.ErrorMessage</p>
+
+<div class="container mt-4">
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="gp-note mb-4" role="note">
+            <div class="gp-note-title">Information</div>
+            <div class="gp-note-text">
+                @Model.ErrorMessage
+            </div>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Create employee</h2>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Enter the employee details below to create a new employee account.
+                    </p>
+
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly"
+                             class="alert alert-danger"
+                             role="alert">
+                        </div>
+
+                        <!-- Employee ID -->
+                        <div class="mb-3">
+                            <label asp-for="newEmployee.Id" class="form-label">
+                                Employee ID
+                            </label>
+                            <input asp-for="newEmployee.Id"
+                                   type="number"
+                                   class="form-control" />
+                            <span asp-validation-for="newEmployee.Id" class="text-danger"></span>
+                        </div>
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label asp-for="newEmployee.Name" class="form-label">Name</label>
+                            <input asp-for="newEmployee.Name" class="form-control" />
+                            <span asp-validation-for="newEmployee.Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label asp-for="newEmployee.Password" class="form-label">Password</label>
+                            <input asp-for="newEmployee.Password"
+                                   type="password"
+                                   class="form-control" />
+                            <span asp-validation-for="newEmployee.Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="newEmployee.Email" class="form-label">Email</label>
+                            <input asp-for="newEmployee.Email"
+                                   type="email"
+                                   class="form-control" />
+                            <span asp-validation-for="newEmployee.Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Work phone -->
+                        <div class="mb-3">
+                            <label asp-for="newEmployee.WorkPhoneNumber" class="form-label">
+                                Work phone
+                            </label>
+                            <input asp-for="newEmployee.WorkPhoneNumber"
+                                   class="form-control" />
+                            <span asp-validation-for="newEmployee.WorkPhoneNumber"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <!-- Personal phone -->
+                        <div class="mb-4">
+                            <label asp-for="newEmployee.PersonalPhoneNumber" class="form-label">
+                                Personal phone
+                            </label>
+                            <input asp-for="newEmployee.PersonalPhoneNumber"
+                                   class="form-control" />
+                            <span asp-validation-for="newEmployee.PersonalPhoneNumber"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Create employee
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mt-3 text-center">
+                <a asp-page="/Employees" class="btn btn-link">
+                    Back to employees
+                </a>
+            </div>
+
+        </div>
     </div>
-}
-<section class="container py-5">
-    <div class="signup-container mx-auto">
-
-<form method="Post">
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-    <!-- id -->
-    <div class="mb-3">
-        <label asp-for="newEmployee.Id" class="form-label"></label>
-        <input  asp-for="newEmployee.Id" type="number" class="form-control" />
-                <span asp-validation-for="newEmployee.Id" class="text-danger"></span>
-
-    </div>
-    <!-- Name -->
-    <div class="mb-3">
-        <label asp-for="newEmployee.Name" class="form-label"></label>
-        <input asp-for="newEmployee.Name" class="form-control" />
-                <span asp-validation-for="newEmployee.Name" class="text-danger"></span>
-
-    </div>
-
-    <!-- Password -->
-    <div class="mb-3">
-        <label asp-for="newEmployee.Password" class="form-label">Password</label>
-        <input asp-for="newEmployee.Password" type="password" class="form-control" />
-        <span asp-validation-for="newEmployee.Password" class="text-danger"></span>
-
-    </div>
-
-    <!-- Email -->
-    <div class="mb-3">
-        <label asp-for="newEmployee.Email" class="form-label">Email</label>
-        <input asp-for="newEmployee.Email"type="email" class="form-control" />
-                <span asp-validation-for="newEmployee.Email" class="text-danger"></span>
-
-    </div>
-
-    <!-- WorkPhoneNumber -->
-    <div class="mb-3">
-        <label asp-for="newEmployee.WorkPhoneNumber" class="form-label"></label>
-        <input asp-for="newEmployee.WorkPhoneNumber" class="form-control" />
-                <span asp-validation-for="newEmployee.WorkPhoneNumber" class="text-danger"></span>
-
-    </div>
-
-    <!-- PersonalPhoneNumber -->
-    <div class="mb-4">
-        <label asp-for="newEmployee.PersonalPhoneNumber" class="form-label"></label>
-        <input asp-for="newEmployee.PersonalPhoneNumber" class="form-control" />
-                <span asp-validation-for="newEmployee.PersonalPhoneNumber" class="text-danger"></span>
-
-    </div>
-
-    <!-- Submit -->
-    <button type="submit" class="btn btn-primary w-100">
-        Opret
-    </button>
-
-</form>
-    </div>
-</section>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</div>

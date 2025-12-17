@@ -1,8 +1,6 @@
-﻿/* SIGNUP CUSTOMER */
-
-.signup-container {
+﻿.signup-container {
     max-width: 600px;
-    background-color: #111111;
+    background-color: var(--bg-section);
     border: 1px solid #242424;
     padding: 2rem;
     border-radius: 12px;
@@ -10,29 +8,40 @@
 
     .signup-container h2 {
         font-family: 'Playfair Display', serif;
-        color: #D4C48A;
+        color: var(--accent);
         margin-bottom: 1.5rem;
     }
 
     .signup-container .form-label {
-        color: #E8E8E8;
+        color: var(--text-light);
+        font-weight: 500;
     }
 
-    .signup-container .form-control {
+    .signup-container .form-control,
+    .signup-container .form-select {
         background-color: #1a1a1a;
-        border: 1px solid #333;
-        color: #E8E8E8;
+        border: 1px solid #333333;
+        color: var(--text-light);
     }
 
-        .signup-container .form-control:focus {
-            border-color: #D4C48A;
-            box-shadow: 0 0 4px #D4C48A;
+        .signup-container .form-control::placeholder {
+            color: rgba(232, 232, 232, 0.55);
+        }
+
+        .signup-container .form-control:focus,
+        .signup-container .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.1rem var(--accent), 0 0 0 0.25rem rgba(212, 196, 138, 0.25);
             background-color: #1f1f1f;
         }
 
     .signup-container .btn-primary {
         width: 100%;
         padding: 10px;
-        font-weight: bold;
+        font-weight: 700;
         border-radius: 6px;
+    }
+
+    .signup-container .text-danger {
+        font-size: 0.95rem;
     }

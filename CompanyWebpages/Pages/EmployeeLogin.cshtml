@@ -1,41 +1,65 @@
 ﻿@page
 @model CompanyWebpages.Pages.EmployeeLoginModel
 @{
-    ViewData["Title"] = "Employee Login";
+    ViewData["Title"] = "Employee login";
 }
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="login-header">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#D4C48A" stroke-width="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            <h2 class="login-title">Log ind</h2>
-            <p class="subtitle">Til køkkensystemet</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-5">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2 class="h5 mb-0">Employee login</h2>
+                </div>
+
+                <div class="card-body">
+                    <p class="text-muted text-center mb-4">
+                        Sign in to the kitchen system.
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Login failed:</strong> @Model.ErrorMessage
+                        </div>
+                    }
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">Employee ID</label>
+                            <input type="number"
+                                   id="userId"
+                                   name="UserID"
+                                   class="form-control"
+                                   placeholder="Enter your employee ID"
+                                   required
+                                   min="1" />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password"
+                                   id="password"
+                                   name="Password"
+                                   class="form-control"
+                                   placeholder="Enter your password"
+                                   required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Sign in
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-center text-muted small">
+                    If you cannot log in, contact an administrator.
+                </div>
+            </div>
+
         </div>
-
-        <form method="post" class="login-form">
-            <div class="form-group">
-                <label for="userId">Kok ID</label>
-                <input type="number" id="userId" name="UserID" class="form-control"
-                       placeholder="Indtast dit kok ID" required min="1" />
-            </div>
-
-            <div class="form-group">
-                <label for="password">Adgangskode</label>
-                <input type="password" id="password" name="Password" class="form-control"
-                       placeholder="Indtast din adgangskode" required />
-            </div>
-
-            <button type="submit" class="btn-login">Log ind</button>
-        </form>
-
-        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-        {
-            <div class="error-message">
-                @Model.ErrorMessage
-            </div>
-        }
     </div>
 </div>

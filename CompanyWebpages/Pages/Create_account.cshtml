@@ -2,63 +2,77 @@
 @model GateGroupWebpages.Pages.Create_accountModel
 
 @{
-    ViewData["Title"] = "Opret konto";
+    ViewData["Title"] = "Create customer account";
 }
 
 <section class="container py-5">
-    <div class="signup-container mx-auto">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
 
-        <h2 class="text-center mb-4">Opret ny kunde</h2>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5 mb-0">Create customer</h2>
+                </div>
 
-        <form method="post">
+                <div class="card-body">
+                    <p class="text-muted mb-4">
+                        Enter the customer details below to create a new customer account.
+                    </p>
 
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <form method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-            <!-- Name -->
-            <div class="mb-3">
-                <label asp-for="Customer.Name" class="form-label"></label>
-                <input asp-for="Customer.Name" class="form-control" />
-                <span asp-validation-for="Customer.Name" class="text-danger"></span>
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label asp-for="Customer.Name" class="form-label">Name</label>
+                            <input asp-for="Customer.Name" class="form-control" />
+                            <span asp-validation-for="Customer.Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label asp-for="Customer.Password" class="form-label">Password</label>
+                            <input asp-for="Customer.Password" type="password" class="form-control" />
+                            <span asp-validation-for="Customer.Password" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label asp-for="Customer.Email" class="form-label">Email</label>
+                            <input asp-for="Customer.Email" class="form-control" />
+                            <span asp-validation-for="Customer.Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Company Name -->
+                        <div class="mb-3">
+                            <label asp-for="Customer.CompanyName" class="form-label">Company name</label>
+                            <input asp-for="Customer.CompanyName" class="form-control" />
+                            <span asp-validation-for="Customer.CompanyName" class="text-danger"></span>
+                        </div>
+
+                        <!-- CVR -->
+                        <div class="mb-4">
+                            <label asp-for="Customer.CVR" class="form-label">CVR</label>
+                            <input asp-for="Customer.CVR" class="form-control" />
+                            <span asp-validation-for="Customer.CVR" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <!-- Password -->
-            <div class="mb-3">
-                <label asp-for="Customer.Password" class="form-label"></label>
-                <input asp-for="Customer.Password" type="password" class="form-control" />
-                <span asp-validation-for="Customer.Password" class="text-danger"></span>
+            <div class="mt-3 text-center">
+                <a asp-page="/AdminOrderList" class="btn btn-link">
+                    Back
+                </a>
             </div>
 
-            <!-- Email -->
-            <div class="mb-3">
-                <label asp-for="Customer.Email" class="form-label"></label>
-                <input asp-for="Customer.Email" class="form-control" />
-                <span asp-validation-for="Customer.Email" class="text-danger"></span>
-            </div>
-
-            <!-- Company Name -->
-            <div class="mb-3">
-                <label asp-for="Customer.CompanyName" class="form-label"></label>
-                <input asp-for="Customer.CompanyName" class="form-control" />
-                <span asp-validation-for="Customer.CompanyName" class="text-danger"></span>
-            </div>
-
-            <!-- CVR -->
-            <div class="mb-4">
-                <label asp-for="Customer.CVR" class="form-label"></label>
-                <input asp-for="Customer.CVR" class="form-control" />
-                <span asp-validation-for="Customer.CVR" class="text-danger"></span>
-            </div>
-
-            <!-- Submit -->
-            <button type="submit" class="btn btn-primary w-100">
-                Opret
-            </button>
-
-        </form>
-
+        </div>
     </div>
 </section>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

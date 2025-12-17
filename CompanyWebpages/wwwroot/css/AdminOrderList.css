@@ -1,76 +1,152 @@
-﻿/* card styling */
+﻿.page-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--accent);
+}
+
+.admin-scope {
+    color: var(--text-light);
+}
+
+    .admin-scope .text-muted,
+    .admin-scope .form-text.text-muted {
+        color: rgba(237, 237, 237, 0.72) !important;
+    }
+
+    .admin-scope .alert {
+        border-radius: 12px;
+    }
+
 .admin-orders-card {
     background-color: #0f0f0f;
     border: 1px solid #242424;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
+    border-radius: 12px;
 }
 
-/* overskrift */
-.admin-orders-title {
-    font-family: 'Playfair Display', serif;
-    color: #D4C48A;
-    margin-bottom: 20px;
+    .admin-orders-card .card-header {
+        background-color: #101010;
+        border-bottom: 1px solid #242424;
+        color: var(--text-light);
+    }
+
+.admin-scope .form-label {
+    color: #F5F5F5;
+    font-weight: 600;
 }
 
-/* tabelstil */
+.admin-orders-card .form-control,
+.admin-orders-card .form-select {
+    background-color: #111111;
+    border: 1px solid #333333;
+    color: #F2F2F2;
+}
+
+    .admin-orders-card .form-control::placeholder {
+        color: rgba(242, 242, 242, 0.55);
+    }
+
+    .admin-orders-card .form-control:focus,
+    .admin-orders-card .form-select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 0.15rem rgba(212, 196, 138, 0.25);
+    }
+
+.admin-table-card {
+    background-color: #0f0f0f;
+    border: 1px solid #242424;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
 .admin-orders-table {
+    margin-bottom: 0;
     width: 100%;
-    color: #e6e6e6;
-    border-collapse: collapse;
+    color: #F2F2F2;
 }
 
-    .admin-orders-table thead {
-        background-color: #1c1c1c;
+    .admin-orders-table.table {
+        --bs-table-bg: transparent;
+        --bs-table-color: #F2F2F2;
     }
 
-    .admin-orders-table th {
-        color: #D4C48A;
-        padding: 10px;
-        border-bottom: 1px solid #333;
+    .admin-orders-table thead th {
+        background-color: #1a1f24;
+        color: #FFFFFF;
+        font-weight: 800;
+        border-bottom: 1px solid rgba(255,255,255,0.14);
+        padding: 14px 14px;
     }
 
-    .admin-orders-table td {
-        padding: 12px;
-        border-bottom: 1px solid #222;
+    .admin-orders-table tbody td {
+        color: #EDEDED;
+        padding: 14px 14px;
+        border-top: 1px solid rgba(255,255,255,0.08);
     }
 
-    /* hover */
-    .admin-orders-table tbody tr:hover {
-        background-color: #1a1a1a;
-        transition: 0.2s ease-in-out;
+    .admin-orders-table tbody tr {
+        background-color: #0f0f0f;
     }
 
-/* cancel knap */
-.cancel-btn {
-    background-color: #a01c1c;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    width: 100%;
-    cursor: pointer;
-    font-size: 14px;
+        .admin-orders-table tbody tr:nth-child(even) {
+            background-color: #111111;
+        }
+
+        .admin-orders-table tbody tr:hover {
+            background-color: #151515;
+        }
+
+.badge-pill {
+    border-radius: 999px;
+    padding: 0.38rem 0.7rem;
+    font-weight: 800;
+    font-size: 0.78rem;
+    letter-spacing: 0.01em;
 }
 
-    .cancel-btn:hover {
-        background-color: #c42424;
-        transition: 0.2s;
-    }
-
-/* cancelled tekst */
-.cancelled-text {
-    color: #888;
-    font-style: italic;
+.badge-soft-neutral {
+    background: rgba(255,255,255,0.10);
+    color: #F2F2F2;
 }
 
-/* status message */
-.admin-status-message {
-    background-color: #1d1d1d;
-    border: 1px solid #2f2f2f;
-    color: #D4C48A;
-    padding: 12px;
-    border-radius: 6px;
-    margin-bottom: 15px;
+.badge-soft-success {
+    background: rgba(25,135,84,0.22);
+    color: #B8F7D4;
+}
+
+.badge-soft-warning {
+    background: rgba(255,193,7,0.22);
+    color: #FFE7A6;
+}
+
+.badge-soft-danger {
+    background: rgba(220,53,69,0.22);
+    color: #FFC0C7;
+}
+
+.admin-scope .btn {
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+    .admin-scope .btn.btn-sm {
+        border-radius: 10px;
+        padding: 0.45rem 0.75rem;
+    }
+
+.admin-scope .btn-outline-light {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+}
+
+    .admin-scope .btn-outline-light:hover,
+    .admin-scope .btn-outline-light:focus {
+        background: rgba(212, 196, 138, 0.12);
+        color: var(--accent);
+    }
+.admin-scope .btn-primary {
+    color: #FFFFFF;
+}
+
+.admin-scope .btn-danger {
+    color: #FFFFFF;
 }

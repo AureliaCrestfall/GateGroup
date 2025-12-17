@@ -1,40 +1,39 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
 
 <section class="container py-5">
+
     <div class="row align-items-center gy-4">
-        <div class="col-lg-7 text-center text-lg-start">
-            <h1 class="display-5 mb-3" style="font-family:'Playfair Display', serif;">
-                Welcome to the Employee Portal
+
+        <!-- Text -->
+        <div class="col-12 col-lg-7 text-center text-lg-start">
+            <h1 class="display-5 mb-3">
+                Welcome to the employee portal
             </h1>
 
             <p class="lead text-muted mb-4">
-                This system is designed to help employees manage their daily tasks efficiently.
-                Through the Employee Dashboard, you can view assigned orders, check storage locations,
-                and update the status of your tasks. The platform supports coordination between
-                departments, ensuring a clear workflow and improved production overview.
+                This system helps employees manage their daily tasks efficiently.
+                From the employee dashboard, you can view assigned orders, check
+                storage locations, and update the status of your tasks.
             </p>
 
-            <p class="text-muted">
-                Use the navigation bar above to access order creation, customer registration,
-                or the Employee Dashboard where your assigned tasks appear in real-time.
+            <p class="text-muted mb-0">
+                The platform supports coordination between departments and provides
+                a clear overview of the production workflow.
             </p>
-
-            <a asp-page="/EmployeeLogin" class="btn btn-primary px-4 mt-3">
-                Go to Employee Dashboard →
-            </a>
         </div>
 
-        <!-- img -->
-        <div class="col-lg-5 text-center">
+        <!-- Image -->
+        <div class="col-12 col-lg-5 text-center">
             <img src="~/img/gg-gategourmet.jpg"
-                 alt="Employee Portal"
-                 class="img-fluid rounded shadow"
+                 alt="Employee portal overview"
+                 class="img-fluid rounded shadow-sm"
                  style="max-width: 280px;" />
         </div>
 
     </div>
+
 </section>

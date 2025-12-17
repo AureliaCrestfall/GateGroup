@@ -6,58 +6,79 @@
     ViewData["Title"] = "Manage customers";
 }
 
-<h1 class="mb-3" style="font-family:'Playfair Display', serif; color: #D4C48A;">
-    ADMIN – Manage / delete customers
-</h1>
+<div class="container mt-4">
 
-<p class="text-muted">
-    Here the admin can delete customers from the system, so only active customers have access.
-</p>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <div>
+            <h1 class="h3 mb-1">Admin – Manage customers</h1>
+            <p class="text-muted mb-0">
+                Delete customers from the system so only active customers have access.
+            </p>
+        </div>
 
-@if (!string.IsNullOrEmpty(Model.StatusMessage))
-{
-    <div class="alert alert-success">
-        @Model.StatusMessage
+        <div class="d-flex gap-2">
+            <a asp-page="/Create_account" class="btn btn-primary">
+                Create customer
+            </a>
+
+            <a asp-page="/AdminOrderList" class="btn btn-outline-secondary">
+                Back
+            </a>
+        </div>
     </div>
-}
 
-<div class="table-responsive mt-3">
-    <table class="table table-dark table-striped align-middle">
-        <thead>
-            <tr>
-                <th>Customer Id</th>
-                <th>Name</th>
-                <th>Password</th>
-                <th style="width: 140px;">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.Customers != null && Model.Customers.Count > 0)
-            {
-                foreach (Customer customer in Model.Customers)
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success">
+            @Model.StatusMessage
+        </div>
+    }
+
+    <div class="table-responsive mt-3">
+        <table class="table table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Name</th>
+                    <th>Password</th>
+                    <th style="width: 160px;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.Customers != null && Model.Customers.Count > 0)
+                {
+                    foreach (Customer customer in Model.Customers)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@customer.ID</td>
+                            <td>@customer.Name</td>
+                            <td>@customer.Password</td>
+                            <td>
+                                <!-- NO JS: go to confirmation page -->
+                                <a asp-page="/CustomerDeleteConfirm"
+                                   asp-route-customerId="@customer.ID"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@customer.ID</td>
-                        <td>@customer.Name</td>
-                        <td>@customer.Password</td>
-                        <td>
-                            <form method="post" asp-page-handler="Delete"
-                                  onsubmit="return confirm('Are you sure you want to delete this customer?');">
-                                <input type="hidden" name="customerId" value="@customer.ID" />
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    Delete
-                                </button>
-                            </form>
+                        <td colspan="4" class="text-muted">
+                            No customers found.
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="4" class="text-muted">No customers found.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="alert alert-warning mt-3">
+        <strong>Note:</strong> Deleting a customer requires confirmation on the next page.
+    </div>
+
 </div>

@@ -1,103 +1,105 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using gategourmetLibrary.Models;
-using gategourmetLibrary.Secret;
-using System.Collections.Generic;
-using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using gategourmetLibrary.Repo;
 using gategourmetLibrary.Service;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
 
 namespace GateGroupWebpages.Pages
 {
     public class DashboardModel : PageModel
     {
+        // Service used to access order logic
         private readonly OrderService _orderService;
 
+        // Constructor injection of service
         public DashboardModel(OrderService orderService)
         {
             _orderService = orderService;
         }
 
-        //list to hold orders
+        // List of orders shown on the page
         public List<Order> Orders { get; set; }
 
-        //bind property to get status filter from query string
+        // Selected status from query string (optional)
         [BindProperty(SupportsGet = true)]
-        // this ? makes it optional and allows null values
-        public string? statusFilter { get; set; }
+        public string statusFilter { get; set; }
 
-        //list of dropdown choices
+        // Dropdown options for status filter
         public List<SelectListItem> StatusOptions { get; set; }
 
-        //it runs when the page is loaded
+        // Runs when the page is loaded
         public void OnGet()
         {
-
-
+            // Get all orders from service
             Orders = _orderService.GetAllOrders();
 
-            //default filter (Created)
-            if (String.IsNullOrEmpty(statusFilter))
+            // Default filter if none is selected
+            if (string.IsNullOrEmpty(statusFilter))
             {
                 statusFilter = "Created";
             }
 
-            //populate dropdown list
+            // Populate dropdown list
             StatusOptions = new List<SelectListItem>
             {
-                //dropdown options
-                //the first part is appears to the customers,
-                //the second part is the value of the choice and here its empty(NOT NULL)
                 new SelectListItem("Created", "Created"),
-                new SelectListItem( "In Progress", "InProgress"),
+                new SelectListItem("In Progress", "InProgress"),
                 new SelectListItem("Completed", "Completed"),
                 new SelectListItem("Cancelled", "Cancelled")
             };
 
-           
+            // Try to convert selected string to OrderStatus enum
+            OrderStatus selectedStatus;
 
-            //if user has selected a status filter, filter the orders by using LINQ
-                //'out' keyword allows the method to return an additional value through this variable
-                if (Enum.TryParse<OrderStatus>(statusFilter, out var selectedStatus))
+            if (Enum.TryParse(statusFilter, out selectedStatus))
+            {
+                // Create new list for filtered orders
+                List<Order> filteredOrders = new List<Order>();
+
+                // Loop through all orders and keep matching ones
+                foreach (Order order in Orders)
                 {
-                    // The expression 'o => o.Status == selectedStatus'
-                    // is a condition (lambda) that checks each order. Only orders that match the selected
-                    // status are kept. ToList() converts the LINQ result back into a List<Order>.
-                    Orders = Orders.Where(o => o.Status == selectedStatus).ToList();
+                    if (order.Status == selectedStatus)
+                    {
+                        filteredOrders.Add(order);
+                    }
                 }
 
-
-
+                
+                Orders = filteredOrders;
+            }
         }
 
-        //delete handler/method
-        public IActionResult OnPostDelete(int ID)
+        // Handles delete button click
+        public IActionResult OnPostDelete(int id)
         {
-            _orderService.DeleteOrder(ID);
+            _orderService.DeleteOrder(id);
             return RedirectToPage();
-
         }
 
-
-
-        //logic to get order status
-        private OrderStatus GetStatusFormating(string status)
+        // Converts status string from database into OrderStatus enum
+        private OrderStatus GetStatusFormatting(string status)
         {
-            // Use a switch expression to match the string value with enum values
-            return status switch
-
+            switch (status)
             {
-                // using LAMBDA expression to map string values to enum, It returns the value on the right when the pattern on the left matches.
-                "Created" => OrderStatus.Created,
-                "InProgress" => OrderStatus.InProgress,
-                "Completed" => OrderStatus.Completed,
-                "Cancelled" => OrderStatus.Cancelled,
-                // Fallback case: if an unknown value comes from the database, default to Created to avoid breaking the system.
-                _ => OrderStatus.Created,
+                case "Created":
+                    return OrderStatus.Created;
 
-            };
+                case "InProgress":
+                    return OrderStatus.InProgress;
 
+                case "Completed":
+                    return OrderStatus.Completed;
+
+                case "Cancelled":
+                    return OrderStatus.Cancelled;
+
+                default:
+                    // Fallback if database contains unexpected value
+                    return OrderStatus.Created;
+            }
         }
     }
 }

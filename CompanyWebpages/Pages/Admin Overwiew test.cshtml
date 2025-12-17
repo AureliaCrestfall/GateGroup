@@ -1,46 +1,287 @@
 ﻿@page
-@model CompanyWebpages.Pages.Admin_Overwiew_testModel
+@model CompanyWebpages.Pages.AdminOrderListModel
+@using gategourmetLibrary.Models
+@using Microsoft.AspNetCore.Mvc.Rendering
+
 @{
+    ViewData["Title"] = "Orders overview";
 }
 
-<h2>Admin Accounts</h2>
+<div class="container my-4">
 
-<a asp-page="./Create" class="btn btn-primary mb-3">Create New Admin</a>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <div>
+            <h2 class="mb-1 page-title">Orders overview</h2>
+            <p class="text-muted mb-0">
+                Use filters to narrow the list. Then click <strong>Apply filters</strong>.
+            </p>
+        </div>
 
-@if (Model.Admins == null || !Model.Admins.Any())
-{
-    <div class="alert alert-info">
-        No admin accounts found. <a asp-page="./Create">Create the first one</a>.
+        <a asp-page="/AdminOrderList" class="btn btn-outline-light">
+            Reset
+        </a>
     </div>
-}
-else
-{
-    <div class="row">
-        @foreach (var admin in Model.Admins)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">@admin.Name</h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">
-                            <strong>ID:</strong> @admin.Id<br>
-                            <strong>Email:</strong> @admin.Email<br>
-                            <strong>Work Phone:</strong> @admin.WorkPhoneNumber<br>
-                            <strong>Personal Phone:</strong> @admin.PersonalPhoneNumber
-                        </p>
-                        @if (admin.MyPosition != null)
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger mb-3">
+            <strong>Error:</strong> @Model.ErrorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.StatusMessage))
+    {
+        <div class="alert alert-success mb-3">
+            <strong>Confirmed:</strong> @Model.StatusMessage
+        </div>
+    }
+
+    <!-- Filters -->
+    <div class="card admin-orders-card mb-4">
+        <div class="card-header fw-semibold">
+            Filters
+        </div>
+
+        <div class="card-body">
+            <form method="get" class="row g-3">
+
+                <!-- Customer -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="selectedCustomerId" class="form-label">Customer</label>
+                    <select class="form-select" id="selectedCustomerId" name="selectedCustomerId">
+                        <option value="">All customers</option>
+                        @if (Model.Customers != null)
                         {
-                            <span class="badge bg-secondary">@admin.MyPosition.Name</span>
+                            foreach (Customer customer in Model.Customers)
+                            {
+                                <option value="@customer.ID" selected="@(Model.SelectedCustomerId == customer.ID)">
+                                    @(string.IsNullOrEmpty(customer.CompanyName) ? customer.Name : customer.CompanyName)
+                                </option>
+                            }
                         }
-                    </div>
-                    <div class="card-footer">
-                        <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </select>
+                </div>
+
+                <!-- Employee -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="empFilter" class="form-label">Employee</label>
+                    <select id="empFilter" name="empFilter" class="form-select">
+                        <option value="">All employees</option>
+                        @if (Model.Filter != null)
+                        {
+                            foreach (SelectListItem emp in Model.Filter)
+                            {
+                                <option value="@emp.Value" selected="@(Model.empFilter == emp.Value)">
+                                    @emp.Text
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Department -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="departmentFilter" class="form-label">Department</label>
+                    <select id="departmentFilter" name="departmentFilter" class="form-select">
+                        <option value="">All departments</option>
+                        @if (Model.DepartmentFilter != null)
+                        {
+                            foreach (SelectListItem dep in Model.DepartmentFilter)
+                            {
+                                <option value="@dep.Value" selected="@(Model.departmentFilter == dep.Value)">
+                                    @dep.Text
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Date range -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="FromDate" class="form-label">From date</label>
+                    <input type="date"
+                           id="FromDate"
+                           name="FromDate"
+                           class="form-control"
+                           value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="ToDate" class="form-label">To date</label>
+                    <input type="date"
+                           id="ToDate"
+                           name="ToDate"
+                           class="form-control"
+                           value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+
+                <!-- Status (today) -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <label for="statusFilter" class="form-label">Today’s status</label>
+                    <select id="statusFilter" name="statusFilter" class="form-select">
+                        <option value="">All statuses today</option>
+                        @{
+                            string[] allStatuses = new string[] { "Created", "InProgress", "Completed", "Cancelled" };
+
+                            foreach (string status in allStatuses)
+                            {
+                                <option value="@status" selected="@(Model.statusFilter == status)">
+                                    @status
+                                </option>
+                            }
+                        }
+                    </select>
+                    <div class="form-text text-muted">
+                        This filter only applies to orders created today.
                     </div>
                 </div>
-            </div>
-        }
+
+                <!-- Buttons -->
+                <div class="col-12 d-flex flex-column flex-md-row gap-2 pt-1">
+                    <button type="submit" class="btn btn-primary">
+                        Apply filters
+                    </button>
+
+                    <a asp-page="/AdminOrderList" class="btn btn-outline-light">
+                        Clear
+                    </a>
+
+                    <div class="ms-md-auto text-muted small align-self-md-center">
+                        @if (!string.IsNullOrEmpty(Model.empFilter))
+                        {
+                            <span class="me-3">Employee ID: <strong>@Model.empFilter</strong></span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.departmentFilter))
+                        {
+                            <span class="me-3">Department ID: <strong>@Model.departmentFilter</strong></span>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.statusFilter))
+                        {
+                            <span>Today: <strong>@Model.statusFilter</strong></span>
+                        }
+                    </div>
+                </div>
+
+            </form>
+        </div>
     </div>
-}
+
+    <!-- Orders table -->
+    @if (Model.Orders == null || !Model.Orders.Any())
+    {
+        <div class="alert alert-info">
+            No orders found.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive admin-orders-table-wrap">
+            <table class="table table-dark table-striped table-hover align-middle admin-orders-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Created</th>
+                        <th>Due</th>
+                        <th>Status</th>
+                        <th>Paid</th>
+                        <th class="text-nowrap">Actions</th>
+                        <th class="text-nowrap">Responsibility</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (Order order in Model.Orders)
+                    {
+                        string statusText = order.Status.ToString();
+                        string statusBadgeClass =
+                        statusText == "Completed" ? "bg-success" :
+                        statusText == "InProgress" ? "bg-warning text-dark" :
+                        statusText == "Cancelled" ? "bg-danger" :
+                        "bg-secondary";
+
+                        <tr>
+                            <td class="fw-semibold">@order.ID</td>
+
+                            <td>
+                                @if (order.CustomerOrder != null)
+                                {
+                                    if (!string.IsNullOrEmpty(order.CustomerOrder.CompanyName))
+                                    {
+                                        <div class="fw-semibold">@order.CustomerOrder.CompanyName</div>
+
+                                        @if (!string.IsNullOrEmpty(order.CustomerOrder.Name) &&
+                                                                order.CustomerOrder.Name != order.CustomerOrder.CompanyName)
+                                        {
+                                            <div class="text-muted small">@order.CustomerOrder.Name</div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @order.CustomerOrder.Name
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+
+                            <td class="text-nowrap">@order.OrderMade.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td class="text-nowrap">@order.OrderDoneBy.ToString("yyyy-MM-dd HH:mm")</td>
+
+                            <td>
+                                <span class="badge @statusBadgeClass">@statusText</span>
+                            </td>
+
+                            <td>
+                                @if (order.paystatus)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Not paid</span>
+                                }
+                            </td>
+
+                            <td>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="/Department/@order.ID" class="btn btn-sm btn-primary">
+                                        Track order
+                                    </a>
+
+                                    @if (order.Status != OrderStatus.Cancelled)
+                                    {
+                                        <form method="post" asp-page-handler="Cancel" class="d-inline">
+                                            <input type="hidden" name="orderId" value="@order.ID" />
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small align-self-center">
+                                            Already cancelled
+                                        </span>
+                                    }
+                                </div>
+                            </td>
+
+                            <td>
+                                <a class="btn btn-sm btn-outline-info"
+                                   asp-page="/Responsible"
+                                   asp-route-orderid="@order.ID">
+                                    View responsible employees
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    }
+
+</div>

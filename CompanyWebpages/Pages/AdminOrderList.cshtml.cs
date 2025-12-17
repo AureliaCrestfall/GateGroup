@@ -296,28 +296,27 @@ namespace CompanyWebpages.Pages
         {
             if (!string.IsNullOrEmpty(statusFilter))
             {
-                List<Order> todaysOrders = _orderService.FilterOrdersByToday(DateTime.Today);
-
-                if (todaysOrders == null)
-                {
-                    todaysOrders = new List<Order>();
-                }
-
                 List<Order> filteredOrders = new List<Order>();
 
-                foreach (Order order in todaysOrders)
+                foreach (Order order in Orders)
                 {
-                    string currentStatus = order.Status.ToString();
+                    bool isToday = order.OrderMade.Date == DateTime.Today;
 
-                    if (currentStatus == statusFilter)
+                    if (isToday)
                     {
-                        filteredOrders.Add(order);
+                        string currentStatus = order.Status.ToString();
+
+                        if (currentStatus == statusFilter)
+                        {
+                            filteredOrders.Add(order);
+                        }
                     }
                 }
 
                 Orders = filteredOrders;
             }
         }
+
 
         // runs when the cancel form is posted
         public IActionResult OnPostCancel(int orderId)

@@ -1,51 +1,81 @@
 ﻿@page
 @model CompanyWebpages.Pages.ResponsibleModel
+@using System.Collections.Generic
+@using gategourmetLibrary.Models
+
 @{
+    ViewData["Title"] = "Responsible employees";
 }
 
+<div class="container mt-4">
 
-<div class="neworder-container container-sm my-4">
-    <div class="text-center mb-4">
-        <h2 class="mb-1">@Model.CustomersOrder.Name 's order with order id:@Model.Order.ID</h2>
-       
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+        <div>
+            <h2 class="mb-1">Responsible employees</h2>
+
+            @if (Model.CustomersOrder != null && Model.Order != null)
+            {
+                <p class="text-muted mb-0">
+                    Customer: <strong>@Model.CustomersOrder.Name</strong> · Order ID: <strong>@Model.Order.ID</strong>
+                </p>
+            }
+        </div>
+
+        <a asp-page="/AdminOrderList" class="btn btn-outline-secondary">
+            Back to orders overview
+        </a>
     </div>
-@if (Model.Employees.Count == 0)
+
+    @if (Model.Employees == null || Model.Employees.Count == 0)
     {
-        <div class="alert alert-info">
-            their are no employees that are working on this order currtnely
+        <div class="gp-note" role="note">
+            <div class="gp-note-title">Info</div>
+            <div class="gp-note-text">
+                No employees are currently working on this order.
+            </div>
         </div>
     }
     else
     {
         <div class="row">
+            @foreach (KeyValuePair<int, Employee> keyValuePair in Model.Employees)
+            {
+                int recipePartId = keyValuePair.Key;
+                Employee employee = keyValuePair.Value;
 
+                <div class="col-12 col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
 
-@foreach(KeyValuePair<int,Employee> keyValue in Model.Employees)
-{
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title">@Model.Order.Recipe[keyValue.Key].partName</h5>
-                <h6 class="card-subtitle mb-2 text-muted">ID: @keyValue.Key</h6>
+                            <h5 class="card-title mb-1">
+                                @Model.Order.Recipe[recipePartId].partName
+                            </h5>
 
-                <div class="mb-3">
-                    <p class="card-text">
-                        <strong>employee id:</strong> @keyValue.Value.Id<br>
-                        <strong>employee name:</strong> @keyValue.Value.Name<br>
-                            <strong>Recipe part status:</strong> @Model.Order.Recipe[keyValue.Key].status<br>
-                            <strong>Recipe part stroage location is :</strong> @Model.Order.Recipe[keyValue.Key].StoredLocation<br>
+                            <div class="text-muted small mb-3">
+                                Recipe part ID: @recipePartId
+                            </div>
 
-                    </p>
+                            <div class="mb-2">
+                                <strong>Employee ID:</strong> @employee.Id
+                            </div>
+
+                            <div class="mb-2">
+                                <strong>Employee name:</strong> @employee.Name
+                            </div>
+
+                            <div class="mb-2">
+                                <strong>Recipe part status:</strong> @Model.Order.Recipe[recipePartId].status
+                            </div>
+
+                            <div class="mb-0">
+                                <strong>Storage location:</strong> @Model.Order.Recipe[recipePartId].StoredLocation
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
-
-                
-
-                   
-            </div>
+            }
         </div>
-    </div>
-   
-}
-</div>
     }
+
 </div>

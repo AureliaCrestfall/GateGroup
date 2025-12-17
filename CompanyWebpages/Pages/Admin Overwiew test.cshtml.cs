@@ -1,6 +1,10 @@
 using gategourmetLibary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using gategourmetLibrary.Models;
+using System.Collections.Generic;
+
+
 
 namespace CompanyWebpages.Pages
 {
@@ -10,6 +14,8 @@ namespace CompanyWebpages.Pages
 
         public void OnGet()
         {
+            Admins = new List<Admin>();
         }
+
     }
 }
