@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
 using gategourmetLibrary.Models;
-using gategourmetLibrary.Repo;
-using gategourmetLibrary.Secret;
 using gategourmetLibrary.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Data.SqlClient;
 
 namespace CompanyWebpages.Pages
 {
@@ -15,19 +12,19 @@ namespace CompanyWebpages.Pages
     public class AdminOrderListModel : PageModel
     {
         // list with all orders to show in the table
-        public List<Order> Orders { get; set; }
+        public List<Order> Orders { get; set; } = new List<Order>();
 
         // status message shown after cancel
-        public string StatusMessage { get; set; }
+        public string StatusMessage { get; set; } = string.Empty;
         // error message if something goes wrong
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
 
         // list of customers for the filter dropdown
-        public List<Customer> Customers { get; set; }
+        public List<Customer> Customers { get; set; } = new List<Customer>();
 
         // bind property to filter from query string (employee dropdown)
         [BindProperty(SupportsGet = true)]
-        public string empFilter { get; set; }
+        public string? empFilter { get; set; }
 
         // bind property to date range
         [BindProperty(SupportsGet = true)]
@@ -41,18 +38,18 @@ namespace CompanyWebpages.Pages
         public int? SelectedCustomerId { get; set; }
 
         // dropdown list of employees
-        public List<SelectListItem> Filter { get; set; }
+        public List<SelectListItem> Filter { get; set; } = new List<SelectListItem>();
 
         // bind property to get department filter from query string (department dropdown)
         [BindProperty(SupportsGet = true)]
-        public string departmentFilter { get; set; }
+        public string? departmentFilter { get; set; }
 
         // dropdown list of departments
-        public List<SelectListItem> DepartmentFilter { get; set; }
+        public List<SelectListItem> DepartmentFilter { get; set; } = new List<SelectListItem>();
 
         // bind property to get status filter for user story "filter by status today"
         [BindProperty(SupportsGet = true)]
-        public string statusFilter { get; set; }
+        public string? statusFilter { get; set; }
 
         // service that handles order logic
         private readonly OrderService _orderService;
@@ -60,14 +57,23 @@ namespace CompanyWebpages.Pages
         // service that handles customer logic
         private readonly CustomerService _customerService;
 
-        // constructor creates repository and service
-        public AdminOrderListModel()
+        // service that handles employee logic
+        private readonly EmployeeService _employeeService;
+
+        // service that handles department logic
+        private readonly DepartmentService _departmentService;
+
+        // constructor uses DI (services are registered in CompanyWebpages/Program.cs)
+        public AdminOrderListModel(
+            OrderService orderService,
+            CustomerService customerService,
+            EmployeeService employeeService,
+            DepartmentService departmentService)
         {
-            string connectionString = new Connect().cstring;
-            IOrderRepo orderRepo = new OrderRepo(connectionString);
-            ICustomerRepo customerRepo = new CustomerRepo(connectionString);
-            _orderService = new OrderService(orderRepo);
-            _customerService = new CustomerService(customerRepo);
+            _orderService = orderService;
+            _customerService = customerService;
+            _employeeService = employeeService;
+            _departmentService = departmentService;
         }
 
         // runs when the page is loaded with a get method 
@@ -141,29 +147,24 @@ namespace CompanyWebpages.Pages
         {
             Filter = new List<SelectListItem>();
 
-            string connectionString = new Connect().cstring;
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
+                Dictionary<int, string> employees = _employeeService.GetEmployeesForFilter();
 
-                string sql = @"SELECT E_ID, E_Name FROM Employee";
-
-                using (SqlCommand command = new SqlCommand(sql, conn))
+                foreach (var employee in employees)
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            SelectListItem item = new SelectListItem(
-                                reader["E_Name"].ToString(),
-                                reader["E_ID"].ToString()
-                            );
+                    SelectListItem item = new SelectListItem(
+                        employee.Value,
+                        employee.Key.ToString()
+                    );
 
-                            Filter.Add(item);
-                        }
-                    }
+                    Filter.Add(item);
                 }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Fejl ved indlæsning af medarbejdere: " + ex.Message;
+                Filter = new List<SelectListItem>();
             }
         }
 
@@ -172,29 +173,27 @@ namespace CompanyWebpages.Pages
         {
             DepartmentFilter = new List<SelectListItem>();
 
-            string connectionString = new Connect().cstring;
-
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            try
             {
-                conn.Open();
+                List<Department> departments = _departmentService.GetAllDepartments() ?? new List<Department>();
 
-                string sql = @"SELECT D_ID, D_Name FROM Department ORDER BY D_Name";
+                // Keep the same behavior as the old SQL: ORDER BY D_Name
+                departments.Sort((a, b) => string.Compare(a?.DepartmentName, b?.DepartmentName, StringComparison.OrdinalIgnoreCase));
 
-                using (SqlCommand command = new SqlCommand(sql, conn))
+                foreach (Department dep in departments)
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            SelectListItem item = new SelectListItem(
-                                reader["D_Name"].ToString(),
-                                reader["D_ID"].ToString()
-                            );
+                    SelectListItem item = new SelectListItem(
+                        dep.DepartmentName,
+                        dep.DepartmentId.ToString()
+                    );
 
-                            DepartmentFilter.Add(item);
-                        }
-                    }
+                    DepartmentFilter.Add(item);
                 }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = "Fejl ved indlæsning af afdelinger: " + ex.Message;
+                DepartmentFilter = new List<SelectListItem>();
             }
         }
 
@@ -203,42 +202,16 @@ namespace CompanyWebpages.Pages
         {
             if (!string.IsNullOrEmpty(empFilter))
             {
-                string connectionString = new Connect().cstring;
-
-                List<int> empOrdersIds = new List<int>();
-
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                try
                 {
-                    conn.Open();
-
-                    string sql = @"SELECT O_ID FROM EmployeeRecipePartOrderTable WHERE E_ID = @id";
-
-                    using (SqlCommand cmd = new SqlCommand(sql, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@id", int.Parse(empFilter));
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                int orderId = reader.GetInt32(0);
-                                empOrdersIds.Add(orderId);
-                            }
-                        }
-                    }
+                    int employeeId = int.Parse(empFilter);
+                    List<int> empOrdersIds = _employeeService.GetOrderIdsByEmployeeId(employeeId);
+                    Orders = _orderService.FilterOrdersByOrderIds(Orders, empOrdersIds);
                 }
-
-                List<Order> filteredOrders = new List<Order>();
-
-                foreach (Order order in Orders)
+                catch (Exception ex)
                 {
-                    if (empOrdersIds.Contains(order.ID))
-                    {
-                        filteredOrders.Add(order);
-                    }
+                    ErrorMessage = "Fejl ved filtrering efter medarbejder: " + ex.Message;
                 }
-
-                Orders = filteredOrders;
             }
         }
 
@@ -259,36 +232,7 @@ namespace CompanyWebpages.Pages
             }
 
             // 2) FromDate filter
-            if (FromDate.HasValue)
-            {
-                List<Order> fromFiltered = new List<Order>();
-
-                foreach (Order order in Orders)
-                {
-                    if (order.OrderMade.Date >= FromDate.Value.Date)
-                    {
-                        fromFiltered.Add(order);
-                    }
-                }
-
-                Orders = fromFiltered;
-            }
-
-            // 3) ToDate filter 
-            if (ToDate.HasValue)
-            {
-                List<Order> toFiltered = new List<Order>();
-
-                foreach (Order order in Orders)
-                {
-                    if (order.OrderMade.Date <= ToDate.Value.Date)
-                    {
-                        toFiltered.Add(order);
-                    }
-                }
-
-                Orders = toFiltered;
-            }
+            Orders = _orderService.FilterOrdersByCreatedDateRange(Orders, FromDate, ToDate);
         }
 
         // applies status filter only on todays orders
@@ -296,24 +240,7 @@ namespace CompanyWebpages.Pages
         {
             if (!string.IsNullOrEmpty(statusFilter))
             {
-                List<Order> filteredOrders = new List<Order>();
-
-                foreach (Order order in Orders)
-                {
-                    bool isToday = order.OrderMade.Date == DateTime.Today;
-
-                    if (isToday)
-                    {
-                        string currentStatus = order.Status.ToString();
-
-                        if (currentStatus == statusFilter)
-                        {
-                            filteredOrders.Add(order);
-                        }
-                    }
-                }
-
-                Orders = filteredOrders;
+                Orders = _orderService.FilterOrdersByStatusForOrdersCreatedToday(Orders, statusFilter);
             }
         }
 

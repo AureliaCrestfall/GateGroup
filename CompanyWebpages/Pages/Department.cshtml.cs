@@ -28,7 +28,17 @@ namespace CompanyWebpages.Pages
             OrderId = orderId;
             
             // Hent ordre information
-            Order = _orderService.GetOrder(orderId);
+            try
+            {
+                Order = _orderService.GetOrder(orderId);
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Fejl ved hentning af ordre #{orderId}: {ex.Message}";
+                Order = null;
+                OrderItems = new List<OrderItem>();
+                return Page();
+            }
             
             if (Order == null)
             {

@@ -15,13 +15,6 @@
             <p class="text-muted mb-0">
                 Filter the list and press <strong>Apply filters</strong>.
             </p>
-        </div>
-
-        <a asp-page="/AdminOrderList" class="btn btn-outline-light">
-            Reset
-        </a>
-    </div>
-
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
         <div class="alert alert-danger mb-3">

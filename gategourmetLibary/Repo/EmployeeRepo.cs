@@ -552,6 +552,164 @@ namespace gategourmetLibrary.Models
 
         }
 
+        public Dictionary<int, string> GetEmployeesForFilter()
+        {
+            Dictionary<int, string> employees = new Dictionary<int, string>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string sql = @"SELECT E_ID, E_Name FROM Employee";
+
+                using (SqlCommand command = new SqlCommand(sql, conn))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int employeeId = Convert.ToInt32(reader["E_ID"]);
+                            string employeeName = reader["E_Name"].ToString();
+                            employees.Add(employeeId, employeeName);
+                        }
+                    }
+                }
+            }
+
+            return employees;
+        }
+
+        public List<int> GetOrderIdsByEmployeeId(int employeeId)
+        {
+            List<int> orderIds = new List<int>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string sql = @"SELECT O_ID FROM EmployeeRecipePartOrderTable WHERE E_ID = @id";
+
+                using (SqlCommand cmd = new SqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", employeeId);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int orderId = reader.GetInt32(0);
+                            orderIds.Add(orderId);
+                        }
+                    }
+                }
+            }
+
+            return orderIds;
+        }
+
+        public List<EmployeeTask> GetEmployeeTasks(int employeeId)
+        {
+            List<EmployeeTask> tasks = new List<EmployeeTask>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string sql =
+                    @"SELECT EmployeeRecipePartOrderTable.O_ID,
+                             EmployeeRecipePartOrderTable.R_ID,
+                             rp.R_Name,
+                             w.W_Type,
+                             rp.R_Status
+                      FROM EmployeeRecipePartOrderTable
+                      INNER JOIN RecipePart rp
+                        ON EmployeeRecipePartOrderTable.R_ID = rp.R_ID
+                      LEFT JOIN werehouseRecipePart wrp
+                        ON EmployeeRecipePartOrderTable.R_ID = wrp.R_ID
+                      LEFT JOIN warehouse w
+                        ON wrp.W_ID = w.W_ID
+                      WHERE EmployeeRecipePartOrderTable.E_ID = @employeeId";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@employeeId", employeeId);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            EmployeeTask task = new EmployeeTask();
+
+                            task.OrderId = reader.GetInt32(reader.GetOrdinal("O_ID"));
+                            task.RecipePartId = reader.GetInt32(reader.GetOrdinal("R_ID"));
+                            task.TaskName = reader["R_Name"].ToString();
+
+                            int locationIndex = reader.GetOrdinal("W_Type");
+                            if (!reader.IsDBNull(locationIndex))
+                            {
+                                task.Location = reader.GetString(locationIndex);
+                            }
+                            else
+                            {
+                                task.Location = "Not registered";
+                            }
+
+                            int statusIndex = reader.GetOrdinal("R_Status");
+                            if (!reader.IsDBNull(statusIndex))
+                            {
+                                string statusText = reader.GetString(statusIndex);
+                                if (Enum.TryParse<OrderStatus>(statusText, out OrderStatus orderStatus))
+                                {
+                                    task.Status = orderStatus;
+                                }
+                                else
+                                {
+                                    task.Status = OrderStatus.Created;
+                                }
+                            }
+                            else
+                            {
+                                task.Status = OrderStatus.Created;
+                            }
+
+                            task.IsCompleted = (task.Status == OrderStatus.Completed);
+
+                            tasks.Add(task);
+                        }
+                    }
+                }
+            }
+
+            return tasks;
+        }
+
+        public void MarkTaskDone(int employeeId, int orderId, int recipePartId)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+                string sql =
+                    @"UPDATE rp
+                      SET rp.R_Status = @status
+                      FROM RecipePart rp
+                      INNER JOIN EmployeeRecipePartOrderTable ert ON rp.R_ID = ert.R_ID
+                      WHERE ert.E_ID = @employeeId
+                        AND ert.O_ID = @orderId
+                        AND ert.R_ID = @recipePartId";
+
+                using (SqlCommand command = new SqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@status", OrderStatus.Completed.ToString());
+                    command.Parameters.AddWithValue("@employeeId", employeeId);
+                    command.Parameters.AddWithValue("@orderId", orderId);
+                    command.Parameters.AddWithValue("@recipePartId", recipePartId);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
 
     }
 }

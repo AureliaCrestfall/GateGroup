@@ -304,128 +304,90 @@ namespace gategourmetLibrary.Repo
         // Returns a specific order by its ID.
         public Order Get(int orderID)
         {
-            SqlConnection sqlConnection = new SqlConnection(_connectionString);
-            Order order = new Order();
-
-            SqlCommand sqlCommand = new SqlCommand(
-                "SELECT OrderTable.O_ID as orderID, OrderTable.O_Made as made, OrderTable.O_Ready as ready," +
-                "  OrderTable.O_PaySatus as paysatus, OrderTable.O_Status as orderstatus, " +
-                "  RP.R_ID as rid, RP.R_Name as rname, RP.R_HowToPrep as howtoprep,RP.R_Status as rstatus, " +
-                "  i.I_ID as ingID, i.I_Name as ingeName" +
-                "   FROM OrderTable" +
-                "   left join orderTableRecipePart OTP on OTP.O_ID = OrderTable.o_ID " +
-                "  left JOIN RecipePart RP ON OTP.R_ID = RP.R_ID   " +
-                "  left join IngrefientrecipePart IR on IR.R_ID = RP.R_ID     " +
-                "  left join ingredient i on i.I_ID = IR.I_ID " +
-                " where ordertable.O_ID = @id",
-                sqlConnection);
-
-            sqlCommand.Parameters.AddWithValue("@id", orderID);
-
-            try
+            using (SqlConnection sqlConnection = new SqlConnection(_connectionString))
             {
-                sqlConnection.Open();
-                SqlDataReader sqlReader = sqlCommand.ExecuteReader();
+                SqlCommand sqlCommand = new SqlCommand(
+                    "SELECT OrderTable.O_ID as orderID, OrderTable.O_Made as made, OrderTable.O_Ready as ready," +
+                    "  OrderTable.O_PaySatus as paysatus, OrderTable.O_Status as orderstatus, " +
+                    "  RP.R_ID as rid, RP.R_Name as rname, RP.R_HowToPrep as howtoprep, RP.R_Status as rstatus, " +
+                    "  i.I_ID as ingID, i.I_Name as ingeName" +
+                    "   FROM OrderTable" +
+                    "   left join orderTableRecipePart OTP on OTP.O_ID = OrderTable.o_ID " +
+                    "  left JOIN RecipePart RP ON OTP.R_ID = RP.R_ID   " +
+                    "  left join IngrefientrecipePart IR on IR.R_ID = RP.R_ID     " +
+                    "  left join ingredient i on i.I_ID = IR.I_ID " +
+                    " where ordertable.O_ID = @id",
+                    sqlConnection);
 
-                if (sqlReader.Read())
+                sqlCommand.Parameters.AddWithValue("@id", orderID);
+
+                try
                 {
-                    int id = Convert.ToInt32(sqlReader["orderID"]);
-                    DateTime made = Convert.ToDateTime(sqlReader["made"]);
-                    DateTime ready = Convert.ToDateTime(sqlReader["ready"]);
-                    bool paystatus = Convert.ToBoolean(sqlReader["paysatus"]);
-                    string statusString = sqlReader["orderstatus"].ToString();
+                    sqlConnection.Open();
 
-                    OrderStatus status;
-                    if (!Enum.TryParse<OrderStatus>(statusString, out status))
+                    using (SqlDataReader sqlReader = sqlCommand.ExecuteReader())
                     {
-                        status = OrderStatus.Created;
-                    }
-                    if (!DBNull.Value.Equals(sqlReader["rid"]))
-                    {
-                        int rID = Convert.ToInt32(sqlReader["rid"]);
-                        string rName = sqlReader["rname"].ToString();
-                        string howtoprep = sqlReader["howtoprep"].ToString();
-                        string rStatus = sqlReader["rstatus"].ToString();
-                        int ingID = Convert.ToInt32(sqlReader["ingID"]);
-                        string ingeName = sqlReader["ingeName"].ToString();
-                    }
-                    
+                        Order order = null;
 
-                    if (order.ID != id)
-                    {
-                        order = new Order(made, ready, id, paystatus, status);
-                        if (!DBNull.Value.Equals(sqlReader["rid"]))
+                        while (sqlReader.Read())
                         {
-                            int rID = Convert.ToInt32(sqlReader["rid"]);
-                            string rName = sqlReader["rname"].ToString();
-                            string howtoprep = sqlReader["howtoprep"].ToString();
-                            string rStatus = sqlReader["rstatus"].ToString();
-                            int ingID = Convert.ToInt32(sqlReader["ingID"]);
-                            string ingeName = sqlReader["ingeName"].ToString();
+                            if (order == null)
+                            {
+                                int id = Convert.ToInt32(sqlReader["orderID"]);
+                                DateTime made = Convert.ToDateTime(sqlReader["made"]);
+                                DateTime ready = Convert.ToDateTime(sqlReader["ready"]);
+                                bool paystatus = Convert.ToBoolean(sqlReader["paysatus"]);
+                                string statusString = sqlReader["orderstatus"]?.ToString();
 
-                            order.Recipe.Add(rID, new RecipePart
-                            {
-                                ID = rID,
-                                partName = rName,
-                                Assemble = howtoprep,
-                                status = rStatus,
-                                Ingredients = new List<Ingredient>()
-                            });
-                            order.Recipe[rID].Ingredients.Add(new Ingredient
-                            {
-                                ID = ingID,
-                                Name = ingeName
-                            });
-                        }
-                        else
-                        {
-                            throw new Exception(" this order dosn't have any recipe parts ");
-                        }
-                        
-                    }
-                    else
-                    {
-                        if (!DBNull.Value.Equals(sqlReader["rid"]))
-                        {
-                            int rID = Convert.ToInt32(sqlReader["rid"]);
-                            string rName = sqlReader["rname"].ToString();
-                            string howtoprep = sqlReader["howtoprep"].ToString();
-                            string rStatus = sqlReader["rstatus"].ToString();
-                            int ingID = Convert.ToInt32(sqlReader["ingID"]);
-                            string ingeName = sqlReader["ingeName"].ToString();
-                            order.Recipe.Add(rID, new RecipePart
-                            {
-                                ID = rID,
-                                partName = rName,
-                                Assemble = howtoprep,
-                                status = rStatus,
-                                Ingredients = new List<Ingredient>()
+                                OrderStatus status;
+                                if (!Enum.TryParse<OrderStatus>(statusString, out status))
+                                {
+                                    status = OrderStatus.Created;
+                                }
 
-                            });
-                            order.Recipe[rID].Ingredients.Add(new Ingredient
+                                order = new Order(made, ready, id, paystatus, status);
+                            }
+
+                            // NOTE: Some orders may have zero recipe parts. That's valid; just return an Order with an empty Recipe dictionary.
+                            if (!DBNull.Value.Equals(sqlReader["rid"]))
                             {
-                                ID = ingID,
-                                Name = ingeName
-                            });
+                                int rID = Convert.ToInt32(sqlReader["rid"]);
+
+                                if (!order.Recipe.ContainsKey(rID))
+                                {
+                                    order.Recipe.Add(rID, new RecipePart
+                                    {
+                                        ID = rID,
+                                        partName = sqlReader["rname"]?.ToString(),
+                                        Assemble = sqlReader["howtoprep"]?.ToString(),
+                                        status = sqlReader["rstatus"]?.ToString(),
+                                        Ingredients = new List<Ingredient>()
+                                    });
+                                }
+
+                                // Ingredients are optional: recipe parts can exist without linked ingredients.
+                                if (!DBNull.Value.Equals(sqlReader["ingID"]))
+                                {
+                                    int ingID = Convert.ToInt32(sqlReader["ingID"]);
+                                    string ingeName = sqlReader["ingeName"]?.ToString();
+
+                                    order.Recipe[rID].Ingredients.Add(new Ingredient
+                                    {
+                                        ID = ingID,
+                                        Name = ingeName
+                                    });
+                                }
+                            }
                         }
-                        else
-                        {
-                            throw new Exception(" this order dosn't have any recipe parts ");
-                        }
+
+                        return order;
                     }
                 }
+                catch (SqlException sqlError)
+                {
+                    throw new Exception("Database error in OrderRepository.Get(): " + sqlError.Message);
+                }
             }
-            catch (SqlException sqlError)
-            {
-                throw new Exception("Database error in OrderRepository.Get(): " + sqlError.Message);
-            }
-            finally
-            {
-                sqlConnection.Close();
-            }
-            Debug.WriteLine(order.ID + " order id in repo is");
-            
-            return order;
         }
 
         public void Update(int orderID, Order updateOrder)
