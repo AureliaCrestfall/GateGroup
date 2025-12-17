@@ -189,8 +189,8 @@ namespace gategourmetLibrary.Models
             //henter alle medarbejder fra sql tabllen 
             SqlCommand command = new SqlCommand("select Employee.E_Name as employeeName, Employee.E_ID as employeeId,Employee.E_Email as employeeEmail,Employee.E_Password as employeePassword" +
                 ",Phone.P_number as phoneNumber,Phone.P_ID as phoneid from Employee" +
-                " join employeePhone on Employee.E_ID = employeePhone.E_ID" +
-                " join Phone on employeePhone.P_ID = Phone.P_ID", connection);
+                " left join employeePhone on Employee.E_ID = employeePhone.E_ID" +
+                " left join Phone on employeePhone.P_ID = Phone.P_ID", connection);
 
             //åben forbindelse
             connection.Open();
@@ -217,16 +217,24 @@ namespace gategourmetLibrary.Models
                 }
                
 
-
-                int phone = (int)reader["phoneid"];
-                if (phone % 2 == 0)
+                if(!DBNull.Value.Equals(reader["phoneid"]))
                 {
-                    employees[(int)reader["employeeId"]].WorkPhoneNumber = reader["phoneNumber"].ToString();
+                    int phone = (int)reader["phoneid"];
+                    if (phone % 2 == 0)
+                    {
+                        employees[(int)reader["employeeId"]].WorkPhoneNumber = reader["phoneNumber"].ToString();
+                    }
+                    else if (phone % 2 != 0)
+                    {
+                        employees[(int)reader["employeeId"]].PersonalPhoneNumber = reader["phoneNumber"].ToString();
+                    }
                 }
-                else if (phone % 2 != 0)
+                else
                 {
-                    employees[(int)reader["employeeId"]].PersonalPhoneNumber = reader["phoneNumber"].ToString();
+                    employees[(int)reader["employeeId"]].PersonalPhoneNumber = " this employee dosn't have a PersonalPhoneNumber";
+                    employees[(int)reader["employeeId"]].WorkPhoneNumber = " this employee dosn't have a WorkPhoneNumber";
                 }
+               
 
             }
             //luk reader  
