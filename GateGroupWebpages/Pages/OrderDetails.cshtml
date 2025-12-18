@@ -88,6 +88,8 @@
                                 <th style="width: 25%;">Part Name</th>
                                 <th style="width: 45%;">How To Prepare</th>
                                 <th>Ingredients</th>
+                                <th>Allergy</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -111,6 +113,40 @@
                                             <span class="opacity-75">None</span>
                                         }
                                     </td>
+                                    <td>
+                                            @{
+                                                var allergies = new List<string>();
+                                                if (part.Value.Ingredients != null)
+                                                {
+                                                    foreach (var ingredient in part.Value.Ingredients)
+                                                    {
+                                                        foreach (var allergy in ingredient.Allergies.Values)
+                                                        {
+                                                            if (!allergies.Contains(allergy))
+                                                            {
+                                                                allergies.Add(allergy);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            @if (allergies.Count > 0)
+                                        {
+                                            foreach (var allergy in allergies)
+                                            {
+                                                <span class="badge bg-danger me-1 mb-1">
+                                                @allergy
+                                                </span>
+                                            }
+										}
+                                            
+
+
+                                        else
+                                        {
+                                            <span class="opacity-75">None</span>
+										}
+									</td>
                                 </tr>
                             }
                         </tbody>

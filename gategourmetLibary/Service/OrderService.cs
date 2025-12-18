@@ -88,7 +88,20 @@ namespace gategourmetLibrary.Service
         // gets a specific order by ID
         public Order GetOrder(int orderID)
         {
-            return _orderRepo.Get(orderID);
+            Order order = _orderRepo.Get(orderID);
+            Dictionary<int, Ingredient> allIngredients = _orderRepo.GetAllIngredients();
+            foreach (var recipePart in order.Recipe.Values)
+            {
+                foreach (var ing in recipePart.Ingredients)
+                {
+                    if (allIngredients.ContainsKey(ing.ID))
+                    {
+                        ing.Allergies = allIngredients[ing.ID].Allergies;
+                    }
+                }
+            }
+            return order;
+
         }
         // gets recipe parts for a specific order
         public List<RecipePart> GetOrderRecipeParts(int orderID)
