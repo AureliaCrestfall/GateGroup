@@ -42,11 +42,6 @@ namespace gategourmetLibrary.Repo
         // adds a new employee in department
         void AddNewDepartmentEmployee(int departmentId, Employee newEmployee);
 
-   
-    
-        // ... eksisterende metoder
-
-        // Tilføj denne linje:
         List<OrderItem> GetOrderStockLocations(int orderId);
     }
 
