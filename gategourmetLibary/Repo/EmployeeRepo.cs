@@ -628,7 +628,7 @@ namespace gategourmetLibrary.Models
                         ON EmployeeRecipePartOrderTable.R_ID = wrp.R_ID
                       LEFT JOIN warehouse w
                         ON wrp.W_ID = w.W_ID
-                      WHERE EmployeeRecipePartOrderTable.E_ID = @employeeId";
+                      WHERE EmployeeRecipePartOrderTable.E_ID = @employeeId and NOT rp.R_Status = 'Cancelled' ";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -671,10 +671,18 @@ namespace gategourmetLibrary.Models
                             {
                                 task.Status = OrderStatus.Created;
                             }
+                            if(task.Status == OrderStatus.Completed)
+                            {
+                                Debug.WriteLine($"{task.Status} task status is");
+                                task.IsCompleted = true;
 
-                            task.IsCompleted = (task.Status == OrderStatus.Completed);
+                            }
+                            else
+                            {
+                                task.IsCompleted = false;
+                            }
 
-                            tasks.Add(task);
+                                tasks.Add(task);
                         }
                     }
                 }

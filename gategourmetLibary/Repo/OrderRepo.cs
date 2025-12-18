@@ -1,6 +1,7 @@
 ﻿using gategourmetLibrary.Models;
 using gategourmetLibrary.Secret;
 using Microsoft.Data.SqlClient;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -163,13 +164,50 @@ namespace gategourmetLibrary.Repo
                 SqlCommand command = new SqlCommand(
                     "UPDATE dbo.OrderTable SET O_Status = @Status WHERE O_ID = @Id",
                     connection);
-
+                SqlCommand commandRecipe = new SqlCommand(
+                 "UPDATE dbo.RecipePart SET R_Status = @Status WHERE R_ID = @Id",
+                 connection);
+                SqlCommand sqlCommand = new SqlCommand("select R_ID from orderTableRecipePart " +
+                    " where O_ID = @id", connection);
                 // store the enum as string in the database
                 command.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
                 command.Parameters.AddWithValue("@Id", orderId);
+                
 
+                sqlCommand.Parameters.AddWithValue("@Id", orderId);
+                List<int> orderIds = new List<int>();
+                commandRecipe.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
+
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                connection.Close();
                 connection.Open();
-                command.ExecuteNonQuery();
+
+                SqlDataReader sqlReader = sqlCommand.ExecuteReader();
+
+                    while (sqlReader.Read())
+                    {
+                        Debug.WriteLine("reader calls");
+                       orderIds.Add((int)sqlReader["R_ID"]);
+
+                    }
+                connection.Close();
+                connection.Open();
+                foreach (int i in orderIds)
+                {
+                    commandRecipe.Parameters.AddWithValue("@Id", i);
+                    commandRecipe.ExecuteNonQuery();
+                }
+
+                }
+                catch (SqlException ex)
+                {
+                    throw new Exception("Databasefail in OrderRepository.CancelOrder(): " + ex.Message);
+
+                }
+
             }
         }
 
