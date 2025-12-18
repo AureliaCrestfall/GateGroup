@@ -220,7 +220,8 @@ namespace gategourmetLibrary.Service
             return filtered;
         }
 
-        // Applies a status filter only to orders created today. Matches the AdminOrderList behavior.
+       
+        // Applies a status filter only to orders created today.
         // If statusFilter is empty/null, the input list is returned unchanged.
         public List<Order> FilterOrdersByStatusForOrdersCreatedToday(List<Order> orders, string statusFilter)
         {
@@ -234,6 +235,14 @@ namespace gategourmetLibrary.Service
                 return orders;
             }
 
+            OrderStatus parsedStatus;
+            bool canParse = Enum.TryParse(statusFilter, true, out parsedStatus);
+            if (!canParse)
+            {
+                // If the filter value is invalid, return empty result 
+                return new List<Order>();
+            }
+
             DateTime today = DateTime.Today;
             List<Order> filtered = new List<Order>();
 
@@ -244,14 +253,12 @@ namespace gategourmetLibrary.Service
                     continue;
                 }
 
-                bool isToday = order.OrderMade.Date == today;
-                if (!isToday)
+                if (order.OrderMade.Date != today)
                 {
                     continue;
                 }
 
-                string currentStatus = order.Status.ToString();
-                if (currentStatus == statusFilter)
+                if (order.Status == parsedStatus)
                 {
                     filtered.Add(order);
                 }
@@ -259,6 +266,7 @@ namespace gategourmetLibrary.Service
 
             return filtered;
         }
+
 
         // returns the current warehouse location for a specific recipe part
         public Warehouse GetRecipePartLocation(int recipePartId)
