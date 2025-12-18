@@ -708,15 +708,15 @@ namespace gategourmetLibrary.Repo
                     DateTime ready = Convert.ToDateTime(reader["O_Ready"]);
                     bool paystatus = Convert.ToBoolean(reader["O_PaySatus"]);
                     string statusString = reader["O_Status"].ToString();
-
+                    Order order = new Order(made, ready, id, paystatus);
+                    
                     OrderStatus status;
                     if (!Enum.TryParse<OrderStatus>(statusString, out status))
                     {
-                        status = OrderStatus.Created;
+                         order.Status=status;
                     }
 
-                    Order order = new Order(made, ready, id, paystatus);
-                    order.Status = status;
+                    
                     order.CustomerOrder = customer;
 
                     orders.Add(order);
@@ -890,7 +890,7 @@ namespace gategourmetLibrary.Repo
         }
 
 
-             public Dictionary<int, Order> GetAllFromID(int idcust)
+        public Dictionary<int, Order> GetAllFromID(int idcust)
         {
             Dictionary<int, Order> ordersFromDatabase = new Dictionary<int, Order>();
 
@@ -971,6 +971,34 @@ namespace gategourmetLibrary.Repo
             }
 
             return new List<Order>(ordersFromDatabase.Values);
+        }
+        public void MarkorderDone(int orderId)
+        {
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+
+                SqlCommand command = new SqlCommand("UPDATE OrderTable SET O_Status = @status " +
+                "  WHERE O_ID = @id",
+                connection);
+                command.Parameters.AddWithValue("@status", OrderStatus.Completed.ToString());
+                command.Parameters.AddWithValue("@id", orderId);
+
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch (SqlException ex)
+                {
+                    throw new Exception("Database error in EmployeeRepo.AsignTask(): " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
         }
     }
 }

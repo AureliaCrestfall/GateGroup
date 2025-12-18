@@ -39,7 +39,6 @@ namespace CompanyWebpages.Pages
 
         public IActionResult OnPostDelete(int id)
         {
-            Debug.WriteLine("OnPostDelete called");
             try
             { 
                 _employeeService.delete(id);

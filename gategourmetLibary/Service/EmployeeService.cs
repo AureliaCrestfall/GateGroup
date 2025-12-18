@@ -124,6 +124,11 @@ namespace gategourmetLibrary.Service
             _iemployee.MarkTaskDone(employeeId, orderId, recipePartId);
         }
 
+        public void AsignTask(int employeeid, int orderid, int recpiepartid)
+        {
+            _iemployee.AsignTask(employeeid, orderid, recpiepartid);
+        }
+
 
 
     }

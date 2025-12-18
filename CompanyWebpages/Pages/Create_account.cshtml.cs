@@ -44,7 +44,6 @@ namespace GateGroupWebpages.Pages
         {
             if (!ModelState.IsValid)
             {
-                Debug.WriteLine("is not vaild");
                 return Page();
             }
 

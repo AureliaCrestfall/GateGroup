@@ -75,7 +75,6 @@ namespace gategourmetLibrary.Repo
         // adds a new customer
         public void AddCustomer(Customer customer)
         {
-            Debug.WriteLine(customer.Email);
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -297,7 +296,6 @@ namespace gategourmetLibrary.Repo
 
                     while (reader.Read())
                     {
-                        Debug.WriteLine($"id from reader is {(int)reader["CID"]}");
                         databasecustomer.ID = (int)reader["CID"];
                         databasecustomer.Name = reader["CName"].ToString();
 
@@ -319,7 +317,6 @@ namespace gategourmetLibrary.Repo
                    
                 }
 
-                Debug.WriteLine($"customer id from ordertablecustomerid is {databasecustomer.ID}");
                 //returnere customer
                 return databasecustomer;
 

@@ -254,5 +254,30 @@ namespace CompanyWebpages.Pages
 
             return RedirectToPage();
         }
+        public IActionResult OnPostComplete(int orderId)
+        {
+            try
+            {
+                _orderService.MarkorderDone(orderId);
+                LoadCustomers();
+                LoadAllOrders();
+                LoadEmployeeFilter();
+                LoadDepartmentFilter();
+                StatusMessage = "Order #" + orderId + "has been marked Completed.";
+                return Page();
+            }
+            catch(Exception ex)
+            {
+                ErrorMessage = ex.Message;
+                LoadCustomers();
+                LoadAllOrders();
+                LoadEmployeeFilter();
+                LoadDepartmentFilter();
+                return Page();
+            }
+
+
+            
+        }
     }
 }

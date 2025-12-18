@@ -26,5 +26,7 @@ namespace gategourmetLibrary.Repo
         List<int> GetOrderIdsByEmployeeId(int employeeId);
         List<EmployeeTask> GetEmployeeTasks(int employeeId);
         void MarkTaskDone(int employeeId, int orderId, int recipePartId);
+
+        void AsignTask(int employeeid, int orderid, int recpiepartid);
     }
 }

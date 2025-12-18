@@ -8,7 +8,7 @@ namespace gategourmetLibrary.Repo
     // This defines all methods that the OrderRepo class must implement.
     public interface IOrderRepo
     {
-        Dictionary<int,Order> GetAll();
+        Dictionary<int, Order> GetAll();
 
         // returns the list of all orders
         List<Order> GetAllOrders();
@@ -64,5 +64,7 @@ namespace gategourmetLibrary.Repo
         // returns all warehouses (freezer, fridge, dry storage)
         List<Warehouse> GetAllWarehouses();
         List<Order> GetAllOrdersFromid(int id);
+
+        void MarkorderDone(int orderId);
     }
 }

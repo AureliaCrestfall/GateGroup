@@ -41,7 +41,6 @@ namespace GateGroupWebpages.Pages
         // Handles delete button click
         public IActionResult OnPostDelete(int id)
         {
-            Debug.WriteLine("delete was called");
             _orderService.DeleteOrder(id);
             SuccessMessage = $"order with ID {id} was deleted successfully.";
             Load();

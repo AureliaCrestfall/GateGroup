@@ -15,7 +15,6 @@ namespace CompanyWebpages
 
             // get connection string from Connect class
             string connection = new Connect().cstring;
-            Debug.WriteLine(connection);
 
             // Razor Pages
             builder.Services.AddRazorPages();

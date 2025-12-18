@@ -34,6 +34,11 @@
                 No employees are currently working on this order.
             </div>
         </div>
+        <a class="btn btn-sm btn-outline-light"
+           asp-page="/Asigntask"
+           asp-route-orderid="@Model.Order.ID">
+           Asign task
+        </a>
     }
     else
     {
@@ -74,7 +79,28 @@
                         </div>
                     </div>
                 </div>
+              
             }
+              @if (Model.Employees.Count< Model.Order.Recipe.Count)
+                {
+                    <a class="btn btn-sm btn-outline-light"
+                       asp-page="/Asigntask"
+                       asp-route-orderid="@Model.Order.ID">
+                        Asign task
+                    </a>
+                }
+                @* else if (Model.Employees.Count == Model.Order.Recipe.Count)
+                {
+
+                    <div class="mb-2">
+                        <strong>Is the ready to be completed:</strong> 
+                    </div>
+                    <form method="post">
+                        <button type="submit" class="btn btn-primary">
+                            mark as completed
+                        </button>
+                    </form>
+                } *@
         </div>
     }
 

@@ -25,7 +25,6 @@ namespace gategourmetLibrary.Service
         // adds a new customer
         public void AddCustomer(Customer customer)
         {
-            Debug.WriteLine(customer);
             _customerRepo.AddCustomer(customer);
         }
         // deletes a customer by ID

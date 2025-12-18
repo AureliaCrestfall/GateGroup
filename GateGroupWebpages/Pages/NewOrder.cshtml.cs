@@ -156,7 +156,6 @@ namespace GateGroupWebpages.Pages
                     {
                         foreach(KeyValuePair<int,string> a in i.Allergies)
                         {
-                            Debug.WriteLine($"the key is {a.Key}");
                             foreach (int allerieID in slectedAllerieId)
                             {
                                 if (a.Key == allerieID)

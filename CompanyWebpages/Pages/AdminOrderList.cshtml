@@ -256,9 +256,15 @@
                                                 Already cancelled
                                             </span>
                                         }
+                                                <form method="post" asp-page-handler="Complete" class="d-inline">
+                                                    <input type="hidden" name="orderId" value="@order.ID" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        mark as Completed
+                                                    </button>
+                                                </form>
                                     </div>
                                 </td>
-
+                                        
                                 <td>
                                     <a class="btn btn-sm btn-outline-light"
                                        asp-page="/Responsible"

@@ -540,8 +540,7 @@ namespace gategourmetLibrary.Models
             }
             catch(SqlException ex)
             {
-                Debug.WriteLine("this is the ex massage"+ex.Message);
-                throw ex;
+                throw new Exception("Database error in EmployeeRepo.AddNewAdmin(): " + ex.Message);
             }
             finally
             {
@@ -673,7 +672,6 @@ namespace gategourmetLibrary.Models
                             }
                             if(task.Status == OrderStatus.Completed)
                             {
-                                Debug.WriteLine($"{task.Status} task status is");
                                 task.IsCompleted = true;
 
                             }
@@ -718,7 +716,42 @@ namespace gategourmetLibrary.Models
             }
         }
 
+        public void AsignTask(int employeeid,int orderid, int recpiepartid)
+        {
 
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+
+
+                SqlCommand command = new SqlCommand("insert into EmployeeRecipePartOrderTable(E_ID,O_ID,R_ID) " +
+                    " values(@EID,@OID,@RID) " +
+                    "UPDATE OrderTable SET O_Status = 'InProgress' WHERE O_ID = @OID " +
+                    "UPDATE RecipePart SET R_Status = 'InProgress' WHERE R_ID = @RID ", connection);
+                
+                    command.Parameters.AddWithValue("@EID", employeeid);
+                    command.Parameters.AddWithValue("@OID", orderid);
+                    command.Parameters.AddWithValue("@RID", recpiepartid);
+                try
+                {
+                    command.ExecuteNonQuery();
+                }
+                catch(SqlException ex)
+                {
+                    throw new Exception("Database error in EmployeeRepo.AsignTask(): " + ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+
+
+            }
+        }
     }
+
+
+    
 }
 

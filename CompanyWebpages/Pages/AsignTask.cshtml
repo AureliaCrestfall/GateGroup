@@ -1,0 +1,56 @@
+﻿@page
+@model CompanyWebpages.Pages.AsignTaskModel
+@{
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Information:</strong> @Model.ErrorMessage
+    </div>
+}
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-warning" role="alert">
+        <strong>Information:</strong> @Model.SuccessMessage
+    </div>
+}
+
+
+
+<div class="container">
+    <div class="row row-cols-md-2 row-cols-lg-3">
+@foreach (KeyValuePair<int,RecipePart> value in Model.Order.Recipe)
+{
+            <form method="post">
+        <h5 class="card-title mb-1">
+            @value.Value.partName
+        </h5>
+
+           @if(value.Value.status == OrderStatus.InProgress.ToString())
+            {
+           <div class="text-muted small mb-3">
+                    this part has been asigned
+            </div>
+            }
+        <div class="text-muted small mb-3">
+            Recipe part ID: @value.Key
+        </div>
+        <div class="col-12">
+            <select name="employeeid" class="form-select" asp-items="Model.EmployeesOptions">
+                        <option value="0">Select an Employee for this task</option>
+                            
+                        </select>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-end">
+            
+            <input type="hidden" value="@value.Key" name="recipeid" />
+            <input type="hidden" value="@Model.Order.ID" name="orderid" />
+            <button type="submit" class="btn btn-primary">
+                asign task
+            </button>
+        </div>
+    </form>
+}
+    </div>
+</div>
