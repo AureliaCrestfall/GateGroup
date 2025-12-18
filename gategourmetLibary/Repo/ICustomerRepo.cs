@@ -25,5 +25,13 @@ namespace gategourmetLibrary.Repo
         //filters customers by name
         List<Customer> FilterCustomersByName(string name);
         Customer GetCustomerByOrder(int orderid);
+
+        //void Add(int customer);
+        //int Get();
+        //void Delete(int customer);
+        //void GetAll();
+        //void MyOrder(int customer);
+        //void Update(int customer);
+        //void Filter(string customer);
     }
 }

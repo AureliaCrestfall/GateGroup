@@ -68,15 +68,23 @@ namespace gategourmetLibrary.Repo
                     connection.Open();
 
                     using (SqlCommand command = new SqlCommand(
-                     "SELECT orderTableRecipePart.O_ID AS [Order ID], " + "ingredient.I_Quntity AS [Ingredient Quantity], " +  "ingredient.I_ID AS [Ingredient ID], " +
-                    "ingredient.I_Name AS [Ingredient Name], " +"ingredient.I_ExpireDate AS [Ingredient ExpireDate], " + "warehouse.W_ID AS [Warehouse ID], " +
-                    "warehouse.W_Name AS [Warehouse Name], " + "warehouse.W_Location AS [Warehouse Location] " +
-                    "FROM orderTableRecipePart " +  "JOIN RecipePart ON RecipePart.R_ID = orderTableRecipePart.R_ID " + "JOIN IngrefientrecipePart ON RecipePart.R_ID = IngrefientrecipePart.R_ID " +
-                    "JOIN ingredient ON ingredient.I_ID = IngrefientrecipePart.I_ID " +
-                     "JOIN warehouseIngredient ON warehouseIngredient.I_ID = ingredient.I_ID " +
-                    "JOIN warehouse ON warehouse.W_ID = warehouseIngredient.W_ID " +
-                    "WHERE orderTableRecipePart.O_ID = @id",
-                    connection)  )
+ "SELECT orderTableRecipePart.O_ID AS [Order ID], " +
+ "ingredient.I_Quntity AS [Ingredient Quantity], " +
+ "ingredient.I_ID AS [Ingredient ID], " +
+ "ingredient.I_Name AS [Ingredient Name], " +
+ "ingredient.I_ExpireDate AS [Ingredient ExpireDate], " +
+ "warehouse.W_ID AS [Warehouse ID], " +
+ "warehouse.W_Name AS [Warehouse Name], " +
+ "warehouse.W_Location AS [Warehouse Location] " +
+ "FROM orderTableRecipePart " +
+ "JOIN RecipePart ON RecipePart.R_ID = orderTableRecipePart.R_ID " +
+ "JOIN IngrefientrecipePart ON RecipePart.R_ID = IngrefientrecipePart.R_ID " +
+ "JOIN ingredient ON ingredient.I_ID = IngrefientrecipePart.I_ID " +
+ "JOIN warehouseIngredient ON warehouseIngredient.I_ID = ingredient.I_ID " +
+ "JOIN warehouse ON warehouse.W_ID = warehouseIngredient.W_ID " +
+ "WHERE orderTableRecipePart.O_ID = @id",
+ connection)
+)
                     {
                         command.Parameters.AddWithValue("@id", orderId);
 

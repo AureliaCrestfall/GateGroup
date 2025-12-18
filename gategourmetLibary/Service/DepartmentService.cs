@@ -93,6 +93,8 @@ namespace gategourmetLibrary.Service
             }
             catch (Exception ex)
             {
+                // Log fejlen eller returner tom liste
+                // Du kan også kaste exception videre hvis det er ønsket
                 throw new Exception($"Kunne ikke hente lagerplaceringer for ordre {orderId}: {ex.Message}", ex);
             }
         }

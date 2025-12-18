@@ -616,15 +616,19 @@ namespace gategourmetLibrary.Models
                 connection.Open();
 
                 string sql =
-                    @"SELECT EmployeeRecipePartOrderTable.O_ID, EmployeeRecipePartOrderTable.R_ID, rp.R_Name,  w.W_Type, rp.R_Status
-                    FROM EmployeeRecipePartOrderTable
-                    INNER JOIN RecipePart rp
-                    ON EmployeeRecipePartOrderTable.R_ID = rp.R_ID
-                    LEFT JOIN werehouseRecipePart wrp
-                    ON EmployeeRecipePartOrderTable.R_ID = wrp.R_ID
-                    LEFT JOIN warehouse w
-                    ON wrp.W_ID = w.W_ID
-                    WHERE EmployeeRecipePartOrderTable.E_ID = @employeeId and NOT rp.R_Status = 'Cancelled' ";
+                    @"SELECT EmployeeRecipePartOrderTable.O_ID,
+                             EmployeeRecipePartOrderTable.R_ID,
+                             rp.R_Name,
+                             w.W_Type,
+                             rp.R_Status
+                      FROM EmployeeRecipePartOrderTable
+                      INNER JOIN RecipePart rp
+                        ON EmployeeRecipePartOrderTable.R_ID = rp.R_ID
+                      LEFT JOIN werehouseRecipePart wrp
+                        ON EmployeeRecipePartOrderTable.R_ID = wrp.R_ID
+                      LEFT JOIN warehouse w
+                        ON wrp.W_ID = w.W_ID
+                      WHERE EmployeeRecipePartOrderTable.E_ID = @employeeId and NOT rp.R_Status = 'Cancelled' ";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {

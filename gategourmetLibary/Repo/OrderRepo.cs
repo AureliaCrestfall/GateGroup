@@ -17,6 +17,8 @@ namespace gategourmetLibrary.Repo
         // Stores the current order ID
         public int orderId { get; set; }
 
+
+
         // connection string to the database
         private readonly string _connectionString;
 
@@ -178,8 +180,8 @@ namespace gategourmetLibrary.Repo
 
                 try
                 {
-                connection.Open();
-                command.ExecuteNonQuery();
+                    connection.Open();
+                    command.ExecuteNonQuery();
                 connection.Close();
                 connection.Open();
 
@@ -332,6 +334,11 @@ namespace gategourmetLibrary.Repo
             }
         }
 
+        public void Delete(int orderID)
+        {
+            // not implemented 
+        }
+
         // Returns a specific order by its ID.
         public Order Get(int orderID)
         {
@@ -379,6 +386,7 @@ namespace gategourmetLibrary.Repo
                                 order = new Order(made, ready, id, paystatus, status);
                             }
 
+                            // NOTE: Some orders may have zero recipe parts. That's valid; just return an Order with an empty Recipe dictionary.
                             if (!DBNull.Value.Equals(sqlReader["rid"]))
                             {
                                 int rID = Convert.ToInt32(sqlReader["rid"]);
@@ -395,6 +403,7 @@ namespace gategourmetLibrary.Repo
                                     });
                                 }
 
+                                // Ingredients are optional: recipe parts can exist without linked ingredients.
                                 if (!DBNull.Value.Equals(sqlReader["ingID"]))
                                 {
                                     int ingID = Convert.ToInt32(sqlReader["ingID"]);
@@ -418,6 +427,22 @@ namespace gategourmetLibrary.Repo
                 }
             }
         }
+
+        public void Update(int orderID, Order updateOrder)
+        {
+            // not used in this project
+        }
+
+        public Order filterAfterWhoMade(Employee filterAfterWhoMade)
+        {
+            return null;
+        }
+
+        public Order filterAfterOrderToday(DateTime filterAfterOrderToday)
+        {
+            return null;
+        }
+
         // Returns all ingredients from the database
         public Dictionary<int, Ingredient> GetAllIngredients()
         {
@@ -503,6 +528,10 @@ namespace gategourmetLibrary.Repo
                 }
             }
 
+
+
+
+
             // get constring from connect class
             string connectionString = new Connect().cstring;
             using (SqlConnection conn = new SqlConnection(connectionString))
@@ -541,6 +570,23 @@ namespace gategourmetLibrary.Repo
             }
         }
 
+        //update an existing order by its ID 
+        public void UpdateOrder(int orderID, Order updatedOrder)
+        {
+            // not implemented in this project
+        }
+
+        //returns a list of recipe parts for a specific order by orderID
+        public List<RecipePart> GetRecipeParts(int orderID)
+        {
+            return null;
+        }
+
+        //filters orders made by a specific employee
+        public List<Order> FilterByEmployee(Employee employee)
+        {
+            return null;
+        }
 
         //filters orders placed today
         public List<Order> FilterByToday(DateTime today)
@@ -682,6 +728,29 @@ namespace gategourmetLibrary.Repo
             return orders;
         }
 
+        //filters orders by their status
+        public List<Order> FilterByStatus(OrderStatus status)
+        {
+            return null;
+        }
+
+        //filters orders by a specific date
+        public List<Order> FilterByDate(DateTime date)
+        {
+            return null;
+        }
+
+        public void filterAfterCompany(Customer filterAfterCompany)
+        {
+        }
+
+        public void filterAfterStatus(Enum filterAfterStatus)
+        {
+        }
+
+        public void filterAfterDate(DateTime filterAfterDate)
+        {
+        }
 
         // Returns all allergies from the database.
         public Dictionary<int, string> GetAllAllergies()
