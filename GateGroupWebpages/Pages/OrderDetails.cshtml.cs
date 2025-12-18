@@ -39,6 +39,12 @@ namespace GateGroupWebpages.Pages
             try
             {
                 Order = _orderService.GetOrder(orderid);
+                if (Order == null)
+                {
+                    ErrorMessage = $"Order #{orderid} blev ikke fundet.";
+                    Order = new Order();
+                    Order.ID = orderid;
+                }
             }
             catch(Exception ex)
             {

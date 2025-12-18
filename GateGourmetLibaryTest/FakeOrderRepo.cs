@@ -17,6 +17,7 @@ namespace GateGourmetLibaryTest
         public void AddOrder(Order order)
         {
             DictOrders.Add(order.ID,order);
+            ListOrders.Add(order);
         }
 
         public void CancelOrder(int orderId)
@@ -51,7 +52,15 @@ namespace GateGourmetLibaryTest
 
         public List<Order> FilterByStatus(OrderStatus status)
         {
-            return ListOrders;
+            List<Order> FOrders = new List<Order>();
+            foreach(Order o in ListOrders)
+            {
+                if(o.Status == status)
+                {
+                    FOrders.Add(o);
+                }
+            }
+            return FOrders;
         }
 
         public List<Order> FilterByToday(DateTime today)
