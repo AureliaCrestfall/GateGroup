@@ -31,30 +31,47 @@ namespace CompanyWebpages.Pages
 
         public IActionResult OnPost()
         {
-            Employee employ = _cs.Get(Convert.ToInt32(UserID));
-            if (Password == employ.Password && UserID != null)
+            if (string.IsNullOrEmpty(UserID))
             {
-                HttpContext.Session.SetString("IsLoggedIn", "true"); // Gem i session
-                HttpContext.Session.SetString("username", $"{employ.Name}"); // Gem i session
-                HttpContext.Session.SetString("userid", $"{employ.Id}");
-                if (_cs.LoginAdmin(Convert.ToInt32(UserID), Password) == true)
-                {
-                    HttpContext.Session.SetString("admin", "true"); // Gem i session
-                }
-
-
-                return RedirectToPage("/EmployeeDashboard");
-                //return RedirectToPage("/NewOrder");
-
+                ErrorMessage = "Please enter a user ID.";
+                return Page();
             }
 
-            // Hvis password IKKE er korrekt
+            int userIdInt;
+            if (!int.TryParse(UserID, out userIdInt))
+            {
+                ErrorMessage = "User ID must be a number.";
+                return Page();
+            }
+
+            Employee employ = _cs.Get(userIdInt);
+
+            if (employ == null)
+            {
+                ErrorMessage = "User not found.";
+                return Page();
+            }
+
+            if (Password == employ.Password)
+            {
+                HttpContext.Session.SetString("IsLoggedIn", "true");
+                HttpContext.Session.SetString("username", employ.Name);
+                HttpContext.Session.SetString("userid", employ.Id.ToString());
+
+                if (_cs.LoginAdmin(userIdInt, Password))
+                {
+                    HttpContext.Session.SetString("admin", "true");
+                }
+
+                return RedirectToPage("/EmployeeDashboard");
+            }
+
             ErrorMessage = "Incorrect password, please try again.";
             return Page();
-
         }
 
 
+
     }
-    
+
 }
