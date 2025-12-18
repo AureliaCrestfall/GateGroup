@@ -65,6 +65,9 @@ namespace gategourmetLibrary.Repo
         List<Warehouse> GetAllWarehouses();
         List<Order> GetAllOrdersFromid(int id);
 
+        // filters orders placed today with a specific status
+        List<Order> FilterByTodayAndStatus(DateTime today, OrderStatus status);
+
         void MarkorderDone(int orderId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace gategourmetLibrary.Service
             _orderRepo = orderRepo;
         }
 
-        public Dictionary<int,Order> GetAll()
+        public Dictionary<int, Order> GetAll()
         {
             return _orderRepo.GetAll();
         }
@@ -37,62 +38,61 @@ namespace gategourmetLibrary.Service
         // adds a new order
         public void AddOrder(Order order)
         {
-            if(order != null)
+            if (order != null)
             {
                 if ((order.OrderDoneBy - order.OrderMade).TotalDays >= 6)
                 {
                     List<int> invalidRecipeParts = new List<int>();
-                    foreach(KeyValuePair<int,RecipePart> rp in order.Recipe)
+                    foreach (KeyValuePair<int, RecipePart> rp in order.Recipe)
                     {
-                        if (rp.Value.partName == string.Empty || rp.Value.partName == null )
+                        if (rp.Value.partName == string.Empty || rp.Value.partName == null)
                         {
                             invalidRecipeParts.Add(rp.Key);
                         }
-                        
                     }
-                    foreach(int i in invalidRecipeParts)
+
+                    foreach (int i in invalidRecipeParts)
                     {
                         order.Recipe.Remove(i);
                     }
-                    if (order.Recipe.Count >0)
+
+                    if (order.Recipe.Count > 0)
                     {
                         _orderRepo.AddOrder(order);
-
                     }
                     else
                     {
                         throw new Exception("order dosn't conatin any vailed recipeparts");
                     }
-
                 }
                 else
                 {
                     throw new Exception("Order Ready by is the close to the time of when the order is made is need to be at least 7 days after");
                 }
             }
-            
-
-
-            
         }
+
         // deletes an order by ID
         public void DeleteOrder(int ID)
         {
             _orderRepo.DeleteOrder(ID);
         }
+
         // updates an existing order
         public void UpdateOrder(int orderID, Order updatedOrder)
         {
             _orderRepo.UpdateOrder(orderID, updatedOrder);
         }
+
         // gets a specific order by ID
         public Order GetOrder(int orderID)
         {
             Order order = _orderRepo.Get(orderID);
             Dictionary<int, Ingredient> allIngredients = _orderRepo.GetAllIngredients();
-            foreach (var recipePart in order.Recipe.Values)
+
+            foreach (RecipePart recipePart in order.Recipe.Values)
             {
-                foreach (var ing in recipePart.Ingredients)
+                foreach (Ingredient ing in recipePart.Ingredients)
                 {
                     if (allIngredients.ContainsKey(ing.ID))
                     {
@@ -100,34 +100,46 @@ namespace gategourmetLibrary.Service
                     }
                 }
             }
-            return order;
 
+            return order;
         }
+
         // gets recipe parts for a specific order
         public List<RecipePart> GetOrderRecipeParts(int orderID)
         {
             return _orderRepo.GetRecipeParts(orderID);
         }
+
         // to filter orders by employee
         public List<Order> FilterOrdersByEmployee(Employee employee)
         {
             return _orderRepo.FilterByEmployee(employee);
         }
+
         // to filter orders placed today
         public List<Order> FilterOrdersByToday(DateTime today)
         {
             return _orderRepo.FilterByToday(today);
         }
+
+        // to filter orders placed today with a specific status 
+        public List<Order> FilterOrdersByTodayAndStatus(DateTime today, OrderStatus status)
+        {
+            return _orderRepo.FilterByTodayAndStatus(today, status);
+        }
+
         // to filter orders by company
         public List<Order> FilterOrdersByCompany(Customer customer)
         {
             return _orderRepo.FilterByCompany(customer);
         }
+
         // to filter orders by status
         public List<Order> FilterOrdersByStatus(OrderStatus status)
         {
             return _orderRepo.FilterByStatus(status);
         }
+
         // to filter orders by date
         public List<Order> FilterOrdersByDate(DateTime date)
         {
@@ -138,6 +150,7 @@ namespace gategourmetLibrary.Service
         {
             return _orderRepo.GetAllIngredients();
         }
+
         public Dictionary<int, string> GetAllAllergies()
         {
             return _orderRepo.GetAllAllergies();
@@ -220,7 +233,6 @@ namespace gategourmetLibrary.Service
             return filtered;
         }
 
-       
         // Applies a status filter only to orders created today.
         // If statusFilter is empty/null, the input list is returned unchanged.
         public List<Order> FilterOrdersByStatusForOrdersCreatedToday(List<Order> orders, string statusFilter)
@@ -267,7 +279,6 @@ namespace gategourmetLibrary.Service
             return filtered;
         }
 
-
         // returns the current warehouse location for a specific recipe part
         public Warehouse GetRecipePartLocation(int recipePartId)
         {
@@ -275,16 +286,16 @@ namespace gategourmetLibrary.Service
         }
 
         // updates the warehouse location for a specific recipe part
-        
         public void UpdateRecipePartLocation(int recipePartId, int warehouseId)
         {
             _orderRepo.UpdateRecipePartLocation(recipePartId, warehouseId);
         }
 
-       public List<Order> GetAllOrdersFromid(int id)
+        public List<Order> GetAllOrdersFromid(int id)
         {
             return _orderRepo.GetAllOrdersFromid(id);
         }
+
         public void MarkorderDone(int orderId)
         {
             _orderRepo.MarkorderDone(orderId);

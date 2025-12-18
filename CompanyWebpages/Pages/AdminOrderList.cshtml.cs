@@ -235,12 +235,27 @@ namespace CompanyWebpages.Pages
             Orders = _orderService.FilterOrdersByCreatedDateRange(Orders, FromDate, ToDate);
         }
 
-        // applies status filter only on todays orders
+        // applies status filter only on todays orders 
         private void ApplyStatusTodayFilter()
         {
             if (!string.IsNullOrEmpty(statusFilter))
             {
-                Orders = _orderService.FilterOrdersByStatusForOrdersCreatedToday(Orders, statusFilter);
+                OrderStatus parsedStatus;
+                bool canParse = Enum.TryParse<OrderStatus>(statusFilter, true, out parsedStatus);
+
+                if (canParse)
+                {
+                    Orders = _orderService.FilterOrdersByTodayAndStatus(DateTime.Today, parsedStatus);
+
+                    if (Orders == null)
+                    {
+                        Orders = new List<Order>();
+                    }
+                }
+                else
+                {
+                    Orders = new List<Order>();
+                }
             }
         }
 

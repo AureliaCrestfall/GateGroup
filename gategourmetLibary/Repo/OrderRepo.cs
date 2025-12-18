@@ -631,6 +631,54 @@ namespace gategourmetLibrary.Repo
 
             return orders;
         }
+        // filters orders placed today with a specific status (SQL)
+        public List<Order> FilterByTodayAndStatus(DateTime today, OrderStatus status)
+        {
+            List<Order> orders = new List<Order>();
+
+            DateTime startDate = today.Date;
+            DateTime endDate = today.Date.AddDays(1);
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlCommand command = new SqlCommand(
+                    "SELECT O_ID, O_Made, O_Ready, O_PaySatus, O_Status " +
+                    "FROM dbo.OrderTable " +
+                    "WHERE O_Made >= @StartDate AND O_Made < @EndDate " +
+                    "AND O_Status = @Status",
+                    connection);
+
+                command.Parameters.AddWithValue("@StartDate", startDate);
+                command.Parameters.AddWithValue("@EndDate", endDate);
+                command.Parameters.AddWithValue("@Status", status.ToString());
+
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    int id = Convert.ToInt32(reader["O_ID"]);
+                    DateTime made = Convert.ToDateTime(reader["O_Made"]);
+                    DateTime ready = Convert.ToDateTime(reader["O_Ready"]);
+                    bool paystatus = Convert.ToBoolean(reader["O_PaySatus"]);
+                    string statusString = reader["O_Status"].ToString();
+
+                    OrderStatus parsedStatus;
+                    if (!Enum.TryParse<OrderStatus>(statusString, out parsedStatus))
+                    {
+                        parsedStatus = OrderStatus.Created;
+                    }
+
+                    Order order = new Order(made, ready, id, paystatus);
+                    order.Status = parsedStatus;
+
+                    orders.Add(order);
+                }
+            }
+
+            return orders;
+        }
+
 
         // filters orders by department
         public List<Order> FilterByDepartment(int departmentId)
