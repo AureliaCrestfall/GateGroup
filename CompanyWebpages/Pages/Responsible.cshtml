@@ -79,7 +79,9 @@
                         </div>
                     </div>
                 </div>
-                if (Model.Employees.Count< Model.Order.Recipe.Count)
+              
+            }
+              @if (Model.Employees.Count< Model.Order.Recipe.Count)
                 {
                     <a class="btn btn-sm btn-outline-light"
                        asp-page="/Asigntask"
@@ -99,7 +101,6 @@
                         </button>
                     </form>
                 } *@
-            }
         </div>
     }
 
