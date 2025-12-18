@@ -161,55 +161,53 @@ namespace gategourmetLibrary.Repo
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlCommand command = new SqlCommand(
-                    "UPDATE dbo.OrderTable SET O_Status = @Status WHERE O_ID = @Id",
-                    connection);
-                SqlCommand commandRecipe = new SqlCommand(
-                 "UPDATE dbo.RecipePart SET R_Status = @Status WHERE R_ID = @Id",
-                 connection);
-                SqlCommand sqlCommand = new SqlCommand("select R_ID from orderTableRecipePart " +
-                    " where O_ID = @id", connection);
-                // store the enum as string in the database
-                command.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
-                command.Parameters.AddWithValue("@Id", orderId);
-                
-
-                sqlCommand.Parameters.AddWithValue("@Id", orderId);
-                List<int> orderIds = new List<int>();
-                commandRecipe.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
-
                 try
                 {
                     connection.Open();
-                    command.ExecuteNonQuery();
-                connection.Close();
-                connection.Open();
 
-                SqlDataReader sqlReader = sqlCommand.ExecuteReader();
-
-                    while (sqlReader.Read())
+                    // Opdater ordre status
+                    using (SqlCommand command = new SqlCommand(
+                        "UPDATE dbo.OrderTable SET O_Status = @Status WHERE O_ID = @Id", connection))
                     {
-                        Debug.WriteLine("reader calls");
-                       orderIds.Add((int)sqlReader["R_ID"]);
-
+                        command.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
+                        command.Parameters.AddWithValue("@Id", orderId);
+                        command.ExecuteNonQuery();
                     }
-                connection.Close();
-                connection.Open();
-                foreach (int i in orderIds)
-                {
-                    commandRecipe.Parameters.AddWithValue("@Id", i);
-                    commandRecipe.ExecuteNonQuery();
-                }
 
+                    // Hent alle RecipePart IDs for ordren
+                    List<int> recipePartIds = new List<int>();
+                    using (SqlCommand sqlCommand = new SqlCommand(
+                        "SELECT R_ID FROM orderTableRecipePart WHERE O_ID = @id", connection))
+                    {
+                        sqlCommand.Parameters.AddWithValue("@id", orderId);
+                        using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                recipePartIds.Add((int)reader["R_ID"]);
+                            }
+                        }
+                    }
+
+                    // Opdater status på alle RecipeParts
+                    foreach (int rId in recipePartIds)
+                    {
+                        using (SqlCommand commandRecipe = new SqlCommand(
+                            "UPDATE dbo.RecipePart SET R_Status = @Status WHERE R_ID = @Id", connection))
+                        {
+                            commandRecipe.Parameters.AddWithValue("@Status", OrderStatus.Cancelled.ToString());
+                            commandRecipe.Parameters.AddWithValue("@Id", rId);
+                            commandRecipe.ExecuteNonQuery();
+                        }
+                    }
                 }
                 catch (SqlException ex)
                 {
-                    throw new Exception("Databasefail in OrderRepository.CancelOrder(): " + ex.Message);
-
+                    throw new Exception("Database fail in OrderRepository.CancelOrder(): " + ex.Message);
                 }
-
             }
         }
+
 
         // Links order to customer in junction table OrderTableCustomer.
         public void AddOrderTableCustomert(int orderID, int customerID)
