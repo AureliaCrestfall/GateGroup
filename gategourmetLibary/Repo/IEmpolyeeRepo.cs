@@ -17,7 +17,8 @@ namespace gategourmetLibrary.Repo
         void Update(Employee empolyee);
         List<Employee> Filter(string empolyee);
         public void AddNewAdmin(Admin admin);
-
+        void AddPhonenumber(string phone, int employeeID);
+        void AddEmployeePhoneLink(int phoneID, int employeeID);
         Dictionary<int, string> GetAllPostions();
         Dictionary<int, Employee> GetEmployeeFromOrderID(int orderid);
         bool IsThisAnAdmin(int employeeID);
