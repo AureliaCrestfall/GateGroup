@@ -41,24 +41,22 @@ namespace CompanyWebpages.Pages
             EmployeesOptions = new List<SelectListItem>();
         }
 
-        public void OnGet(int orderid )
+        public IActionResult OnGet(int orderid )
         {
-            try
+
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("admin") != "true")
             {
-                Order = _os.GetOrder(orderid);
-                CustomersOrder = _cs.GetCustomerByOrder(orderid);
-                Dictionary<int, Employee> AllEmployeesDict = _es.GetAll();
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/EmployeeLogin");
+            }
+            else
+            {
+                Load(orderid);
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
             
-                foreach (KeyValuePair<int,Employee> keyValuePair in AllEmployeesDict)
-                {
-                    EmployeesOptions.Add(new SelectListItem(keyValuePair.Value.Name, keyValuePair.Key.ToString()));
-
-                }
-            }
-            catch (Exception)
-            {
-
-            }
         }
        
 
@@ -92,6 +90,26 @@ namespace CompanyWebpages.Pages
             }
 
             return Page();
+        }
+
+        public void Load(int orderid)
+        {
+            try
+            {
+                Order = _os.GetOrder(orderid);
+                CustomersOrder = _cs.GetCustomerByOrder(orderid);
+                Dictionary<int, Employee> AllEmployeesDict = _es.GetAll();
+
+                foreach (KeyValuePair<int, Employee> keyValuePair in AllEmployeesDict)
+                {
+                    EmployeesOptions.Add(new SelectListItem(keyValuePair.Value.Name, keyValuePair.Key.ToString()));
+
+                }
+            }
+            catch (Exception)
+            {
+
+            }
         }
     }
 }

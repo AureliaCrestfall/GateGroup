@@ -32,15 +32,28 @@ namespace CompanyWebpages.Pages
 
         public List<SelectListItem> Positions { get; set; }
        
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            // Simuler data - i praksis vil du hente dette fra en database/service
-            Positions = new List<SelectListItem>
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/EmployeeLogin");
+            }
+            else
+            {
+                // Simuler data - i praksis vil du hente dette fra en database/service
+                Positions = new List<SelectListItem>
             {
                 new SelectListItem { Value = "1", Text = "System Administrator" },
                 new SelectListItem { Value = "2", Text = "HR Manager" },
                 new SelectListItem { Value = "3", Text = "Deparment Manager" }
             };
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
+           
+            
 
         }
         

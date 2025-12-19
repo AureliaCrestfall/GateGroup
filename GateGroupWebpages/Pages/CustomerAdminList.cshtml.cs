@@ -29,9 +29,21 @@ namespace CompanyWebpages.Pages
         }
 
         // runs when the page is loaded with a GET request
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            Customers = _customerService.GetAllCustomers();
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/Login");
+            }
+            else
+            {
+                Customers = _customerService.GetAllCustomers();
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
+            
         }
 
         // runs when the Delete form is posted

@@ -30,10 +30,20 @@ namespace CompanyWebpages.Pages
         }
 
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-           Employees =_employeeService.GetAll();
-
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/EmployeeLogin");
+            }
+            else
+            {
+                Employees = _employeeService.GetAll();
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
 
         }
 

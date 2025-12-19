@@ -25,9 +25,21 @@ namespace CompanyWebpages.Pages
             _cs = cs;
         }
 
-        public void OnGet(int orderid)
+        public IActionResult OnGet(int orderid)
         {
-            Load(orderid);
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/EmployeeLogin");
+            }
+            else
+            {
+                Load(orderid);
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
+            
         }
 
         public IActionResult OnPost()

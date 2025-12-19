@@ -33,9 +33,21 @@ namespace GateGroupWebpages.Pages
         public List<SelectListItem> StatusOptions { get; set; }
 
         // Runs when the page is loaded
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            Load();
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/Login");
+            }
+            else
+            {
+                Load();
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
+           
         }
 
         // Handles delete button click

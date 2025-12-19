@@ -77,16 +77,28 @@ namespace CompanyWebpages.Pages
         }
 
         // runs when the page is loaded with a get method 
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            LoadCustomers();
-            LoadAllOrders();
-            LoadEmployeeFilter();
-            LoadDepartmentFilter();
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("admin") != "true")
+            {
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/EmployeeLogin");
+            }
+            else
+            {
+                LoadCustomers();
+                LoadAllOrders();
+                LoadEmployeeFilter();
+                LoadDepartmentFilter();
 
-            ApplyEmployeeFilter();
-            ApplyDepartmentFilter();
-            ApplyStatusTodayFilter();
+                ApplyEmployeeFilter();
+                ApplyDepartmentFilter();
+                ApplyStatusTodayFilter();
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
+           
         }
 
         // loads all customers for the dropdown

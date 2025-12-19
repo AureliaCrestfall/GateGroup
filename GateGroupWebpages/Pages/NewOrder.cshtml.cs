@@ -103,9 +103,14 @@ namespace GateGroupWebpages.Pages
                 // Hvis IKKE logget ind - send til login siden
                 return RedirectToPage("/Login");
             }
+            else
+            {
+                Load();
+                // Hvis logget ind - vis siden som normalt
+                return Page();
+            }
 
-            // Hvis logget ind - vis siden som normalt
-            return Page();
+           
 
         }
 
@@ -181,28 +186,14 @@ namespace GateGroupWebpages.Pages
             }
             catch (Exception ex)
             {
-                newOrder.OrderMade = DateTime.Now;
-                                    newOrder.OrderDoneBy = DateTime.Now.AddDays(7).Date;
-                                    Ingredients = _os.GetAllIngredients();
-                                    Dictionary<int, string> Alleries = _os.GetAllAllergies();
-
-                                    IngredientOptions = new List<SelectListItem>();
-                                    foreach (KeyValuePair<int, Ingredient> ikv in Ingredients)
-                                    {
-                                        IngredientOptions.Add(new SelectListItem(ikv.Value.Name, ikv.Value.ID.ToString()));
-                                    }
-                                    AllerieOptions = new List<SelectListItem>();
-                                    foreach (KeyValuePair<int, string> akv in Alleries)
-                                    {
-                                        AllerieOptions.Add(new SelectListItem(akv.Value, akv.Key.ToString()));
-                                    }
+                Load();
                 ErrorMessage = $"{ex.Message}";
                 return Page();
 
             }
 
 
-            return RedirectToPage("/NewOrder");
+            
         }
         public void Load()
         {

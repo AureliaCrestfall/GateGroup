@@ -34,23 +34,35 @@ namespace GateGroupWebpages.Pages
         public int orderId { get; set; }
 
         //it runs when the page is loaded (Get request)
-        public void OnGet(int orderid)
+        public IActionResult OnGet(int orderid)
         {
-            try
+            // Tjek om brugeren er logget ind før den giver adgang til siden 
+            if (HttpContext.Session.GetString("IsLoggedIn") != "true")
             {
-                Order = _orderService.GetOrder(orderid);
-                if (Order == null)
+                // Hvis IKKE logget ind - send til login siden
+                return RedirectToPage("/Login");
+            }
+            else
+            {
+                try
                 {
-                    ErrorMessage = $"Order #{orderId} was not found.";
-                    Order = new Order();
+                    Order = _orderService.GetOrder(orderid);
+                    if (Order == null)
+                    {
+                        ErrorMessage = $"Order #{orderId} was not found.";
+                        Order = new Order();
+                        Order.ID = orderid;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = ex.Message;
                     Order.ID = orderid;
                 }
+                // Hvis logget ind - vis siden som normalt
+                return Page();
             }
-            catch(Exception ex)
-            {
-                ErrorMessage = ex.Message;
-                Order.ID = orderid;
-            }
+            
             
             
         }
