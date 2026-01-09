@@ -103,6 +103,27 @@ namespace GateGroupWebpages.Pages
             };
 
 
+            // Try to convert selected string to OrderStatus enum
+            OrderStatus selectedStatus;
+
+            if (Enum.TryParse(statusFilter, out selectedStatus))
+            {
+                // Create new list for filtered orders
+                List<Order> filteredOrders = new List<Order>();
+
+                // Loop through all orders and keep matching ones
+                foreach (Order order in Orders)
+                {
+                    if (order.Status == selectedStatus)
+                    {
+                        filteredOrders.Add(order);
+                    }
+                }
+
+
+                Orders = filteredOrders;
+            }
+
 
 
 
@@ -124,32 +145,6 @@ namespace GateGroupWebpages.Pages
             //        .ToList(); // Convert the result back to a List for further use in the UI
             //}
 
-
-
-
-
-
-
-            // Try to convert selected string to OrderStatus enum
-            OrderStatus selectedStatus;
-
-            if (Enum.TryParse(statusFilter, out selectedStatus))
-            {
-                // Create new list for filtered orders
-                List<Order> filteredOrders = new List<Order>();
-
-                // Loop through all orders and keep matching ones
-                foreach (Order order in Orders)
-                {
-                    if (order.Status == selectedStatus)
-                    {
-                        filteredOrders.Add(order);
-                    }
-                }
-
-
-                Orders = filteredOrders;
-            }
         }
     }
 }
