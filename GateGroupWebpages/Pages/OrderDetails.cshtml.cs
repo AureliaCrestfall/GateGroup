@@ -27,7 +27,7 @@ namespace GateGroupWebpages.Pages
         //it holds the order 
         public Order Order { get; set; }
         //it holds the recipe parts details for the order
-        public List<RecipePartDetails> RecipeParts { get; set; } = new List<RecipePartDetails>(); //Initialize to avoid null reference and it means (= new List<string>(); )
+        public List<RecipePartDetails> RecipeParts { get; set; } = new List<RecipePartDetails>(); //Initialize to avoid null reference
 
         //bind property to get orderId from query string
         [BindProperty(SupportsGet = true)]
@@ -72,7 +72,7 @@ namespace GateGroupWebpages.Pages
             // Use a switch expression to match the string value with enum values
             return status switch
             {
-                // using LAMBDA expression to map string values to enum, It returns the value on the right when the pattern on the left matches.
+                // using Switch expression to map string values to enum, It returns the value on the right when the pattern on the left matches.
                 "Cancelled" => OrderStatus.Cancelled, 
                 "Created" => OrderStatus.Created, 
                 "InProgress" => OrderStatus.InProgress, 
