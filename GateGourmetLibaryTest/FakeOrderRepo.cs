@@ -68,6 +68,11 @@ namespace GateGourmetLibaryTest
             throw new NotImplementedException();
         }
 
+        public List<Order> FilterByTodayAndStatus(DateTime today, OrderStatus status)
+        {
+            throw new NotImplementedException();
+        }
+
         public Order Get(int orderID)
         {
             throw new NotImplementedException();
@@ -109,6 +114,11 @@ namespace GateGourmetLibaryTest
         }
 
         public List<RecipePart> GetRecipeParts(int orderID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MarkorderDone(int orderId)
         {
             throw new NotImplementedException();
         }
