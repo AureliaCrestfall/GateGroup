@@ -763,6 +763,16 @@ namespace gategourmetLibrary.Models
 
             }
         }
+
+        void IEmpolyeeRepo.AddPhonenumber(string phone, int employeeID)
+        {
+            AddPhonenumber(phone, employeeID);
+        }
+
+        void IEmpolyeeRepo.AddEmployeePhoneLink(int phoneID, int employeeID)
+        {
+            AddEmployeePhoneLink(phoneID, employeeID);
+        }
     }
 
 
