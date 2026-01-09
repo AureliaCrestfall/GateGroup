@@ -102,6 +102,34 @@ namespace GateGroupWebpages.Pages
                 new SelectListItem("Cancelled", "Cancelled")
             };
 
+
+
+
+
+
+            //TO EXAM
+            // Variable that will hold the converted enum value from the UI filter
+            //OrderStatus selectedStatus;
+
+            //// First we make sure that the Orders list is not null
+            //// Then we safely try to convert the selected status (string from dropdown)
+            //// into the OrderStatus enum using TryParse to avoid runtime exceptions
+            //if (Orders != null && Enum.TryParse(statusFilter, out selectedStatus))
+            //{
+            //    // Filter the orders using LINQ
+            //    // Where() iterates through the collection and keeps only
+            //    // the orders whose Status matches the selected enum value
+            //    Orders = Orders
+            //        .Where(o => o.Status == selectedStatus)
+            //        .ToList(); // Convert the result back to a List for further use in the UI
+            //}
+
+
+
+
+
+
+
             // Try to convert selected string to OrderStatus enum
             OrderStatus selectedStatus;
 
